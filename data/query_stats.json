@@ -5,8 +5,38 @@
   "display": "What are the promotion rules for me?"
  },
  "what are the promotion rules": {
-  "count": 1,
-  "last": 1787466626.3462973,
+  "count": 2,
+  "last": 1787466760.1511064,
   "display": "What are the promotion rules?"
+ },
+ "b tech": {
+  "count": 1,
+  "last": 1787466791.9845386,
+  "display": "B.Tech"
+ },
+ "what about first year": {
+  "count": 1,
+  "last": 1787466925.999124,
+  "display": "What about first year?"
+ },
+ "who should we contact if we face any problems in hostel": {
+  "count": 1,
+  "last": 1787467033.1876082,
+  "display": "Who should we contact if we face any problems in hostel?"
+ },
+ "who to contact regarding course curriculam": {
+  "count": 1,
+  "last": 1787467095.96459,
+  "display": "Who to contact regarding course curriculam?"
+ },
+ "lets say i m currently facing conflict in timetable who should i contact and how": {
+  "count": 1,
+  "last": 1787467155.6007574,
+  "display": "Lets say I'm currently facing conflict in timetable. Who should I contact and ho"
+ },
+ "cse": {
+  "count": 1,
+  "last": 1787467225.98616,
+  "display": "CSE"
  }
 }

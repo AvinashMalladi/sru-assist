@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SRU Assist - embeddable chat widget for the university portal.
  *
  * INTEGRATION (for portal developers):
@@ -34,7 +34,7 @@
   var css = [
     ".srucw-root{all:initial;font-family:'Segoe UI',system-ui,sans-serif}",
     ".srucw-bubble{position:fixed;right:22px;bottom:22px;width:60px;height:60px;border-radius:50%;",
-    "background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;cursor:pointer;",
+    "background:linear-gradient(135deg,#23468A,#3E6BC0);color:#fff;border:none;cursor:pointer;",
     "box-shadow:0 8px 24px rgba(79,70,229,.45);font-size:26px;z-index:99998;display:flex;",
     "align-items:center;justify-content:center;transition:transform .15s ease}",
     ".srucw-bubble:hover{transform:scale(1.08)}",
@@ -43,7 +43,7 @@
     "box-shadow:0 24px 64px rgba(0,0,0,.28);display:none;flex-direction:column;overflow:hidden;",
     "border:1px solid #e5e7eb}",
     ".srucw-panel.open{display:flex}",
-    ".srucw-head{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;padding:14px 16px;",
+    ".srucw-head{background:linear-gradient(135deg,#23468A,#3E6BC0);color:#fff;padding:14px 16px;",
     "display:flex;align-items:center;gap:10px}",
     ".srucw-avatar{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);",
     "display:flex;align-items:center;justify-content:center;font-size:18px}",
@@ -56,7 +56,7 @@
     ".srucw-msg{max-width:80%;padding:9px 12px;border-radius:14px;font-size:13.5px;line-height:1.45;",
     "white-space:pre-wrap;word-wrap:break-word}",
     ".srucw-msg.bot{background:#fff;color:#111827;border:1px solid #e5e7eb;border-bottom-left-radius:4px;white-space:normal;overflow-x:auto}",
-    ".srucw-msg.user{background:#4f46e5;color:#fff;border-bottom-right-radius:4px}",
+    ".srucw-msg.user{background:#23468A;color:#fff;border-bottom-right-radius:4px}",
     ".srucw-msg table{border-collapse:collapse;width:100%;margin:6px 0;font-size:11.5px}",
     ".srucw-msg th,.srucw-msg td{border:1px solid #e5e7eb;padding:3.5px 6px;text-align:left}",
     ".srucw-msg th{background:#f3f4f6;font-weight:600}",
@@ -65,17 +65,17 @@
     ".srucw-msg h3,.srucw-msg h4{margin:8px 0 4px;font-size:13px;color:#111827}",
     ".srucw-msg p{margin:0 0 7px}",
     ".srucw-msg p:last-child{margin-bottom:0}",
-    ".srucw-msg code{background:#eef2ff;border-radius:4px;padding:1px 5px;font-size:12px}",
-    ".srucw-cite{display:inline-block;margin-top:6px;font-size:10.5px;color:#6d28d9;background:#ede9fe;",
+    ".srucw-msg code{background:#dbe7f7;border-radius:4px;padding:1px 5px;font-size:12px}",
+    ".srucw-cite{display:inline-block;margin-top:6px;font-size:10.5px;color:#23468A;background:#dbe7f7;",
     "border-radius:6px;padding:2px 7px;font-weight:600}",
     ".srucw-sugg{padding:0 14px 8px;background:#f6f7fb;display:flex;gap:6px;flex-wrap:wrap}",
-    ".srucw-sugg button{font-size:11.5px;color:#4f46e5;background:#fff;border:1px solid #c7d2fe;",
+    ".srucw-sugg button{font-size:11.5px;color:#23468A;background:#fff;border:1px solid #b7cbe8;",
     "border-radius:999px;padding:5px 11px;cursor:pointer}",
-    ".srucw-sugg button:hover{background:#eef2ff}",
+    ".srucw-sugg button:hover{background:#dbe7f7}",
     ".srucw-inputbar{display:flex;gap:8px;padding:12px;border-top:1px solid #e5e7eb;background:#fff}",
     ".srucw-input{flex:1;border:1px solid #d1d5db;border-radius:10px;padding:9px 12px;font-size:13.5px;outline:none}",
-    ".srucw-input:focus{border-color:#4f46e5}",
-    ".srucw-send{background:#4f46e5;color:#fff;border:none;border-radius:10px;padding:9px 16px;",
+    ".srucw-input:focus{border-color:#23468A}",
+    ".srucw-send{background:#23468A;color:#fff;border:none;border-radius:10px;padding:9px 16px;",
     "font-size:13.5px;font-weight:600;cursor:pointer}",
     ".srucw-send:disabled{opacity:.55;cursor:default}",
     ".srucw-typing span{display:inline-block;width:6px;height:6px;margin:0 1.5px;border-radius:50%;",
@@ -85,12 +85,12 @@
     "@keyframes srucwBlink{0%,80%,100%{opacity:.25}40%{opacity:1}}",
     ".srucw-gear{margin-left:auto;background:none;border:none;color:#fff;font-size:15px;cursor:pointer;opacity:.9;padding:0 4px}",
     ".srucw-head .srucw-close{margin-left:2px}",
-    ".srucw-profile{display:none;background:#eef2ff;padding:10px 14px;border-bottom:1px solid #e5e7eb;font-size:12px;color:#374151}",
+    ".srucw-profile{display:none;background:#dbe7f7;padding:10px 14px;border-bottom:1px solid #e5e7eb;font-size:12px;color:#374151}",
     ".srucw-profile.open{display:block}",
     ".srucw-profile .row{display:flex;gap:8px;margin-bottom:7px}",
-    ".srucw-profile select,.srucw-profile input{flex:1;border:1px solid #c7d2fe;border-radius:8px;padding:6px 8px;font-size:12px;background:#fff;outline:none;min-width:0}",
+    ".srucw-profile select,.srucw-profile input{flex:1;border:1px solid #b7cbe8;border-radius:8px;padding:6px 8px;font-size:12px;background:#fff;outline:none;min-width:0}",
     ".srucw-profile button{border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer}",
-    ".srucw-pf-save{background:#4f46e5;color:#fff}",
+    ".srucw-pf-save{background:#23468A;color:#fff}",
     ".srucw-pf-clear{background:#e5e7eb;color:#374151}",
   ].join("");
 

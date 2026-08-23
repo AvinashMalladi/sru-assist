@@ -71,6 +71,17 @@ The widget is dependency-free JS. On any portal page:
 <script src="https://chatbot.yourdomain.com/static/widget.js"></script>
 ```
 
+### Real portal notes (sraap.in)
+- The live portal (`sraap.in`) is server-rendered **PHP + Bootstrap 5 + jQuery**.
+  Integration = paste the two tags above into the dashboard template
+  (e.g. `student/dash_board.php`, or a shared footer include) just before `</body>`.
+- Brand palette matched from `assets/css/style.css`: primary **#23468A**, light
+  accents #97B9E2 / #dbe7f7 — widget + demo already use these.
+- The public pages disable right-click/devtools via inline JS; this does not
+  affect the widget.
+- The API host must be reachable from students' browsers over HTTPS; keep
+  `add_cors` in `app.py` restricted to `https://sraap.in` in production.
+
 Checklist for production:
 - [ ] Host `app.py` behind HTTPS (e.g. gunicorn + nginx, or Render/Railway).
 - [ ] Restrict CORS in `app.py` (`add_cors`) to the real portal domain.
