@@ -55,8 +55,17 @@
     ".srucw-row.user{flex-direction:row-reverse}",
     ".srucw-msg{max-width:80%;padding:9px 12px;border-radius:14px;font-size:13.5px;line-height:1.45;",
     "white-space:pre-wrap;word-wrap:break-word}",
-    ".srucw-msg.bot{background:#fff;color:#111827;border:1px solid #e5e7eb;border-bottom-left-radius:4px}",
+    ".srucw-msg.bot{background:#fff;color:#111827;border:1px solid #e5e7eb;border-bottom-left-radius:4px;white-space:normal}",
     ".srucw-msg.user{background:#4f46e5;color:#fff;border-bottom-right-radius:4px}",
+    ".srucw-msg table{border-collapse:collapse;width:100%;margin:6px 0;font-size:12px}",
+    ".srucw-msg th,.srucw-msg td{border:1px solid #e5e7eb;padding:4px 7px;text-align:left}",
+    ".srucw-msg th{background:#f3f4f6;font-weight:600}",
+    ".srucw-msg ul,.srucw-msg ol{margin:4px 0 6px;padding-left:18px}",
+    ".srucw-msg li{margin:2.5px 0}",
+    ".srucw-msg h3,.srucw-msg h4{margin:8px 0 4px;font-size:13px;color:#111827}",
+    ".srucw-msg p{margin:0 0 7px}",
+    ".srucw-msg p:last-child{margin-bottom:0}",
+    ".srucw-msg code{background:#eef2ff;border-radius:4px;padding:1px 5px;font-size:12px}",
     ".srucw-cite{display:inline-block;margin-top:6px;font-size:10.5px;color:#6d28d9;background:#ede9fe;",
     "border-radius:6px;padding:2px 7px;font-weight:600}",
     ".srucw-sugg{padding:0 14px 8px;background:#f6f7fb;display:flex;gap:6px;flex-wrap:wrap}",
@@ -75,6 +84,82 @@
     ".srucw-typing span:nth-child(3){animation-delay:.4s}",
     "@keyframes srucwBlink{0%,80%,100%{opacity:.25}40%{opacity:1}}",
   ].join("");
+
+  // ---------- mini markdown ----------
+  function esc(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function inline(t) {
+    return t
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/(^|[\s(])\*([^*\n]+)\*(?=[\s).,!?:;]|$)/g, "$1<em>$2</em>")
+      .replace(/`([^`]+)`/g, "<code>$1</code>");
+  }
+
+  function cells(line) {
+    return line.replace(/^\s*\|/, "").replace(/\|\s*$/, "").split("|").map(function (c) { return c.trim(); });
+  }
+
+  function renderMarkdown(raw) {
+    var s = raw
+      .replace(/\\\[([\s\S]*?)\\\]/g, "$1")   // \[ ... \] -> content
+      .replace(/\\\(([\s\S]*?)\\\)/g, "$1");  // \( ... \) -> content
+    s = s
+      .replace(/\\frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g, "($1) ÷ ($2)")
+      .replace(/\\d?frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g, "($1) ÷ ($2)")
+      .replace(/\\times/g, " × ").replace(/\\cdot/g, " · ")
+      .replace(/\\sum/g, "Σ").replace(/\\approx/g, "≈")
+      .replace(/\\text\s*\{([^{}]*)\}/g, "$1");
+    s = esc(s);
+    s = s.replace(/_\{?([A-Za-z0-9])\}?/g, "<sub>$1</sub>");
+
+    var lines = s.split("\n"), out = [], i = 0, m;
+    while (i < lines.length) {
+      var L = lines[i];
+      if (/^\s*$/.test(L)) { i++; continue; }
+
+      if ((m = L.match(/^\s*#{1,6}\s+(.*)$/))) {
+        out.push("<h4>" + inline(m[1]) + "</h4>"); i++; continue;
+      }
+
+      if (L.indexOf("|") >= 0 && i + 1 < lines.length &&
+          /^\s*\|?[\s:|\-]+\|?\s*$/.test(lines[i + 1]) && lines[i + 1].indexOf("-") >= 0) {
+        var head = cells(L), body = [];
+        i += 2;
+        while (i < lines.length && lines[i].indexOf("|") >= 0 && !/^\s*$/.test(lines[i])) {
+          body.push(cells(lines[i])); i++;
+        }
+        var t = "<table><thead><tr>";
+        head.forEach(function (c) { t += "<th>" + inline(c) + "</th>"; });
+        t += "</tr></thead><tbody>";
+        body.forEach(function (r) {
+          t += "<tr>"; r.forEach(function (c) { t += "<td>" + inline(c) + "</td>"; }); t += "</tr>";
+        });
+        out.push(t + "</tbody></table>");
+        continue;
+      }
+
+      if (/^\s*[-*•]\s+/.test(L)) {
+        var ul = "<ul>";
+        while (i < lines.length && /^\s*[-*•]\s+/.test(lines[i])) {
+          ul += "<li>" + inline(lines[i].replace(/^\s*[-*•]\s+/, "")) + "</li>"; i++;
+        }
+        out.push(ul + "</ul>"); continue;
+      }
+
+      if (/^\s*\d+[.)]\s+/.test(L)) {
+        var ol = "<ol>";
+        while (i < lines.length && /^\s*\d+[.)]\s+/.test(lines[i])) {
+          ol += "<li>" + inline(lines[i].replace(/^\s*\d+[.)]\s+/, "")) + "</li>"; i++;
+        }
+        out.push(ol + "</ol>"); continue;
+      }
+
+      out.push("<p>" + inline(L.trim()) + "</p>"); i++;
+    }
+    return out.join("");
+  }
 
   // ---------- dom ----------
   function el(tag, cls, text) {
@@ -123,7 +208,9 @@
 
   function addMsg(role, text, cites) {
     var row = el("div", "srucw-row " + role);
-    var b = el("div", "srucw-msg " + role, text);
+    var b = el("div", "srucw-msg " + role);
+    if (role === "bot") { b.innerHTML = renderMarkdown(text); }
+    else { b.textContent = text; }
     row.appendChild(b);
     if (cites && cites.length) {
       b.appendChild(el("br"));
