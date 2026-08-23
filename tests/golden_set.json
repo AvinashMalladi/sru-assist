@@ -1,0 +1,28 @@
+{
+  "description": "Golden Q&A set for SRU Assist retrieval evaluation. expect_pages = handbook pages whose content SHOULD be retrieved for the question (any overlap within top_k counts as a hit).",
+  "top_k": 6,
+  "cases": [
+    { "id": "pass-marks", "q": "What is the minimum pass percentage?", "expect_pages": [34], "note": "45% UG aggregate rule" },
+    { "id": "grade-scale", "q": "Explain the letter grade scale", "expect_pages": [30], "note": "A+ to I table" },
+    { "id": "sgpa-calc", "q": "How is SGPA calculated for a semester?", "expect_pages": [31], "note": "illustration" },
+    { "id": "cgpa-calc", "q": "How do they compute my CGPA?", "expect_pages": [31], "note": "credit-weighted illustration" },
+    { "id": "f-grade-repeat", "q": "I got an F in one course, what happens now?", "expect_pages": [30, 31, 34, 60], "note": "repeat/backlog rules" },
+    { "id": "i-grade", "q": "What does an I grade mean and how do I clear it?", "expect_pages": [30, 31, 34, 60, 74], "note": "incomplete grade" },
+    { "id": "promotion", "q": "What are the promotion rules to the next year?", "expect_pages": [36, 37, 38], "note": "flowcharts 2.4" },
+    { "id": "attendance-exam", "q": "How much attendance do I need to write the end semester exam?", "expect_pages": [27, 29, 32, 55], "note": "exam eligibility" },
+    { "id": "condonation", "q": "My attendance is short, can it be condoned?", "expect_pages": [56, 81], "note": "condonation policy" },
+    { "id": "total-credits", "q": "How many total credits do I need to graduate?", "expect_pages": [28, 59], "note": "degree credit requirement" },
+    { "id": "malpractice", "q": "What happens if a student is caught using unfair means in an exam?", "expect_pages": [34, 35, 36, 80], "note": "CPAM / malpractice" },
+    { "id": "summer-sem", "q": "Can I clear a failed course in the summer semester?", "expect_pages": [26, 27, 28, 31, 34], "note": "summer offering" },
+    { "id": "revaluation", "q": "How do I apply for re-evaluation of my answer script?", "expect_pages": [33], "note": "re-evaluation process" },
+    { "id": "dress-code", "q": "Is there a dress code on campus?", "expect_pages": [8, 81], "note": "dress code section" },
+    { "id": "hostel", "q": "Tell me about hostel facilities and rules", "expect_pages": [6, 7, 19, 23, 24], "note": "hostel section" },
+    { "id": "scholarship", "q": "Are scholarships available for students?", "expect_pages": [6, 47, 51, 82, 83], "note": "scholarships" },
+    { "id": "anti-ragging", "q": "What are the anti-ragging rules here?", "expect_pages": [7, 82, 85], "note": "anti-ragging" },
+    { "id": "library", "q": "What are the library facilities and timings?", "expect_pages": [21, 22, 23, 24], "note": "library" },
+    { "id": "exam-fee", "q": "When and how do I pay the examination fee?", "expect_pages": [9, 31, 32], "note": "exam fee" },
+    { "id": "id-card", "q": "I lost my identity card, what should I do?", "expect_pages": [6, 46], "note": "ID card" },
+    { "id": "mentor-system", "q": "Who is my faculty mentor and what do they help with?", "expect_pages": [9, 11, 18, 26], "note": "mentoring system" },
+    { "id": "cgpa-promotion", "q": "What CGPA is needed to get promoted to second year?", "expect_pages": [36, 37, 38, 81], "note": "4.50 CGPA / 40% credits undertaking + flowchart" }
+  ]
+}

@@ -55,6 +55,20 @@ BM25 over ~300 chunks is fast, deterministic, needs no model download, and is
 trivial to swap later. `retriever.py` exposes a single `.search()` interface so
 a mentor can drop in FAISS/Chroma embeddings without touching anything else.
 
+## Quality & evaluation
+`tests/golden_set.json` holds 22 real student questions with the handbook pages
+that MUST be retrieved. Score it any time:
+
+```bash
+python scripts/run_eval.py        # retrieval-only, no API cost
+python scripts/run_eval.py --full # also tests live LLM answers
+```
+
+Current baseline: **100% hit-rate @ top-6, MRR 0.74** (exit code fails CI
+under 80%). See `ARCHITECTURE.md` for design decisions,
+`docs/API.md` for the integration contract, `PRODUCTIONIZATION.md` for moving
+to university infrastructure / paid models.
+
 ---
 
 ## Integrating into the real portal (handover notes)
