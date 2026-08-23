@@ -99,6 +99,29 @@ to force handbook-only answers.
 
 ---
 
+## Deploying (Render free tier)
+
+Code is deploy-ready (`render.yaml`, `gunicorn`, `$PORT` support included).
+
+1. **Push to GitHub**
+   ```bash
+   cd sru-chatbot
+   git remote add origin https://github.com/<your-username>/sru-assist.git
+   git push -u origin master
+   ```
+2. **Render** → sign in with GitHub → **New + → Blueprint** → select the repo.
+   Render reads `render.yaml` automatically.
+3. When prompted, fill the secret values: `OPENROUTER_API_KEY`, `MODEL_NAME`,
+   `TAVILY_API_KEY` (paste from your local `.env`).
+4. Deploy → live at `https://sru-assist-xxxx.onrender.com` with valid HTTPS.
+5. Point the widget there on any page:
+   `window.SRU_CHAT = { apiUrl: "https://sru-assist-xxxx.onrender.com" };`
+
+Free-tier notes: sleeps after ~15 min idle (first request then takes ~40 s);
+`data/query_stats.json` resets on redeploys (ephemeral disk).
+
+---
+
 ## Team workflow
 
 - Git repo per folder; use branches + pull requests.
