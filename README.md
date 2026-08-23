@@ -64,12 +64,14 @@ The widget is dependency-free JS. On any portal page:
 ```html
 <script>
   window.SRU_CHAT = {
-    apiUrl: "https://chatbot.yourdomain.com", // where app.py is hosted
+    apiUrl: "https://sru-assist.onrender.com", // deployed API
     botName: "SRU Assist",
   };
 </script>
-<script src="https://chatbot.yourdomain.com/static/widget.js"></script>
+<script src="https://sru-assist.onrender.com/static/widget.js"></script>
 ```
+
+Demo portal with the widget already wired: **https://sru-assist.onrender.com/**
 
 ### Real portal notes (sraap.in)
 - The live portal (`sraap.in`) is server-rendered **PHP + Bootstrap 5 + jQuery**.
@@ -99,7 +101,7 @@ to force handbook-only answers.
 
 ---
 
-## Deploying (Render free tier)
+## Deploying (Render free tier) — LIVE at https://sru-assist.onrender.com
 
 Code is deploy-ready (`render.yaml`, `gunicorn`, `$PORT` support included).
 
