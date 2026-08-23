@@ -282,7 +282,7 @@
     row.appendChild(b);
     if (cites && cites.length) {
       b.appendChild(el("br"));
-      b.appendChild(el("span", "srucw-cite", "📖 Handbook " + cites.join(", ")));
+      b.appendChild(el("span", "srucw-cite", "📖 " + cites.join(" · ")));
     }
     msgsBox.appendChild(row);
     msgsBox.scrollTop = msgsBox.scrollHeight;

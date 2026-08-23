@@ -1,33 +1,31 @@
-"""Extract text from the handbook PDF into data/handbook_text.txt.
+"""Extract text from ALL handbook PDFs into per-document text files.
 
-Usage:  python scripts/extract_handbook.py [path_to_pdf]
-Default expects data/student_handbook.pdf (already included).
+Usage:  python scripts/extract_handbook.py            # processes every PDF in data/
+        python scripts/extract_handbook.py <pdf>      # single file
+
+(The extraction logic lives in agent/retriever.py so retrieval can also
+auto-extract new documents lazily.)
 """
 import os
 import sys
 
-from pypdf import PdfReader
-
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT)
+
+from agent.retriever import DATA, extract_pdf  # noqa: E402
 
 
 def main():
-    pdf = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "data", "student_handbook.pdf")
-    out = os.path.join(ROOT, "data", "handbook_text.txt")
-
-    reader = PdfReader(pdf)
-    parts, empty = [], 0
-    for i, page in enumerate(reader.pages):
-        text = page.extract_text() or ""
-        if not text.strip():
-            empty += 1
-            text = f"[page {i + 1} - no extractable text]"
-        parts.append(f"\n\n===== PAGE {i + 1} =====\n{text}")
-
-    with open(out, "w", encoding="utf-8") as f:
-        f.write("".join(parts))
-
-    print(f"pages={len(reader.pages)} empty={empty} -> {out}")
+    if len(sys.argv) > 1:
+        print(extract_pdf(sys.argv[1]))
+        return
+    pdfs = [os.path.join(DATA, f) for f in sorted(os.listdir(DATA)) if f.lower().endswith(".pdf")]
+    if not pdfs:
+        print("No PDFs found in data/")
+        return
+    for p in pdfs:
+        extract_pdf(p)
+        print(f"extracted {os.path.basename(p)}")
 
 
 if __name__ == "__main__":

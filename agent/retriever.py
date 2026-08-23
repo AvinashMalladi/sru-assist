@@ -1,8 +1,8 @@
-"""Chunking + BM25 retrieval over the SR University Student Handbook.
+"""Multi-document chunking + BM25 retrieval over SRU handbook PDFs.
 
-Zero external dependencies: chunks are built from data/handbook_text.txt
-(page markers produced by scripts/extract_handbook.py) and ranked with a
-pure-python BM25 implementation.
+Drop any PDF into data/ and register it in DOC_SOURCES (label + filename).
+Text is auto-extracted on first load; chunks carry their document label so
+answers can cite "(R23 Handbook p. 57)" vs "(Handbook 2026-27 p. 34)".
 """
 import math
 import os
@@ -10,7 +10,8 @@ import re
 from collections import Counter
 from dataclasses import dataclass
 
-DATA_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "handbook_text.txt")
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA = os.path.join(ROOT, "data")
 
 PAGE_RE = re.compile(r"===== PAGE (\d+) =====")
 TOKEN_RE = re.compile(r"[a-z0-9]+")
@@ -23,12 +24,23 @@ STOPWORDS = {
     "i", "my", "me", "you", "your", "we", "us", "if", "not", "no", "yes",
 }
 
+# Register documents here: pdf file in data/ -> citation label.
+DOC_SOURCES = [
+    {"file": "student_handbook.pdf", "label": "Handbook 2026-27"},
+    {"file": "R23_BTECH_20240322.pdf", "label": "R23 Handbook"},
+]
+
 
 @dataclass
 class Chunk:
     text: str
     page: int
+    doc: str
     tokens: list
+
+
+def tokenize(text):
+    return [_stem(t) for t in TOKEN_RE.findall(text.lower()) if t not in STOPWORDS]
 
 
 def _stem(token):
@@ -42,17 +54,33 @@ def _stem(token):
     return token
 
 
-def tokenize(text):
-    return [_stem(t) for t in TOKEN_RE.findall(text.lower()) if t not in STOPWORDS]
+def _slug(name):
+    base = os.path.splitext(os.path.basename(name))[0]
+    return re.sub(r"[^a-zA-Z0-9]+", "_", base).strip("_").lower()[:40]
 
 
-def load_pages(path=DATA_FILE):
-    """Return [(page_number, text), ...] from the extracted handbook."""
-    if not os.path.exists(path):
-        raise FileNotFoundError(
-            f"{path} not found. Run scripts/extract_handbook.py first."
-        )
-    with open(path, encoding="utf-8") as f:
+def extract_pdf(pdf_path):
+    """PDF -> data/<slug>.txt with page markers. Returns txt path."""
+    from pypdf import PdfReader
+
+    out = os.path.join(DATA, f"{_slug(pdf_path)}.txt")
+    reader = PdfReader(pdf_path)
+    parts = []
+    for i, page in enumerate(reader.pages):
+        text = page.extract_text() or ""
+        if not text.strip():
+            text = f"[page {i + 1} - no extractable text]"
+        parts.append(f"\n\n===== PAGE {i + 1} =====\n{text}")
+    with open(out, "w", encoding="utf-8") as f:
+        f.write("".join(parts))
+    return out
+
+
+def load_pages(txt_path):
+    """Return [(page_number, text), ...] from an extracted text file."""
+    if not os.path.exists(txt_path):
+        raise FileNotFoundError(f"{txt_path} not found")
+    with open(txt_path, encoding="utf-8") as f:
         raw = f.read()
     pages = []
     parts = PAGE_RE.split(raw)
@@ -64,28 +92,28 @@ def load_pages(path=DATA_FILE):
     return pages
 
 
-def split_page(text, page_no):
+def split_page(text, page_no, doc_label):
     """Split one page into <= MAX_CHUNK_CHARS chunks at paragraph boundaries."""
     paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
-    chunks, buf = [], ""
+    raw_chunks, buf = [], ""
     for para in paragraphs:
         if buf and len(buf) + len(para) + 2 > MAX_CHUNK_CHARS:
-            chunks.append(buf)
+            raw_chunks.append(buf)
             buf = para
         else:
             buf = f"{buf}\n\n{para}" if buf else para
     if buf:
-        chunks.append(buf)
-    # A single monster paragraph still larger than the cap: hard-split it.
+        raw_chunks.append(buf)
+
     final = []
-    for c in chunks:
+    for c in raw_chunks:
         while len(c) > MAX_CHUNK_CHARS * 1.5:
             cut = c.rfind(" ", 0, MAX_CHUNK_CHARS)
             cut = cut if cut > 400 else MAX_CHUNK_CHARS
             final.append(c[:cut])
             c = c[cut:].strip()
         final.append(c)
-    return [Chunk(text=c, page=page_no, tokens=tokenize(c)) for c in final]
+    return [Chunk(text=c, page=page_no, doc=doc_label, tokens=tokenize(c)) for c in final]
 
 
 class BM25:
@@ -99,12 +127,8 @@ class BM25:
             self.df.update(set(c.tokens))
         self.N = len(chunks)
 
-    def _idf(self, term):
-        n = self.df.get(term, 0)
-        return math.log(1 + (self.N - n + 0.5) / (n + 0.5))
-
-    def search(self, query, top_k=6):
-        q_tokens = tokenize(query)
+    def search(self, query_tokens, top_k):
+        q_tokens = tokenize(query_tokens) if isinstance(query_tokens, str) else query_tokens
         scores = []
         for idx, chunk in enumerate(self.chunks):
             tf = Counter(chunk.tokens)
@@ -119,20 +143,74 @@ class BM25:
                 )
             scores.append((s, idx))
         scores.sort(reverse=True)
-        hits = [self.chunks[i] for s, i in scores[:top_k] if s > 0]
-        return hits
+        return [self.chunks[i] for s, i in scores[:top_k] if s > 0]
+
+    def _idf(self, term):
+        n = self.df.get(term, 0)
+        return math.log(1 + (self.N - n + 0.5) / (n + 0.5))
 
 
-class HandbookRetriever:
-    def __init__(self, path=DATA_FILE):
-        pages = load_pages(path)
+class MultiDocRetriever:
+    def __init__(self, sources=None):
+        sources = sources or DOC_SOURCES
         self.chunks = []
-        for page_no, text in pages:
-            self.chunks.extend(split_page(text, page_no))
+        loaded = []
+        for src in sources:
+            pdf = os.path.join(DATA, src["file"])
+            txt = os.path.join(DATA, f"{_slug(src['file'])}.txt")
+            if not os.path.exists(txt):
+                print(f"* extracting {src['file']} ...")
+                txt = extract_pdf(pdf)
+            doc_chunks = []
+            for page_no, text in load_pages(txt):
+                doc_chunks.extend(split_page(text, page_no, src["label"]))
+            self.chunks.extend(doc_chunks)
+            loaded.append(src["label"])
+        self.labels = loaded
+        self.default_label = loaded[0]
+        # Per-document sub-indexes so each regulation gets fair representation.
+        self.index_by_doc = {}
+        for src in sources:
+            label = src["label"]
+            sub = [c for c in self.chunks if c.doc == label]
+            self.index_by_doc[label] = BM25(sub)
         self.index = BM25(self.chunks)
 
+    def _doc_hints(self, query):
+        """Which regulations does the query name explicitly? Empty = none."""
+        q = query.lower()
+        hinted = []
+        for label in self.labels:
+            tokens = [t.lower() for t in re.findall(r"[a-zA-Z0-9]+", label)]
+            ids = [t for t in tokens if re.fullmatch(r"[a-z]\d{2}|\d{4}", t)] or [
+                t for t in tokens if len(t) >= 4
+            ]
+            if any(re.search(r"\b" + re.escape(t) + r"\b", q) for t in ids):
+                hinted.append(label)
+        if not hinted and re.search(r"\b(old|previous|earlier|last year)\b", q):
+            older = next((l for l in self.labels if l != self.default_label), None)
+            if older:
+                hinted.append(older)
+        return hinted
+
     def search(self, query, top_k=6):
-        return self.index.search(query, top_k)
+        """Intent-aware routing:
+        - no named regulation -> search the current handbook (proven baseline)
+        - one named -> search that regulation alone
+        - several named (comparison) -> even split across them
+        """
+        hinted = self._doc_hints(query)
+        if not hinted:
+            return self.index_by_doc[self.default_label].search(query, top_k)
+
+        if len(hinted) == 1:
+            return self.index_by_doc[hinted[0]].search(query, top_k)
+
+        per_doc = math.ceil(top_k / len(hinted))
+        out = []
+        for label in hinted:
+            out.extend(self.index_by_doc[label].search(query, per_doc))
+        return out[:top_k]
 
     def format_hits(self, query, top_k=6):
         hits = self.search(query, top_k)
@@ -140,8 +218,8 @@ class HandbookRetriever:
             return "No relevant handbook sections found.", []
         blocks, cites = [], []
         for h in hits:
-            blocks.append(f"[Handbook page {h.page}]\n{h.text}")
-            cites.append(f"p.{h.page}")
+            blocks.append(f"[{h.doc} · page {h.page}]\n{h.text}")
+            cites.append(f"{h.doc} p.{h.page}")
         return "\n\n---\n\n".join(blocks), cites
 
 
@@ -151,5 +229,5 @@ _retriever = None
 def get_retriever():
     global _retriever
     if _retriever is None:
-        _retriever = HandbookRetriever()
+        _retriever = MultiDocRetriever()
     return _retriever

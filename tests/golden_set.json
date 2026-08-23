@@ -23,6 +23,11 @@
     { "id": "exam-fee", "q": "When and how do I pay the examination fee?", "expect_pages": [9, 31, 32], "note": "exam fee" },
     { "id": "id-card", "q": "I lost my identity card, what should I do?", "expect_pages": [6, 46], "note": "ID card" },
     { "id": "mentor-system", "q": "Who is my faculty mentor and what do they help with?", "expect_pages": [9, 11, 18, 26], "note": "mentoring system" },
-    { "id": "cgpa-promotion", "q": "What CGPA is needed to get promoted to second year?", "expect_pages": [36, 37, 38, 81], "note": "4.50 CGPA / 40% credits undertaking + flowchart" }
+    { "id": "cgpa-promotion", "q": "What CGPA is needed to get promoted to second year?", "expect_pages": [36, 37, 38, 81], "note": "4.50 CGPA / 40% credits undertaking + flowchart" },
+    { "id": "r23-pe", "q": "What are professional electives in R23 regulation?", "doc": "R23 Handbook", "expect_pages": [53, 166, 167], "note": "PE list/structure" },
+    { "id": "r23-oe", "q": "How do open electives work in the R23 regulation?", "doc": "R23 Handbook", "expect_pages": [53, 54, 61, 64], "note": "OE rules" },
+    { "id": "r23-honors", "q": "Can I take honors or a minor in R23?", "doc": "R23 Handbook", "expect_pages": [54, 60, 61, 62, 73], "note": "honors/minor" },
+    { "id": "r23-noncredit", "q": "What mandatory non-credit courses exist in R23?", "doc": "R23 Handbook", "expect_pages": [52], "note": "non-credit courses" },
+    { "id": "r23-grades", "q": "Show the R23 grading scale table", "doc": "R23 Handbook", "expect_pages": [86, 71], "note": "grade points table" }
   ]
 }

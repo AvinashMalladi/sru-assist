@@ -56,18 +56,39 @@ trivial to swap later. `retriever.py` exposes a single `.search()` interface so
 a mentor can drop in FAISS/Chroma embeddings without touching anything else.
 
 ## Quality & evaluation
-`tests/golden_set.json` holds 22 real student questions with the handbook pages
-that MUST be retrieved. Score it any time:
+`tests/golden_set.json` holds 27 real student questions across BOTH regulations
+(Handbook 2026-27 + R23), each with the handbook pages that MUST be retrieved.
+Score it any time:
 
 ```bash
 python scripts/run_eval.py        # retrieval-only, no API cost
 python scripts/run_eval.py --full # also tests live LLM answers
 ```
 
-Current baseline: **100% hit-rate @ top-6, MRR 0.74** (exit code fails CI
-under 80%). See `ARCHITECTURE.md` for design decisions,
-`docs/API.md` for the integration contract, `PRODUCTIONIZATION.md` for moving
-to university infrastructure / paid models.
+Current baseline (multi-document): **93% hit-rate @ top-6, MRR 0.70**. The two
+known misses are elective-list queries where BM25's keyword matching scatters
+across course-table pages — the documented motivation for hybrid embedding
+retrieval (see ARCHITECTURE.md D1). Exit code fails CI under 80%.
+See `ARCHITECTURE.md` for design decisions, `docs/API.md` for the integration
+contract, `PRODUCTIONIZATION.md` for moving to university infrastructure /
+paid models.
+
+## Multiple documents
+Drop a PDF into `data/`, add one line to `DOC_SOURCES` in
+`agent/retriever.py`:
+
+```python
+DOC_SOURCES = [
+    {"file": "student_handbook.pdf",   "label": "Handbook 2026-27"},
+    {"file": "R23_BTECH_20240322.pdf", "label": "R23 Handbook"},
+    {"file": "<new>.pdf",              "label": "<Label>"},
+]
+```
+
+Text extraction happens automatically on next start. Retrieval routes by
+intent: naming a regulation ("in R23…") searches that document; comparison
+questions search both; everything else defaults to the current handbook.
+Citations always name the document: `(R23 Handbook p. 57)`.
 
 ---
 

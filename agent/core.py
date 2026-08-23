@@ -1,5 +1,6 @@
 """Agentic loop: auto-RAG grounding + optional tool calling with fallbacks."""
 import json
+import re
 
 from . import llm, tools
 from .prompts import FALLBACK_PROMPT, SYSTEM_PROMPT
@@ -7,6 +8,13 @@ from .retriever import get_retriever
 
 MAX_STEPS = 4
 MAX_HISTORY = 10
+
+CITE_RE = re.compile(r"\[([^\]]+?) · page (\d+)\]")
+
+
+def _cites_from(text):
+    """Extract '<label> p.N' citation strings from retrieved text blocks."""
+    return {f"{label.strip()} p.{page}" for label, page in CITE_RE.findall(text or "")}
 
 
 def _auto_context(question):
@@ -106,8 +114,7 @@ def run_agent(question, history=None, profile=None):
             result = tools.execute(name, args)
             used_tools.append({"tool": name, "args": args})
             if name == "search_handbook":
-                for page in _pages_in(result):
-                    citations.add(page)
+                citations |= _cites_from(result)
             messages.append(
                 {
                     "role": "tool",
@@ -132,8 +139,7 @@ def run_agent(question, history=None, profile=None):
         answer = _grounded_answer(messages, question)
 
     # Merge pages the model saw via auto-context into citations.
-    for page in _pages_in(ctx or ""):
-        citations.add(page)
+    citations |= _cites_from(ctx or "")
 
     return {
         "answer": answer,
@@ -154,12 +160,6 @@ def _grounded_answer(messages, question):
     ]
     reply = llm.chat(msgs, tools=None)
     return (reply.content or "").strip()
-
-
-def _pages_in(text):
-    import re
-
-    return {int(p) for p in re.findall(r"p\.(\d+)|page (\d+)", text) for p in p if p}
 
 
 def _web_enabled():

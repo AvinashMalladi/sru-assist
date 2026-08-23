@@ -28,11 +28,20 @@ grounded no-tool answer instead of failing — the widget never shows a crash.
 ## Decisions and their reasons
 
 ### D1 · BM25 first, vector DB later
-Pure-python BM25 (no numpy/torch/langchain). At handbook scale (~260 chunks)
-it is instant, deterministic, dependency-free, and trivially portable. The
-retriever exposes one interface (`search(query, top_k)`), so swapping in
-embeddings/FAISS/Chroma later changes one file. Measured: 100% hit-rate @6,
-MRR 0.74 on the golden set (`scripts/run_eval.py`).
+Pure-python BM25 (no numpy/torch/langchain). At handbook scale it is instant,
+deterministic, dependency-free, and trivially portable. The retriever exposes
+one interface (`search(query, top_k)`), so swapping in embeddings/FAISS/Chroma
+later changes one file. Measured on the 27-case golden set spanning two
+regulations: 93% hit-rate @6, MRR 0.70. The residual misses (elective-list
+queries scattered across course tables) are precisely the semantic gap that
+motivates hybrid retrieval next.
+
+### D1b · Intent-based multi-document routing
+With multiple regulations indexed, naive merged search pollutes results (the
+wrong regulation crowds out the right one — measured drop to 81%). Instead:
+queries naming a regulation search only that document's sub-index; comparison
+questions split slots evenly; everything else searches the current handbook
+exactly as the proven single-doc baseline did.
 
 ### D2 · Always retrieve before generating (auto-RAG)
 Even if the model never calls a tool, top-6 chunks ride along with the prompt.
