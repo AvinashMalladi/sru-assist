@@ -33,13 +33,30 @@ def _trim_history(history):
     return clean
 
 
-def run_agent(question, history=None):
+PROFILE_KEYS = ("programme", "branch", "year", "semester")
+
+
+def _profile_block(profile):
+    if not isinstance(profile, dict):
+        return "\n\nSTUDENT PROFILE: unknown"
+    parts = []
+    for k in PROFILE_KEYS:
+        v = str(profile.get(k, "") or "").strip()
+        if v:
+            parts.append(f"{k}={v[:40]}")
+    if not parts:
+        return "\n\nSTUDENT PROFILE: unknown"
+    return "\n\nSTUDENT PROFILE: " + "; ".join(parts)
+
+
+def run_agent(question, history=None, profile=None):
     """Returns {"answer", "citations", "tool_calls", "mode"}."""
     history = _trim_history(history or [])
     citations = set()
     used_tools = []
+    profile_line = _profile_block(profile)
 
-    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    messages = [{"role": "system", "content": SYSTEM_PROMPT + profile_line}]
     messages.extend(history)
 
     ctx = _auto_context(question)

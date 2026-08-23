@@ -8,6 +8,7 @@ from flask import Flask, jsonify, request, send_from_directory
 
 from agent.config import load_env
 from agent.core import run_agent
+from agent.stats import get_suggestions, track_query
 
 load_env()
 
@@ -35,19 +36,27 @@ def health():
     return jsonify({"status": "ok", "model": os.environ.get("MODEL_NAME", "default")})
 
 
+@app.get("/api/suggestions")
+def suggestions():
+    return jsonify({"suggestions": get_suggestions(6)})
+
+
 @app.post("/api/chat")
 def chat():
     data = request.get_json(silent=True) or {}
     question = (data.get("message") or "").strip()
     history = data.get("history") or []
+    profile = data.get("profile") or {}
 
     if not question:
         return jsonify({"error": "message is required"}), 400
     if len(question) > 1000:
         return jsonify({"error": "message too long (max 1000 chars)"}), 400
 
+    track_query(question)
+
     try:
-        result = run_agent(question, history)
+        result = run_agent(question, history, profile=profile)
     except Exception as exc:  # noqa: BLE001 - never crash the widget
         app.logger.exception("agent failure")
         return (

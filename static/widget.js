@@ -38,8 +38,8 @@
     "box-shadow:0 8px 24px rgba(79,70,229,.45);font-size:26px;z-index:99998;display:flex;",
     "align-items:center;justify-content:center;transition:transform .15s ease}",
     ".srucw-bubble:hover{transform:scale(1.08)}",
-    ".srucw-panel{position:fixed;right:22px;bottom:94px;width:370px;max-width:calc(100vw - 32px);",
-    "height:540px;max-height:calc(100vh - 130px);background:#fff;border-radius:16px;z-index:99999;",
+    ".srucw-panel{position:fixed;right:22px;bottom:94px;width:460px;max-width:calc(100vw - 32px);",
+    "height:min(680px,calc(100vh - 120px));background:#fff;border-radius:16px;z-index:99999;",
     "box-shadow:0 24px 64px rgba(0,0,0,.28);display:none;flex-direction:column;overflow:hidden;",
     "border:1px solid #e5e7eb}",
     ".srucw-panel.open{display:flex}",
@@ -55,10 +55,10 @@
     ".srucw-row.user{flex-direction:row-reverse}",
     ".srucw-msg{max-width:80%;padding:9px 12px;border-radius:14px;font-size:13.5px;line-height:1.45;",
     "white-space:pre-wrap;word-wrap:break-word}",
-    ".srucw-msg.bot{background:#fff;color:#111827;border:1px solid #e5e7eb;border-bottom-left-radius:4px;white-space:normal}",
+    ".srucw-msg.bot{background:#fff;color:#111827;border:1px solid #e5e7eb;border-bottom-left-radius:4px;white-space:normal;overflow-x:auto}",
     ".srucw-msg.user{background:#4f46e5;color:#fff;border-bottom-right-radius:4px}",
-    ".srucw-msg table{border-collapse:collapse;width:100%;margin:6px 0;font-size:12px}",
-    ".srucw-msg th,.srucw-msg td{border:1px solid #e5e7eb;padding:4px 7px;text-align:left}",
+    ".srucw-msg table{border-collapse:collapse;width:100%;margin:6px 0;font-size:11.5px}",
+    ".srucw-msg th,.srucw-msg td{border:1px solid #e5e7eb;padding:3.5px 6px;text-align:left}",
     ".srucw-msg th{background:#f3f4f6;font-weight:600}",
     ".srucw-msg ul,.srucw-msg ol{margin:4px 0 6px;padding-left:18px}",
     ".srucw-msg li{margin:2.5px 0}",
@@ -83,6 +83,15 @@
     ".srucw-typing span:nth-child(2){animation-delay:.2s}",
     ".srucw-typing span:nth-child(3){animation-delay:.4s}",
     "@keyframes srucwBlink{0%,80%,100%{opacity:.25}40%{opacity:1}}",
+    ".srucw-gear{margin-left:auto;background:none;border:none;color:#fff;font-size:15px;cursor:pointer;opacity:.9;padding:0 4px}",
+    ".srucw-head .srucw-close{margin-left:2px}",
+    ".srucw-profile{display:none;background:#eef2ff;padding:10px 14px;border-bottom:1px solid #e5e7eb;font-size:12px;color:#374151}",
+    ".srucw-profile.open{display:block}",
+    ".srucw-profile .row{display:flex;gap:8px;margin-bottom:7px}",
+    ".srucw-profile select,.srucw-profile input{flex:1;border:1px solid #c7d2fe;border-radius:8px;padding:6px 8px;font-size:12px;background:#fff;outline:none;min-width:0}",
+    ".srucw-profile button{border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer}",
+    ".srucw-pf-save{background:#4f46e5;color:#fff}",
+    ".srucw-pf-clear{background:#e5e7eb;color:#374151}",
   ].join("");
 
   // ---------- mini markdown ----------
@@ -180,8 +189,23 @@
   panel.innerHTML =
     '<div class="srucw-head"><div class="srucw-avatar">🎓</div><div>' +
     '<div class="srucw-title"></div><div class="srucw-sub">Student Handbook AI</div></div>' +
+    '<button class="srucw-gear" title="My profile" aria-label="Set my profile">⚙️</button>' +
     '<button class="srucw-close" aria-label="Close chat">×</button></div>';
   panel.querySelector(".srucw-title").textContent = BOT_NAME;
+
+  var profBox = el("div", "srucw-profile");
+  profBox.innerHTML =
+    '<div class="row"><select class="pf-prog">' +
+      '<option value="">Programme…</option><option>B.Tech</option><option>BBA</option>' +
+      '<option>BCA</option><option>B.Sc.</option><option>Other</option></select>' +
+    '<input class="pf-branch" placeholder="Branch, e.g. CSE (AI & ML)" maxlength="40"></div>' +
+    '<div class="row"><select class="pf-year">' +
+      '<option value="">Year…</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>' +
+    '<select class="pf-sem">' +
+      '<option value="">Semester…</option><option>1</option><option>2</option><option>3</option>' +
+      '<option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></div>' +
+    '<div class="row"><button class="srucw-pf-save">Save</button>' +
+    '<button class="srucw-pf-clear">Clear</button></div>';
 
   var msgsBox = el("div", "srucw-msgs");
   var suggBox = el("div", "srucw-sugg");
@@ -194,6 +218,7 @@
   panel.appendChild(msgsBox);
   panel.appendChild(suggBox);
   panel.appendChild(inputBar);
+  panel.insertBefore(profBox, msgsBox);
 
   var bubble = el("button", "srucw-bubble", "💬");
   bubble.setAttribute("aria-label", "Open SRU Assist chat");
@@ -205,6 +230,49 @@
   // ---------- state ----------
   var history = [];
   var busy = false;
+  var PF_KEY = "sru_profile";
+
+  function loadProfile() {
+    try { return JSON.parse(localStorage.getItem(PF_KEY) || "{}") || {}; }
+    catch (e) { return {}; }
+  }
+
+  function profileSummary(p) {
+    return [p.programme, p.branch, p.year ? "Year " + p.year : "", p.semester ? "Sem " + p.semester : ""]
+      .filter(Boolean).join(" · ");
+  }
+
+  var profile = loadProfile();
+
+  function applyProfileUI() {
+    var sub = panel.querySelector(".srucw-sub");
+    sub.textContent = profileSummary(profile) || "Student Handbook AI";
+    profBox.querySelector(".pf-prog").value = profile.programme || "";
+    profBox.querySelector(".pf-branch").value = profile.branch || "";
+    profBox.querySelector(".pf-year").value = profile.year || "";
+    profBox.querySelector(".pf-sem").value = profile.semester || "";
+  }
+  applyProfileUI();
+
+  var gearBtn = panel.querySelector(".srucw-gear");
+  gearBtn.onclick = function () { profBox.classList.toggle("open"); };
+
+  profBox.querySelector(".srucw-pf-save").onclick = function () {
+    profile = {
+      programme: profBox.querySelector(".pf-prog").value,
+      branch: profBox.querySelector(".pf-branch").value.trim(),
+      year: profBox.querySelector(".pf-year").value,
+      semester: profBox.querySelector(".pf-sem").value,
+    };
+    try { localStorage.setItem(PF_KEY, JSON.stringify(profile)); } catch (e) {}
+    applyProfileUI();
+    profBox.classList.remove("open");
+  };
+  profBox.querySelector(".srucw-pf-clear").onclick = function () {
+    profile = {};
+    try { localStorage.removeItem(PF_KEY); } catch (e) {}
+    applyProfileUI();
+  };
 
   function addMsg(role, text, cites) {
     var row = el("div", "srucw-row " + role);
@@ -251,7 +319,7 @@
     fetch(API + "/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text, history: history }),
+      body: JSON.stringify({ message: text, history: history, profile: profile }),
     })
       .then(function (r) { return r.json(); })
       .then(function (data) {
@@ -260,6 +328,8 @@
         addMsg("bot", ans, data.citations);
         history.push({ role: "user", content: text });
         history.push({ role: "assistant", content: ans });
+        maybeClarifyChips(ans);
+        refreshSuggestions();
       })
       .catch(function () {
         typing(false);
@@ -277,6 +347,37 @@
     if (e.key === "Enter") ask();
   });
 
+  // ---------- dynamic suggestions ----------
+  function setChips(list) {
+    suggBox.innerHTML = "";
+    list.filter(Boolean).slice(0, 5).forEach(function (s) {
+      var b = el("button", null, s);
+      b.onclick = function () { ask(s); };
+      suggBox.appendChild(b);
+    });
+  }
+
+  function refreshSuggestions() {
+    fetch(API + "/api/suggestions")
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (d.suggestions && d.suggestions.length) setChips(d.suggestions); })
+      .catch(function () {});
+  }
+
+  // When the bot asks a clarifying question, offer one-tap answers.
+  function maybeClarifyChips(ans) {
+    if (!ans || ans.length > 260 || !/\?["']?\s*$/.test(ans.trim())) return;
+    var opts = null;
+    if (/programme|program\b|b\.?tech|bba|bca|b\.?sc|diploma/i.test(ans)) {
+      opts = ["B.Tech", "BBA", "BCA", "B.Sc."];
+    } else if (/branch|speciali[sz]ation|stream|course offered/i.test(ans)) {
+      opts = ["CSE", "ECE", "EEE", "Mechanical", "Civil"];
+    } else if (/\byear\b|\bsemester\b|\bsem\b/i.test(ans)) {
+      opts = ["Year 1", "Year 2", "Year 3", "Year 4"];
+    }
+    if (opts) setChips(opts);
+  }
+
   bubble.onclick = function () {
     var open = panel.classList.toggle("open");
     bubble.textContent = open ? "×" : "💬";
@@ -285,6 +386,7 @@
         addMsg("bot", WELCOME);
         history.push({ role: "assistant", content: WELCOME });
       }
+      refreshSuggestions();
       input.focus();
     }
   };
