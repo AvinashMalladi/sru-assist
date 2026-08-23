@@ -32,9 +32,19 @@ Pure-python BM25 (no numpy/torch/langchain). At handbook scale it is instant,
 deterministic, dependency-free, and trivially portable. The retriever exposes
 one interface (`search(query, top_k)`), so swapping in embeddings/FAISS/Chroma
 later changes one file. Measured on the 27-case golden set spanning two
-regulations: 93% hit-rate @6, MRR 0.70. The residual misses (elective-list
-queries scattered across course tables) are precisely the semantic gap that
-motivates hybrid retrieval next.
+regulations: 100% hit-rate @6, MRR 0.76 — after adding a second retrieval
+stage: BM25 candidates are promoted when their text contains the query's
+adjacent term pairs as an exact phrase (handles hyphen/compound variants,
+e.g. "non-credit" vs the PDF's "noncredit"). Remaining headroom is semantic
+paraphrase, which motivates hybrid retrieval next.
+
+### D1c · Two-stage phrase promotion
+BM25 alone over-favors short chunks repeating a single query term; long table
+pages holding the true answer sink under length normalization. Stage two scans
+each document's candidate pool for exact adjacent-pair matches ("professional
+elective") and moves those chunks to the front, preserving BM25 order within
+each group. Promote-not-replace keeps recall safe: non-matching results
+backfill instead of being discarded.
 
 ### D1b · Intent-based multi-document routing
 With multiple regulations indexed, naive merged search pollutes results (the

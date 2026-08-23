@@ -65,10 +65,12 @@ python scripts/run_eval.py        # retrieval-only, no API cost
 python scripts/run_eval.py --full # also tests live LLM answers
 ```
 
-Current baseline (multi-document): **93% hit-rate @ top-6, MRR 0.70**. The two
-known misses are elective-list queries where BM25's keyword matching scatters
-across course-table pages — the documented motivation for hybrid embedding
-retrieval (see ARCHITECTURE.md D1). Exit code fails CI under 80%.
+Current baseline (multi-document): **100% hit-rate @ top-6, MRR 0.76** across
+all 27 golden questions. Retrieval is two-stage: BM25 for recall, then exact
+query-phrase promotion for precision (with compound-word normalization, e.g.
+"non-credit" ↔ "noncredit"). Remaining headroom is semantic paraphrase — the
+motivation for hybrid embedding retrieval (see ARCHITECTURE.md D1).
+Exit code fails CI under 80%.
 See `ARCHITECTURE.md` for design decisions, `docs/API.md` for the integration
 contract, `PRODUCTIONIZATION.md` for moving to university infrastructure /
 paid models.

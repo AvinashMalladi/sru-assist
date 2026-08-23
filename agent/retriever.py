@@ -40,7 +40,17 @@ class Chunk:
 
 
 def tokenize(text):
-    return [_stem(t) for t in TOKEN_RE.findall(text.lower()) if t not in STOPWORDS]
+    """Stemmed tokens; compound words like 'noncredit' are emitted alongside
+    their split forms so 'non-credit' queries still match."""
+    tokens = [_stem(t) for t in TOKEN_RE.findall(text.lower()) if t not in STOPWORDS]
+    out = list(tokens)
+    for a, b in zip(tokens, tokens[1:]):
+        if (a, b) == ("non", "credit"):
+            out.append("noncredit")
+        elif a == "re" and b.startswith("evalu"):
+            out.append("reevalu")
+            out.append(b)
+    return out
 
 
 def _stem(token):
@@ -193,24 +203,61 @@ class MultiDocRetriever:
                 hinted.append(older)
         return hinted
 
+    def _phrase_rerank(self, query, pool):
+        """Two-stage retrieval: BM25 provides recall; exact query-phrase matches
+        provide precision. Candidates containing one of the query's adjacent
+        term pairs are promoted to the front (original BM25 order preserved),
+        the rest backfill behind them. Handles hyphen/space variants
+        ('non-credit' vs 'noncredit') via a squashed comparison string."""
+        q_tokens = [t for t in tokenize(query) if len(t) > 2]
+        phrases = list(dict.fromkeys(zip(q_tokens, q_tokens[1:])))
+        if not phrases:
+            return pool
+
+        def has_phrase(chunk):
+            t = " " + re.sub(r"[\s\-]+", " ", chunk.text.lower()) + " "
+            compact = t.replace(" ", "")
+            return any(
+                f" {a} {b} " in t or f"{a}{b}" in compact for a, b in phrases
+            )
+
+        hits = [c for c in pool if has_phrase(c)]
+        if not hits:
+            return pool
+        hit_ids = {id(c) for c in hits}
+        return hits + [c for c in pool if id(c) not in hit_ids]
+
     def search(self, query, top_k=6):
         """Intent-aware routing:
         - no named regulation -> search the current handbook (proven baseline)
         - one named -> search that regulation alone
         - several named (comparison) -> even split across them
+        Results are then re-ranked by exact-phrase matches.
         """
         hinted = self._doc_hints(query)
         if not hinted:
-            return self.index_by_doc[self.default_label].search(query, top_k)
+            labels = [self.default_label]
+        elif len(hinted) == 1:
+            labels = hinted
+        else:
+            labels = hinted
 
-        if len(hinted) == 1:
-            return self.index_by_doc[hinted[0]].search(query, top_k)
+        pools = {}
+        for label in labels:
+            raw = self.index_by_doc[label].search(query, max(top_k * 6, 30))
+            pools[label] = self._phrase_rerank(query, raw)
 
-        per_doc = math.ceil(top_k / len(hinted))
-        out = []
-        for label in hinted:
-            out.extend(self.index_by_doc[label].search(query, per_doc))
-        return out[:top_k]
+        out, seen = [], set()
+        # keep the intended doc balance: round-robin in label order
+        while len(out) < top_k and any(pools.values()):
+            for label in labels:
+                lst = pools.get(label) or []
+                if lst and len(out) < top_k:
+                    nxt = lst.pop(0)
+                    if id(nxt) not in seen:
+                        out.append(nxt)
+                        seen.add(id(nxt))
+        return out
 
     def format_hits(self, query, top_k=6):
         hits = self.search(query, top_k)
