@@ -1,3 +1,6 @@
+Open **https://sru-assist.onrender.com/** -> Render Deployed
+
+
 # SRU Assist — Agentic Student Handbook Chatbot
 
 An **agentic RAG chatbot** for the SR University student portal. Students ask
