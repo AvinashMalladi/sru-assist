@@ -185,6 +185,27 @@ def _slug_url(url):
     return re.sub(r"[^a-zA-Z0-9]+", "_", base).strip("_").lower()[:40]
 
 
+def _repair_email_breaks(text):
+    """Rejoin email addresses that the PDF text layer split across lines
+    (e.g. 'g.rajeshwarreddy@sru.edu.i\\nn'). Only stitches fragments when the
+    combined tail is a known TLD, so ordinary line breaks are left untouched."""
+    known = {
+        "in", "on", "com", "net", "org", "edu", "ac", "gov", "co",
+        "uk", "io", "ai", "id", "us", "me", "info", "biz",
+    }
+
+    def fix(m):
+        if m.group(2) + m.group(3) in known:
+            return m.group(1) + m.group(2) + m.group(3)
+        return m.group(0)
+
+    return re.sub(
+        r"([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.)([a-z]{1,3})\s*\n\s*([a-z]{1,3})",
+        fix,
+        text,
+    )
+
+
 def extract_pdf(pdf_path):
     """PDF -> data/<slug>.txt with page markers. Returns txt path."""
     from pypdf import PdfReader
@@ -193,7 +214,7 @@ def extract_pdf(pdf_path):
     reader = PdfReader(pdf_path)
     parts = []
     for i, page in enumerate(reader.pages):
-        text = page.extract_text() or ""
+        text = _repair_email_breaks(page.extract_text() or "")
         if not text.strip():
             text = f"[page {i + 1} - no extractable text]"
         parts.append(f"\n\n===== PAGE {i + 1} =====\n{text}")
