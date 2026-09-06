@@ -33,7 +33,7 @@ Ask a question. Returns a grounded answer with handbook citations.
 |---|---|---|
 | `message` | string | required, 1–1000 chars |
 | `history` | array | optional, last 10 messages sent; server keeps the near-most 6 (fast mode) / 10 (agent mode); roles `user`/`assistant` only |
-| `profile` | object | optional; keys `programme`, `branch`, `year`, `semester`; each ≤40 chars |
+| `profile` | object | optional; keys `programme`, `branch`, `year`, `semester`, `hostel`; each ≤40 chars. The widget fills these automatically from the student's chat answers — there is no settings form. |
 
 ### Response `200`
 ```json
@@ -91,5 +91,6 @@ the widget's suggestion chips.
 <script src="https://sru-assist.onrender.com/static/widget.js"></script>
 ```
 Config keys: `apiUrl`, `botName`, `welcome`. The widget renders markdown,
-shows citation chips, asks profile via ⚙️, and shows one-tap options when the
-agent asks a clarifying question.
+shows citation chips, auto-remembers the student's profile from chat
+clarifications (programme/branch/year/semester/hostel — no settings icon),
+and shows one-tap options when the agent asks a clarifying question.

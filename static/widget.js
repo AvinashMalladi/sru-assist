@@ -82,15 +82,6 @@
     ".srucw-typing span:nth-child(2){animation-delay:.2s}",
     ".srucw-typing span:nth-child(3){animation-delay:.4s}",
     "@keyframes srucwBlink{0%,80%,100%{opacity:.25}40%{opacity:1}}",
-    ".srucw-gear{margin-left:auto;background:none;border:none;color:#fff;font-size:15px;cursor:pointer;opacity:.9;padding:0 4px}",
-    ".srucw-head .srucw-close{margin-left:2px}",
-    ".srucw-profile{display:none;background:#dbe7f7;padding:10px 14px;border-bottom:1px solid #e5e7eb;font-size:12px;color:#374151}",
-    ".srucw-profile.open{display:block}",
-    ".srucw-profile .row{display:flex;gap:8px;margin-bottom:7px}",
-    ".srucw-profile select,.srucw-profile input{flex:1;border:1px solid #b7cbe8;border-radius:8px;padding:6px 8px;font-size:12px;background:#fff;outline:none;min-width:0}",
-    ".srucw-profile button{border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer}",
-    ".srucw-pf-save{background:#23468A;color:#fff}",
-    ".srucw-pf-clear{background:#e5e7eb;color:#374151}",
   ].join("");
 
   // ---------- mini markdown ----------
@@ -188,23 +179,8 @@
   panel.innerHTML =
     '<div class="srucw-head"><div class="srucw-avatar">🎓</div><div>' +
     '<div class="srucw-title"></div><div class="srucw-sub">Student Handbook AI</div></div>' +
-    '<button class="srucw-gear" title="My profile" aria-label="Set my profile">⚙️</button>' +
     '<button class="srucw-close" aria-label="Close chat">×</button></div>';
   panel.querySelector(".srucw-title").textContent = BOT_NAME;
-
-  var profBox = el("div", "srucw-profile");
-  profBox.innerHTML =
-    '<div class="row"><select class="pf-prog">' +
-      '<option value="">Programme…</option><option>B.Tech</option><option>BBA</option>' +
-      '<option>BCA</option><option>B.Sc.</option><option>Other</option></select>' +
-    '<input class="pf-branch" placeholder="Branch, e.g. CSE (AI & ML)" maxlength="40"></div>' +
-    '<div class="row"><select class="pf-year">' +
-      '<option value="">Year…</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>' +
-    '<select class="pf-sem">' +
-      '<option value="">Semester…</option><option>1</option><option>2</option><option>3</option>' +
-      '<option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></div>' +
-    '<div class="row"><button class="srucw-pf-save">Save</button>' +
-    '<button class="srucw-pf-clear">Clear</button></div>';
 
   var msgsBox = el("div", "srucw-msgs");
   var suggBox = el("div", "srucw-sugg");
@@ -217,7 +193,6 @@
   panel.appendChild(msgsBox);
   panel.appendChild(suggBox);
   panel.appendChild(inputBar);
-  panel.insertBefore(profBox, msgsBox);
 
   var bubble = el("button", "srucw-bubble", "💬");
   bubble.setAttribute("aria-label", "Open SRU Assist chat");
@@ -243,35 +218,64 @@
 
   var profile = loadProfile();
 
-  function applyProfileUI() {
+  function updateSubtitle() {
     var sub = panel.querySelector(".srucw-sub");
     sub.textContent = profileSummary(profile) || "Student Handbook AI";
-    profBox.querySelector(".pf-prog").value = profile.programme || "";
-    profBox.querySelector(".pf-branch").value = profile.branch || "";
-    profBox.querySelector(".pf-year").value = profile.year || "";
-    profBox.querySelector(".pf-sem").value = profile.semester || "";
   }
-  applyProfileUI();
 
-  var gearBtn = panel.querySelector(".srucw-gear");
-  gearBtn.onclick = function () { profBox.classList.toggle("open"); };
-
-  profBox.querySelector(".srucw-pf-save").onclick = function () {
-    profile = {
-      programme: profBox.querySelector(".pf-prog").value,
-      branch: profBox.querySelector(".pf-branch").value.trim(),
-      year: profBox.querySelector(".pf-year").value,
-      semester: profBox.querySelector(".pf-sem").value,
-    };
+  function saveProfile() {
     try { localStorage.setItem(PF_KEY, JSON.stringify(profile)); } catch (e) {}
-    applyProfileUI();
-    profBox.classList.remove("open");
-  };
-  profBox.querySelector(".srucw-pf-clear").onclick = function () {
-    profile = {};
-    try { localStorage.removeItem(PF_KEY); } catch (e) {}
-    applyProfileUI();
-  };
+    updateSubtitle();
+  }
+
+  // The bot asks clarifying questions in the chat (hostel, programme, branch,
+  // year, semester). Whatever the student picks from a chip or types plainly is
+  // remembered, so the bot never asks for the same detail twice.
+  function captureProfile(text) {
+    var t = (text || "").trim(), match;
+    if (!t) return;
+    var changed = false;
+    function add(k, v) {
+      if (v && profile[k] !== v) { profile[k] = v; changed = true; }
+    }
+
+    if (/hostel/i.test(t)) {
+      if (/\b(?:boys?)\b|bh-?\d/i.test(t)) add("hostel", "Boys");
+      else if (/\b(?:girls?)\b|gh-?\d/i.test(t)) add("hostel", "Girls");
+    }
+
+    var PROGS = [
+      [/\bm\.?\s?tech\b/i, "M.Tech"],
+      [/\bb\.?\s?tech\b/i, "B.Tech"],
+      [/\bb\.?\s?sc\.?\b/i, "B.Sc."],
+      [/\bbba\b/i, "BBA"],
+      [/\bbca\b/i, "BCA"],
+      [/\bdiploma\b/i, "Diploma"],
+    ];
+    for (var i = 0; i < PROGS.length; i++) {
+      if (PROGS[i][0].test(t)) { add("programme", PROGS[i][1]); break; }
+    }
+
+    match = t.match(/\b(cse|ece|eee|aiml|ai[ &]*ml|data ?science|mech(?:anical)?|civil)\b/i);
+    if (match) add("branch", match[1].toUpperCase().replace(/\s*&\s*/g, "&"));
+
+    match = t.match(/\b(?:sem|semester)[\s\-:]*(1|2|3|4|5|6|7|8)\b/i);
+    if (match) add("semester", match[1]);
+
+    match = t.match(/\b(?:year|yr)[\s\-:]*(1|2|3|4|5)\b/i) ||
+           t.match(/\b(1st|2nd|3rd|4th|5th|first|second|third|fourth|fifth)\s+(?:year|yr)\b/i);
+    if (match) {
+      var WORD = { first: "1", second: "2", third: "3", fourth: "4", fifth: "5" };
+      var ord = (match[0].split(/\s+/)[0] || "").toLowerCase();
+      var val = (match[1] || "").replace(/\D/g, "") || WORD[ord] ||
+                (ord.match(/\d/) ? ord.match(/\d/)[0] : "") || "";
+      add("year", val);
+    }
+
+    if (changed) saveProfile();
+  }
+
+  updateSubtitle();
 
   function addMsg(role, text, cites) {
     var row = el("div", "srucw-row " + role);
@@ -309,6 +313,7 @@
   function ask(text) {
     text = (text || input.value).trim();
     if (!text || busy) return;
+    captureProfile(text);
     input.value = "";
     busy = true;
     sendBtn.disabled = true;
@@ -327,7 +332,7 @@
         addMsg("bot", ans, data.citations);
         history.push({ role: "user", content: text });
         history.push({ role: "assistant", content: ans });
-        if (data.options && data.options.length) setChips(data.options);
+        if (data.options && data.options.length) setChips(data.options, 8);
         else maybeClarifyChips(ans);
         refreshSuggestions();
       })
@@ -347,11 +352,11 @@
     if (e.key === "Enter") ask();
   });
 
-  // ---------- dynamic suggestions (capped at SUGGESTION_LIMIT chips) ----------
+  // ---------- suggestion chips (capped: 3 for recency-bandit, 8 for clarifications) ----------
   var SUGGESTION_LIMIT = 3;
-  function setChips(list) {
+  function setChips(list, max) {
     suggBox.innerHTML = "";
-    list.filter(Boolean).slice(0, SUGGESTION_LIMIT).forEach(function (s) {
+    list.filter(Boolean).slice(0, max || SUGGESTION_LIMIT).forEach(function (s) {
       var b = el("button", null, s);
       b.onclick = function () { ask(s); };
       suggBox.appendChild(b);
@@ -371,14 +376,17 @@
     var opts = null;
     if (/boys? hostel|girls? hostel|which hostel|boys or girls|hostel .* boys?/i.test(ans)) {
       opts = ["Boys Hostel", "Girls Hostel"];
+    } else if (/sem(?:ester)?\b/i.test(ans)) {
+      opts = ["Semester 1", "Semester 2", "Semester 3", "Semester 4",
+              "Semester 5", "Semester 6", "Semester 7", "Semester 8"];
     } else if (/programme|program\b|b\.?tech|bba|bca|b\.?sc|diploma/i.test(ans)) {
-      opts = ["B.Tech", "BBA", "BCA", "B.Sc."];
+      opts = ["B.Tech", "BBA", "BCA", "B.Sc.", "M.Tech", "Diploma"];
     } else if (/branch|speciali[sz]ation|stream|course offered/i.test(ans)) {
       opts = ["CSE", "ECE", "EEE", "Mechanical", "Civil"];
-    } else if (/\byear\b|\bsemester\b|\bsem\b/i.test(ans)) {
+    } else if (/\byear\b|\byr\b/i.test(ans)) {
       opts = ["Year 1", "Year 2", "Year 3", "Year 4"];
     }
-    if (opts) setChips(opts);
+    if (opts) setChips(opts, 8);
   }
 
   bubble.onclick = function () {

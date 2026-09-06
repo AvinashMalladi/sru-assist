@@ -69,10 +69,12 @@ sometimes lack tool support → every LLM call is wrapped: failure ⇒ grounded
 direct-answer path (`_grounded_answer`). Reliability beats purity for students.
 
 ### D4 · Clarify-then-personalize instead of guessing
-Handbook rules differ by programme/year. The profile (from the widget's ⚙️)
-is injected into the system prompt; when a rule depends on unknown programme/
-year, the agent must ask exactly ONE clarifying question. This killed the
-worst class of wrong answers (applying B.Tech rules to BBA students).
+Handbook rules differ by programme/year. The profile — gathered by the
+clarifying questions themselves; there is no settings form, the widget simply
+remembers the answers in `localStorage` — is injected into the system prompt;
+when a rule depends on unknown programme/year, the agent must ask exactly ONE
+clarifying question. This killed the worst class of wrong answers (applying
+B.Tech rules to BBA students).
 
 ### D5 · Citations are a contract
 Every policy claim carries `(Handbook p. X)`; pages flow from chunk metadata.

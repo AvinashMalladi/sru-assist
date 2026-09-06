@@ -37,7 +37,8 @@ page has the bubble.
    `*`; **in production restrict it** to `https://sraap.in` in `app.py` `add_cors`.
 2. Calls happen from the *student's browser* to the API host, so the API host must be
    reachable over HTTPS from public internet.
-3. The widget remembers the student's profile (programme/branch/year/semester) in
+3. The widget remembers the student's profile (programme/branch/year/semester/hostel,
+   captured from the bot's in-chat clarifying questions — no settings form) in
    `localStorage`; no server-side session needed.
 
 Config keys: `apiUrl` (defaults to the widget's own origin), `botName`, `welcome`.

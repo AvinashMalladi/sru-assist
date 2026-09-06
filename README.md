@@ -71,7 +71,7 @@ Built by the SRU student project team (2026). Each bullet maps to a commit in `g
 |---|---|---|
 | 1 | **SRU Assist v1** | Working agentic handbook chatbot: Flask API (`POST /api/chat`, `GET /api/health`), page-based chunking + pure-Python BM25 retrieval over the 86-page Student Handbook, LLM tool-calling loop via OpenRouter, embeddable vanilla-JS widget + mock demo portal. |
 | 2 | **Chat-friendly formatting** | LaTeX/math markup banned in prompts; the widget ships a **mini-markdown renderer** (paragraphs, dash bullets, numbered lists, tables, bold, inline code, subscripts) with LaTeX cleanup (`\frac`, `\times`, `\[...\]`…) as a second safety net. Fixes the "raw `\frac` in the chat bubble" failure class seen in testing. |
-| 3 | **Personalization & clarify-then-answer** | Student profile (⚙️ in widget: programme/branch/year/semester) injected into the system prompt, persisted in `localStorage`. When a rule depends on programme/year and it is unknown, the agent asks **exactly ONE** clarifying question instead of guessing. Topic-bandit suggestion chips (`agent/stats.py` → `data/query_stats.json`) surface recent asks as short labels. |
+| 3 | **Personalization & clarify-then-answer** | No settings UI — the bot gathers the student's *programme / branch / year / semester / hostel* by asking clarifying questions in the chat, and the widget auto-remembers each answer (`localStorage`, no server session). When a rule depends on programme/year and it is unknown, the agent asks **exactly ONE** clarifying question instead of guessing. Topic-bandit suggestion chips (`agent/stats.py` → `data/query_stats.json`) surface recent asks as short labels. |
 | 4 | **Branding & portal prep** | Widget + demo rebranded to the SRAAP/SRU palette (primary **#23468A**, accents #97B9E2 / #dbe7f7), matching the live portal's stylesheet. Real-portal integration notes written up (see below). |
 | 5 | **Production readiness** | `gunicorn` startup, `$PORT`/`FLASK_PORT` support, `render.yaml` Blueprint for one-click Render deploy. Deployed live at **https://sru-assist.onrender.com**. |
 | 6 | **Documented live deployment** | Deploy URL recorded; README deploy guide verified. |
@@ -212,8 +212,9 @@ table).
 (NVIDIA's free endpoint states sessions are logged and may be used to improve their
 products; logs are not linked to your identity). OpenRouter itself adds connection logs.
 Rule of thumb for this project: **nothing personal or confidential goes to a free
-endpoint** — student PII stays out of prompts (we already only send programme/branch/
-year/semester in the profile block).
+endpoint** — student PII stays out of prompts (we only send the profile block — programme/
+branch/year/semester/hostel — the student chose to share in chat; never names,
+ID numbers or contact details).
 
 ---
 
@@ -360,14 +361,17 @@ with its own citation"). Citations always name the document: `(R23 Handbook p. 5
 
 ## Personalization & conversation features
 
-- **Student profile** — the widget's ⚙️ lets students set *programme / branch / year /
-  semester* (persisted in `localStorage`, sent with every request). `agent/core.py` builds
-  a `STUDENT PROFILE: programme=…; branch=…` block appended to the system prompt, so
-  answers target the student's actual programme.
+- **Student profile, gathered in chat (no settings UI)** — `agent/core.py` builds a
+  `STUDENT PROFILE: programme=…; branch=…` block appended to the system prompt, so
+  answers target the student's actual programme. The widget auto-remembers the details
+  (`captureProfile`): `localStorage`, sent with every request. The student never fills a
+  form — answering the bot's clarifying question (chip tap or plain text like "B.Tech CSE,
+  sem 3, girls hostel") is enough, and the bot won't ask for an already-known detail.
 - **Clarify-then-answer** — if a rule depends on programme/year and it's unknown, the
   prompt instructs the model to ask **exactly one** clarifying question (never guess).
   The widget auto-detects such questions and offers one-tap answer chips
-  (`maybeClarifyChips`: B.Tech/BBA/BCA/B.Sc., CSE/ECE/EEE/…, Year 1–4).
+  (`maybeClarifyChips`: Boys/Girls hostel, B.Tech/BBA/BCA/B.Sc./M.Tech/Diploma,
+  CSE/ECE/EEE/…, Sem 1–8, Year 1–4).
 - **Topic-based suggestion chips** — every typed question is folded onto a fixed set
   of handbook topics ("Promotion rules", "Attendance criteria", "CGPA / grading", …).
   Scores use **recency + frequency decay** (a bandit-style ranker:
@@ -382,7 +386,7 @@ with its own citation"). Citations always name the document: `(R23 Handbook p. 5
   - *Boys/Girls hostel* — any hostel/dining/mess/fee/room question asks
     "Boys or Girls hostel?" (rules, facilities and contacts differ per side)
     when the student hasn't already said, whether in the query, recent chat
-    history, or a future `profile.hostel` field.
+    history, or the `profile.hostel` field the widget fills from a chat answer.
   - *Programme/branch* — when the retrieved chunks for the question actually mix
     ≥2 programmes (e.g. "How many total credits do I need to graduate?") and the
     profile/branch is unknown, it asks "Which programme or branch are you in?".
@@ -462,8 +466,9 @@ page:
 ```
 
 Features: floating 💬 bubble + panel (460px, brand gradient), mini-markdown renderer with
-LaTeX cleanup, citation chips (`📖 Handbook 2026-27 p.34`), typing indicator, profile
-⚙️ drawer, dynamic suggestion chips, one-tap clarify chips, safe escaping
+LaTeX cleanup, citation chips (`📖 Handbook 2026-27 p.34`), typing indicator, chat-gathered
+profile memory (no settings icon), dynamic suggestion chips, one-tap clarify chips
+(hostel/programme/branch/semester/year), safe escaping
 (escape-first before any markup), Enter-to-send, busy/disabled handling, and a graceful
 "can't reach server" message. All CSS is injected as a namespaced stylesheet; the widget
 is safe against sandboxed content because it escapes before rendering.
