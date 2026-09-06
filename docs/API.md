@@ -67,10 +67,11 @@ Behavior notes:
 
 ## GET /api/suggestions
 ```json
-{ "suggestions": ["What are the promotion rules?", "..."] }
+{ "suggestions": ["Promotion rules", "Attendance criteria", "CGPA / grading"] }
 ```
-Most-searched student questions first (persisted in `data/query_stats.json`),
-padded with curated defaults. Powers the widget chips.
+Returns up to `limit` topic labels ranked by **recency-decayed popularity**
+(`?limit=` optional, default 3). Persisted in `data/query_stats.json`. Powers
+the widget's suggestion chips.
 
 ## GET /api/health
 ```json

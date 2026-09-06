@@ -1,47 +1,24 @@
 {
- "what are the promotion rules for me": {
-  "count": 1,
-  "last": 1787466598.6386886,
-  "display": "What are the promotion rules for me?"
- },
- "what are the promotion rules": {
-  "count": 2,
-  "last": 1787466760.1511064,
-  "display": "What are the promotion rules?"
- },
- "b tech": {
-  "count": 1,
-  "last": 1787466791.9845386,
-  "display": "B.Tech"
- },
- "what about first year": {
-  "count": 1,
-  "last": 1787466925.999124,
-  "display": "What about first year?"
- },
- "who should we contact if we face any problems in hostel": {
-  "count": 1,
-  "last": 1787467033.1876082,
-  "display": "Who should we contact if we face any problems in hostel?"
- },
- "who to contact regarding course curriculam": {
-  "count": 1,
-  "last": 1787467095.96459,
-  "display": "Who to contact regarding course curriculam?"
- },
- "lets say i m currently facing conflict in timetable who should i contact and how": {
-  "count": 1,
-  "last": 1787467155.6007574,
-  "display": "Lets say I'm currently facing conflict in timetable. Who should I contact and ho"
- },
- "cse": {
-  "count": 1,
-  "last": 1787467225.98616,
-  "display": "CSE"
- },
- "what are professional electives in r23 regulation how is it different in the new": {
-  "count": 1,
-  "last": 1787479326.515364,
-  "display": "What are professional electives in R23 regulation? How is it different in the ne"
+ "_topics": {
+  "Promotion rules": {
+   "count": 6,
+   "last": 1788700000
+  },
+  "Attendance criteria": {
+   "count": 5,
+   "last": 1788698000
+  },
+  "CGPA / grading": {
+   "count": 4,
+   "last": 1788696000
+  },
+  "Pass marks": {
+   "count": 2,
+   "last": 1788692000
+  },
+  "Exams & re-eval": {
+   "count": 1,
+   "last": 1788660000
+  }
  }
 }

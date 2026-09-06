@@ -39,7 +39,8 @@ def health():
 
 @app.get("/api/suggestions")
 def suggestions():
-    return jsonify({"suggestions": get_suggestions(6)})
+    n = int(request.args.get("limit", "3") or "3")
+    return jsonify({"suggestions": get_suggestions(n)})
 
 
 @app.post("/api/chat")

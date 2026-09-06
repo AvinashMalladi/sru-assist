@@ -24,10 +24,9 @@
     "Hi! I'm SRU Assist 🤖\nAsk me about credits, grading, CGPA, pass marks, attendance, exams or any handbook rule.";
 
   var SUGGESTIONS = [
-    "How is CGPA calculated?",
-    "Minimum pass marks?",
-    "Attendance requirement?",
-    "What is the grading scale?",
+    "Promotion rules",
+    "Attendance criteria",
+    "CGPA / grading",
   ];
 
   // ---------- styles ----------
@@ -347,10 +346,11 @@
     if (e.key === "Enter") ask();
   });
 
-  // ---------- dynamic suggestions ----------
+  // ---------- dynamic suggestions (capped at SUGGESTION_LIMIT chips) ----------
+  var SUGGESTION_LIMIT = 3;
   function setChips(list) {
     suggBox.innerHTML = "";
-    list.filter(Boolean).slice(0, 5).forEach(function (s) {
+    list.filter(Boolean).slice(0, SUGGESTION_LIMIT).forEach(function (s) {
       var b = el("button", null, s);
       b.onclick = function () { ask(s); };
       suggBox.appendChild(b);

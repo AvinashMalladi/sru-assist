@@ -68,7 +68,7 @@ Built by the SRU student project team (2026). Each bullet maps to a commit in `g
 |---|---|---|
 | 1 | **SRU Assist v1** | Working agentic handbook chatbot: Flask API (`POST /api/chat`, `GET /api/health`), page-based chunking + pure-Python BM25 retrieval over the 86-page Student Handbook, LLM tool-calling loop via OpenRouter, embeddable vanilla-JS widget + mock demo portal. |
 | 2 | **Chat-friendly formatting** | LaTeX/math markup banned in prompts; the widget ships a **mini-markdown renderer** (paragraphs, dash bullets, numbered lists, tables, bold, inline code, subscripts) with LaTeX cleanup (`\frac`, `\times`, `\[...\]`…) as a second safety net. Fixes the "raw `\frac` in the chat bubble" failure class seen in testing. |
-| 3 | **Personalization & clarify-then-answer** | Student profile (⚙️ in widget: programme/branch/year/semester) injected into the system prompt, persisted in `localStorage`. When a rule depends on programme/year and it is unknown, the agent asks **exactly ONE** clarifying question instead of guessing. Popular-search tracking (`agent/stats.py` → `data/query_stats.json`) powers dynamic suggestion chips. |
+| 3 | **Personalization & clarify-then-answer** | Student profile (⚙️ in widget: programme/branch/year/semester) injected into the system prompt, persisted in `localStorage`. When a rule depends on programme/year and it is unknown, the agent asks **exactly ONE** clarifying question instead of guessing. Topic-bandit suggestion chips (`agent/stats.py` → `data/query_stats.json`) surface recent asks as short labels. |
 | 4 | **Branding & portal prep** | Widget + demo rebranded to the SRAAP/SRU palette (primary **#23468A**, accents #97B9E2 / #dbe7f7), matching the live portal's stylesheet. Real-portal integration notes written up (see below). |
 | 5 | **Production readiness** | `gunicorn` startup, `$PORT`/`FLASK_PORT` support, `render.yaml` Blueprint for one-click Render deploy. Deployed live at **https://sru-assist.onrender.com**. |
 | 6 | **Documented live deployment** | Deploy URL recorded; README deploy guide verified. |
@@ -216,10 +216,13 @@ with its own citation"). Citations always name the document: `(R23 Handbook p. 5
   prompt instructs the model to ask **exactly one** clarifying question (never guess).
   The widget auto-detects such questions and offers one-tap answer chips
   (`maybeClarifyChips`: B.Tech/BBA/BCA/B.Sc., CSE/ECE/EEE/…, Year 1–4).
-- **Popular-search suggestions** — every question is normalized and counted
-  (`agent/stats.py`, thread-safe, persisted to `data/query_stats.json`). `GET
-  /api/suggestions` returns the most-asked questions (padded with curated defaults) →
-  rendered as tap-able chips under the input.
+- **Topic-based suggestion chips** — every typed question is folded onto a fixed set
+  of handbook topics ("Promotion rules", "Attendance criteria", "CGPA / grading", …).
+  Scores use **recency + frequency decay** (a bandit-style ranker: `score = Σ
+  2^(-age_days/7)`), so recent, repeated asks surface as short topic labels. `GET
+  /api/suggestions?limit=3` (default 3) returns clean labels → rendered as tap-able
+  chips under the input. Stateless, JSON-persisted (`data/query_stats.json`), swappable
+  for a model-based recommender behind the same interface.
 - **History** — the widget keeps the conversation in memory and sends the last 10
   messages with each request (stateless server, no user accounts).
 
@@ -255,7 +258,8 @@ Base URL: `http://localhost:5000` (dev) · `https://sru-assist.onrender.com` (li
 | `rag-fallback-midloop` | errored mid-loop → grounded direct answer |
 | `error` | unexpected exception → safe generic message (still HTTP 200) |
 
-**`GET /api/suggestions`** → `{ "suggestions": ["…", "…"] }` (most-searched first).
+**`GET /api/suggestions`** → `{ "suggestions": ["Promotion rules", "…"] }`,
+takes `?limit=` (default 3) → top topic labels by recency-decayed popularity.
 **`GET /api/health`** → `{ "status": "ok", "model": "<id>" }`.
 
 Errors: `400 {"error": "message is required"}` / `"message too long (max 1000 chars)"`.
@@ -458,7 +462,7 @@ agent/
   prompts.py           system prompt: grounding, citations, clarify rules, format rules
   llm.py               OpenAI-compatible client wrapper (OpenRouter)
   config.py            tiny .env loader
-  stats.py             popularity tracking → suggestion chips
+  stats.py             topic-bandit suggestion ranking → chips
 static/widget.js       embeddable chat widget (vanilla JS, zero deps)
 demo/index.html        mock SRAAP portal for demos/screenshots (widget wired in)
 data/                  handbook PDFs + extracted text + query_stats.json + documents.json
@@ -501,8 +505,10 @@ requirements.txt       5 dependencies only
   touching identity systems; horizontal scaling needs no shared state.
 - **D7 · Chat-safe formatting** — LaTeX banned in prompts + mini-markdown renderer with
   LaTeX cleanup as a second net.
-- **D8 · Popularity tracking without infra** — JSON-file counters power dynamic
-  suggestion chips; swappable for Redis later behind the same interface.
+- **D8 · Topic-bandit suggestion ranking** — typed questions are folded onto fixed
+  handbook topics and scored by **recency × frequency decay** (`Σ 2^(-age/7)`), so the
+  chips reflect what students actually just asked, capped at 3. JSON-persisted,
+  swappable for a model-based recommender behind the same `get_suggestions` interface.
 
 ---
 

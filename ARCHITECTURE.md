@@ -83,9 +83,12 @@ Prompts ban LaTeX/math markup; widget ships a mini-markdown renderer (tables,
 bold, lists) with LaTeX cleanup as a second net. Fixes the "raw \frac in the
 bubble" failure class observed in testing.
 
-### D8 · Query popularity tracking without infra
-Normalized question counts persisted to `data/query_stats.json` power dynamic
-suggestion chips. Swap for Redis/analytics later; interface stays.
+### D8 · Topic-bandit suggestion ranking without infra
+Typed questions fold onto fixed handbook topics and are scored by **recency ×
+frequency decay** (`Σ 2^(-age_days/7)`, half-life 7 d), so chips mirror what
+students just asked and stale history fades. Returns up to 3 clean labels
+(`/api/suggestions?limit=3`); raw query counts are persisted too. Swap for a
+model-based recommender/Redis later; the `get_suggestions` interface stays.
 
 ### D9 · Latency-first fast mode
 Default is a single LLM call grounded by auto-context (`AGENT_MODE=fast`).
@@ -116,7 +119,7 @@ agent/retriever.py   page parsing -> chunks -> BM25 index
 agent/tools.py       tool specs + implementations (search/calc/web)
 agent/prompts.py     system prompt: grounding, citations, clarify rules
 agent/core.py        agentic loop, fallbacks, citation collection
-agent/stats.py       suggestion popularity
+agent/stats.py       topic-bandit suggestion ranking
 static/widget.js     embeddable UI (vanilla JS, zero deps)
 tests/golden_set.json  evaluation cases
 scripts/run_eval.py    retrieval/full-pipeline scoring
