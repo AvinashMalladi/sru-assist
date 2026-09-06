@@ -18,6 +18,33 @@ SYNC_REGISTRY = os.path.join(DATA, "documents.json")
 PAGE_RE = re.compile(r"===== PAGE (\d+) =====")
 TOKEN_RE = re.compile(r"[a-z0-9]+")
 MAX_CHUNK_CHARS = 1400
+CONTACT_TARGET_CHARS = 400
+EMAIL_RE = re.compile(r"[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,}", re.I)
+MOBILE_RE = re.compile(r"\b\d{10}\b")
+
+
+def _contact_table(para):
+    """A paragraph that is really a contact directory: it contains both an email
+    address and a 10-digit mobile number, i.e. rows like 'Service -> Person ->
+    phone -> email'. We split these into small row groups so a query for one
+    service (e.g. 'wifi', 'scholarship', 'transport') hits ITS row instead of a
+    1500-char dump of every contact on the page."""
+    return EMAIL_RE.search(para) is not None and MOBILE_RE.search(para) is not None
+
+
+def _split_contact_rows(para):
+    """Yield small line-group chunks so a single contact entry (3-4 lines) is not
+    drowned by ~20 entries sharing 'sru.edu.in' / 'Block-I' noise."""
+    chunks, buf = [], ""
+    for ln in para.splitlines():
+        if buf and len(buf) + len(ln) + 1 > CONTACT_TARGET_CHARS:
+            chunks.append(buf)
+            buf = ln
+        else:
+            buf = f"{buf}\n{ln}" if buf else ln
+    if buf:
+        chunks.append(buf)
+    return chunks
 
 STOPWORDS = {
     "the", "a", "an", "is", "are", "was", "were", "of", "to", "in", "for", "on",
@@ -83,17 +110,20 @@ class Chunk:
 
 
 def tokenize(text):
-    """Stemmed tokens; compound words like 'noncredit' are emitted alongside
-    their split forms so 'non-credit' queries still match."""
-    tokens = [_stem(t) for t in TOKEN_RE.findall(text.lower()) if t not in STOPWORDS]
-    out = list(tokens)
-    for a, b in zip(tokens, tokens[1:]):
-        if (a, b) == ("non", "credit"):
-            out.append("noncredit")
-        elif a == "re" and b.startswith("evalu"):
-            out.append("reevalu")
-            out.append(b)
-    return out
+    """Stemmed tokens; hyphenated words are emitted in BOTH their split and
+    hyphenless forms so 'wifi' matches 'Wi-Fi', 're-evaluation' matches
+    'reevaluation', 'non-credit' matches 'noncredit', and so on — the whole
+    class of hyphen/compound misses, not just known pairs."""
+    tokens = []
+    for unit in re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)*", text.lower()):
+        parts = [t for t in unit.split("-") if t not in STOPWORDS]
+        stems = [_stem(t) for t in parts]
+        tokens.extend(stems)
+        if len(parts) == 2:
+            joined = _stem(parts[0] + parts[1])
+            if joined not in tokens:
+                tokens.append(joined)
+    return tokens
 
 
 def _stem(token):
@@ -105,6 +135,42 @@ def _stem(token):
     if len(token) > 3 and token.endswith("s") and not token.endswith("ss"):
         return token[:-1]
     return token
+
+
+# Query-side expansion for high-value synonyms. Retrieved content is untouched,
+# so this cannot disturb indexing statistics or the golden-set baseline. It only
+# widens the query string (and phrase-candidates) before BM25 + rerank.
+QUERY_EXPANSIONS = {
+    "wifi": "wifi wi-fi wireless network",
+    "wi-fi": "wifi wi-fi wireless network",
+    "wireless": "wifi wi-fi wireless network",
+    "internet": "internet wifi broadband network",
+    "network": "wifi network internet",
+    "not working": "not working issue problem down disconnected",
+    "not connecting": "not working issue problem connecting",
+    "contact": "contact reach report help desk helpline number",
+    "issue": "issue problem complaint help",
+    "problem": "problem issue complaint help",
+    "complaint": "complaint issue problem help",
+}
+
+
+def expand_query(query):
+    """Widen a query string with synonym variants before tokenization.
+
+    Aggressive expansion would drown exact-match precision, so we only append
+    extra terms, never replace; BM25 + the two-stage phrase rerank still favor
+    exact matches, while synonym variants improve recall for queries that name
+    a thing differently than the handbook does (e.g. 'internet not working'
+    vs 'Wi-Fi related issues')."""
+    q = query.lower()
+    parts = [query]
+    for key, value in QUERY_EXPANSIONS.items():
+        if key in q:
+            parts.append(value)
+    if len(parts) == 1:
+        return query
+    return " ".join(dict.fromkeys(parts))
 
 
 def _slug(name):
@@ -266,11 +332,18 @@ def _ensure_source(src):
 
 
 def split_page(text, page_no, doc_label):
-    """Split one page into <= MAX_CHUNK_CHARS chunks at paragraph boundaries."""
+    """Split one page into <= MAX_CHUNK_CHARS chunks at paragraph boundaries.
+    Contact-directory paragraphs (email + mobile) are broken into small row
+    groups so any single 'service -> contact' entry stays retrievable."""
     paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
     raw_chunks, buf = [], ""
     for para in paragraphs:
-        if buf and len(buf) + len(para) + 2 > MAX_CHUNK_CHARS:
+        if _contact_table(para):
+            if buf:
+                raw_chunks.append(buf)
+                buf = ""
+            raw_chunks.extend(_split_contact_rows(para))
+        elif buf and len(buf) + len(para) + 2 > MAX_CHUNK_CHARS:
             raw_chunks.append(buf)
             buf = para
         else:
@@ -405,9 +478,10 @@ class MultiDocRetriever:
         else:
             labels = hinted
 
+        expanded = expand_query(query)
         pools = {}
         for label in labels:
-            raw = self.index_by_doc[label].search(query, max(top_k * 6, 30))
+            raw = self.index_by_doc[label].search(expanded, max(top_k * 6, 30))
             pools[label] = self._phrase_rerank(query, raw)
 
         out, seen = [], set()
