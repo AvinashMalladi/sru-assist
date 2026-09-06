@@ -10,7 +10,7 @@ import os
 import re
 
 from . import llm, tools
-from .prompts import FALLBACK_PROMPT, SYSTEM_PROMPT
+from .prompts import FALLBACK_PROMPT, FAST_SYSTEM_PROMPT, SYSTEM_PROMPT
 from .retriever import get_retriever
 
 MAX_STEPS = int(os.environ.get("AGENT_MAX_STEPS", "4"))
@@ -19,6 +19,77 @@ FAST_HISTORY = 6
 AUTO_CONTEXT_TOP_K = int(os.environ.get("AUTO_CONTEXT_TOP_K", "4"))
 
 CITE_RE = re.compile(r"\[([^\]]+?) · page (\d+)\]")
+
+# Tool arguments that must never leak into a student-facing answer.
+_TOOL_KEYS = ("query", "expression", "tool", "name", "arguments", "top_k", "topk")
+
+
+def _normalize_question(question):
+    """If a student pastes a tool-call-shaped JSON string, unwrap it to the
+    real question. e.g. '{"query": "promotion policy", "topk": 5}' -> the
+    text inside query (ignoring numeric args). Anything else is returned
+    unchanged."""
+    q = (question or "").strip()
+    if not q.startswith("{"):
+        return q
+    try:
+        obj = json.loads(q)
+        if isinstance(obj, dict):
+            inner = obj.get("query") or obj.get("question") or obj.get("message")
+            if isinstance(inner, str) and inner.strip():
+                return inner.strip()
+    except Exception:  # noqa: BLE001 - not JSON -> treat as plain text
+        pass
+    return q
+
+
+def _strip_fences(text):
+    """Remove a surrounding ```json / ``` code fence if present."""
+    s = (text or "").strip()
+    lines = s.splitlines()
+    if lines and lines[0].startswith("```"):
+        lines = lines[1:]
+    if lines and lines[-1].strip() == "```":
+        lines = lines[:-1]
+    return "\n".join(lines).strip()
+
+
+def _looks_like_tool_call(text):
+    """True when the entire reply is a raw tool-call payload (the failure mode
+    where the model echoes {"query": ...} instead of answering)."""
+    t = _strip_fences(text)
+    if not t:
+        return False
+    if re.search(r"(?:search_handbook|calculator|search_web)\s*\(", t):
+        return True
+    if not t.startswith("{"):
+        return False
+    try:
+        obj = json.loads(t)
+    except Exception:  # noqa: BLE001 - not clean JSON
+        return False
+    if isinstance(obj, dict) and any(k in obj for k in _TOOL_KEYS):
+        return True
+    return False
+
+
+def _cleanup_answer(raw):
+    """Strip stray tool-call JSON fragments that slipped into an otherwise
+    good answer (e.g. '{"query": "..."}' inline). Empty result signals the
+    caller to regenerate."""
+    t = _strip_fences(raw or "").strip()
+    if not t:
+        return ""
+    # Remove quoted tool args embedded in the text.
+    t = re.sub(
+        r"\{\s*\"(?:query|expression)\"\s*:\s*\"[^\"]*\""
+        r"(?:\s*,\s*\"(?:top_k|topk|k)\"\s*:\s*\d+\s*)?\}",
+        "",
+        t,
+    )
+    # Remove function-call spellings like search_handbook({"query": ...}).
+    t = re.sub(r"(?:search_handbook|calculator|search_web|function_call)\s*\([^)]*\)", "", t)
+    return re.sub(r"\n{3,}", "\n\n", t).strip()
 
 
 def _cites_from(text):
@@ -69,6 +140,7 @@ def _profile_block(profile):
 
 def run_agent(question, history=None, profile=None):
     """Returns {"answer", "citations", "tool_calls", "mode"}."""
+    question = _normalize_question(question)
     if _fast_mode():
         return _fast_answer(question, history, profile)
     return _agentic_answer(question, history, profile)
@@ -80,12 +152,14 @@ def _fast_mode():
 
 
 def _fast_answer(question, history, profile):
-    """One LLM call, no tools. Grounded purely by auto-retrieved context."""
+    """One LLM call, no tools, tool-free system prompt. Grounded purely by
+    auto-retrieved context; tricked into echoing {"query":...} it regenerates
+    a grounded answer instead."""
     history = _trim_history(history or [], keep=FAST_HISTORY)
     citations = set()
     profile_line = _profile_block(profile)
 
-    messages = [{"role": "system", "content": SYSTEM_PROMPT + profile_line}]
+    messages = [{"role": "system", "content": FAST_SYSTEM_PROMPT + profile_line}]
     messages.extend(history)
 
     ctx = _auto_context(question)
@@ -95,7 +169,7 @@ def _fast_answer(question, history, profile):
     try:
         reply = llm.chat(messages, tools=None, max_tokens=_max_tokens())
     except Exception:
-        answer = _grounded_answer(messages, question)
+        answer = _finalize_answer("", messages, question)
         citations |= _cites_from(ctx or "")
         return {
             "answer": answer,
@@ -104,9 +178,7 @@ def _fast_answer(question, history, profile):
             "mode": "fast-fallback",
         }
 
-    answer = (reply.content or "").strip()
-    if not answer:
-        answer = _grounded_answer(messages, question)
+    answer = _finalize_answer(reply.content, messages, question)
     citations |= _cites_from(ctx or "")
 
     return {
@@ -115,6 +187,17 @@ def _fast_answer(question, history, profile):
         "tool_calls": [],
         "mode": "fast",
     }
+
+
+def _finalize_answer(raw, messages, question):
+    """Turn a raw model reply into a usable answer. If the model echoed a
+    tool-call JSON or produced nothing, regenerate a grounded answer."""
+    if _looks_like_tool_call(raw):
+        raw = ""
+    clean = _cleanup_answer(raw)
+    if not clean:
+        return _grounded_answer(messages, question)
+    return clean
 
 
 def _agentic_answer(question, history, profile):
@@ -194,9 +277,7 @@ def _agentic_answer(question, history, profile):
                 "mode": "rag-fallback-midloop",
             }
 
-    answer = (reply.content or "").strip()
-    if not answer:
-        answer = _grounded_answer(messages, question)
+    answer = _finalize_answer(reply.content, messages, question)
 
     # Merge pages the model saw via auto-context into citations.
     citations |= _cites_from(ctx or "")
@@ -226,7 +307,10 @@ def _grounded_answer(messages, question):
         {"role": "user", "content": f"HANDBOOK CONTEXT:\n{text}\n\nQUESTION: {question}"},
     ]
     reply = llm.chat(msgs, tools=None)
-    return (reply.content or "").strip()
+    clean = _cleanup_answer(reply.content or "")
+    if _looks_like_tool_call(clean):
+        return "I couldn't retrieve a clear answer from the handbook for that question. Please contact the Student Help Desk."
+    return clean or "I couldn't find that in the handbook. Please contact the Student Help Desk."
 
 
 def _web_enabled():

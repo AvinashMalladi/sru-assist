@@ -76,7 +76,7 @@ Built by the SRU student project team (2026). Each bullet maps to a commit in `g
 | 8 | **Multi-document + intent routing** | Second regulation added — **R23 B.Tech Handbook** (238 pages) — with per-document indexes, intent-based routing (name a regulation → search only that doc; comparison → split; else default to current handbook), `(R23 Handbook p. N)` citations. Eval expanded to **27 golden cases @ 93% → 100% hit-rate**. |
 | 9 | **100% retrieval hit-rate** | Two-stage retrieval: BM25 recall + **exact query-phrase promotion** and **compound-word normalization** — e.g. "non-credit" matches the PDF's "noncredit". Final baseline: **100% hit-rate @ top-6, MRR 0.76** across all 27 cases. |
 
-**Current baseline:** `100% hit-rate @ top-6 · MRR 0.76` on 27 golden questions spanning
+**Current baseline:** `100% hit-rate @ top-6 · MRR 0.76` on 28 golden questions spanning
 BOTH regulations. Remaining headroom is semantic paraphrase — the motivation for hybrid
 embedding retrieval (roadmap).
 
@@ -292,7 +292,7 @@ is safe against sandboxed content because it escapes before rendering.
 
 ## Evaluation & quality
 
-`tests/golden_set.json` holds **27 real student questions** across both regulations,
+`tests/golden_set.json` holds **28 real student questions** across both regulations,
 each annotated with `expect_pages` — the handbook pages that *must* be retrieved. Score it
 any time:
 
@@ -302,7 +302,7 @@ python scripts/run_eval.py --k 8      # widen retrieval window
 python scripts/run_eval.py --full     # also runs the live agent and checks citations
 ```
 
-**Baseline (current): 100% hit-rate @ top-6 · MRR 0.76** (27/27). Coverage spans pass
+**Baseline (current): 100% hit-rate @ top-6 · MRR 0.76** (28/28). Coverage spans pass
 marks, grade scales, SGPA/CGPA, F-grade & I-grade handling, promotion rules, attendance /
 condonation, graduation credits, malpractice (CPAM), summer semester, re-evaluation,
 dress code, hostel, scholarships, anti-ragging, library, exam fees, ID cards, mentoring —
@@ -462,7 +462,7 @@ agent/
 static/widget.js       embeddable chat widget (vanilla JS, zero deps)
 demo/index.html        mock SRAAP portal for demos/screenshots (widget wired in)
 data/                  handbook PDFs + extracted text + query_stats.json + documents.json
-tests/golden_set.json  27 golden Q&A cases (both regulations)
+tests/golden_set.json  28 golden Q&A cases (both regulations)
 scripts/
   run_eval.py          retrieval + full-pipeline scoring (CI exit code)
   extract_handbook.py  rebuild /<slug>.txt from PDFs

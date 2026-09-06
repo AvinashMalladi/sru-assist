@@ -101,6 +101,14 @@ at boot), or `txt` (pushed via `POST /api/sync`, registered in
 `data/documents.json`, rebuilt in place). The portal stays the single source of
 truth; the backend stores only a cacheable text copy and needs no PDF.
 
+### D11 · Tool-call echo defence
+Free models sometimes echo the tool-call payload as plain text (e.g.
+`{"query": "...", "topk": 5}`) instead of answering. Three layers: a separate
+tool-free `FAST_SYSTEM_PROMPT` names no tools in fast mode; `_normalize_question`
+unwraps a pasted tool-call JSON to the real query up front; and `_cleanup_answer`
++ `_looks_like_tool_call` strip stray JSON/regenerate a grounded answer if the
+model slips. `_grounded_answer` is the final net with an explicit non-answer.
+
 ## Layout
 ```
 app.py               Flask routes, CORS, static serving
