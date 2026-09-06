@@ -10,6 +10,7 @@ import os
 import re
 
 from . import llm, tools
+from .clarify import check as clarify_check
 from .prompts import FALLBACK_PROMPT, FAST_SYSTEM_PROMPT, SYSTEM_PROMPT
 from .retriever import get_retriever
 
@@ -139,8 +140,16 @@ def _profile_block(profile):
 
 
 def run_agent(question, history=None, profile=None):
-    """Returns {"answer", "citations", "tool_calls", "mode"}."""
+    """Returns {"answer", "citations", "tool_calls", "mode"}.
+
+    A deterministic clarify pre-pass (zero LLM cost) fires first for ambiguous
+    questions (Boys/Girls hostel, programme/branch) so the model never guesses
+    and serves the wrong side's info.
+    """
     question = _normalize_question(question)
+    clarify = clarify_check(question, history, profile)
+    if clarify:
+        return clarify
     if _fast_mode():
         return _fast_answer(question, history, profile)
     return _agentic_answer(question, history, profile)

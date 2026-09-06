@@ -12,6 +12,9 @@ student question
       ▼
 Flask  POST /api/chat  ──►  agent/core.run_agent()
       │
+      ├─0► clarify pre-pass (agent/clarify.py): ambiguous Boys/Girls hostel /
+      │      programme-branch questions asked first - zero LLM cost
+      │
       ├─1► auto-retrieve: BM25 over handbook chunks (always; grounds the model)
       │      + query expansion + two-stage phrase rerank + doc routing
       │
@@ -139,10 +142,26 @@ fragments back into one address only when the combined tail is a known TLD, so
 ordinary line breaks are untouched. Applied per page inside `extract_pdf()` so
 the on-disk text is clean without hand-editing data files.
 
+### D15 · Deterministic clarify pre-pass
+Questions that are ambiguous on a dimension the handbook splits (Boys vs Girls
+hostel, programme/branch) previously relied on the model to decide to ask —
+free models often just answer the wrong side. `agent/clarify.py` runs before
+any LLM call and decides in code, at zero token cost:
+- hostel gender: topic keyword + no gender declared in query/history/profile +
+  a document-level fact that both a Boys and a Girls hostel exist;
+- branch: topic keyword + nothing declared + this question's retrieved chunks
+  actually mix >=2 distinct programme labels;
+- regulation-named questions ("in R23") skip clarify entirely — doc routing
+  already disambiguates that axis.
+The reply is `mode:"clarify"` with an `options` array the widget renders as
+one-tap chips, and the same "ask before mixing" rule was added to the prompts
+for the LLM-generated path.
+
 ## Layout
 ```
 app.py               Flask routes, CORS, static serving
 agent/retriever.py   page parsing -> chunks -> BM25 index
+agent/clarify.py     deterministic clarify pre-pass (hostel/branch)
 agent/tools.py       tool specs + implementations (search/calc/web)
 agent/prompts.py     system prompt: grounding, citations, clarify rules
 agent/core.py        agentic loop, fallbacks, citation collection

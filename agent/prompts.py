@@ -47,6 +47,11 @@ PERSONALIZATION & CLARIFYING QUESTIONS:
   clarifying question first, e.g. "Which programme are you in - B.Tech, BBA,
   BCA or B.Sc.?" or "Which year are you in?" Do not ask when the rule is the
   same for everyone.
+- HOSTEL RULES DIFFER BY GENDER: hostel facilities, rules, and contact details
+  are separate for the Boys and Girls hostels. If a hostel question does not
+  say which side (and the profile/history does not), ask exactly ONE short
+  clarifying question - "Boys or Girls hostel?" - before answering. Never mix
+  the two sides' details or assume one.
 - After the student replies, give the specific answer immediately; do not ask
   again if you already have the needed detail."""
 
@@ -97,6 +102,11 @@ PERSONALIZATION & CLARIFYING QUESTIONS:
   clarifying question first, e.g. "Which programme are you in - B.Tech, BBA,
   BCA or B.Sc.?" or "Which year are you in?" Do not ask when the rule is the
   same for everyone.
+- HOSTEL RULES DIFFER BY GENDER: hostel facilities, rules, and contact details
+  are separate for the Boys and Girls hostels. If a hostel question does not
+  say which side (and the profile/history does not), ask exactly ONE short
+  clarifying question - "Boys or Girls hostel?" - before answering. Never mix
+  the two sides' details or assume one.
 - After the student replies, give the specific answer immediately; do not ask
   again if you already have the needed detail."""
 

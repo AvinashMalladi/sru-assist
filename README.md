@@ -110,6 +110,9 @@ Open **http://localhost:5000** → the mock student portal loads → click the *
 ```
  Flask  POST /api/chat ──►  agent/core.run_agent()
    │
+   ├─0► clarify pre-pass (agent/clarify.py, ZERO LLM cost): ambiguous Boys/Girls
+   │     hostel or programme/branch questions get a one-tap question first
+   │
    ├─1► auto-retrieve: BM25 over handbook chunks (always; grounds the model)
    │     retriever.search() → _phrase_rerank → format_hits(top_k=4 in fast mode)
    │
@@ -128,7 +131,8 @@ Open **http://localhost:5000** → the mock student portal loads → click the *
 | Layer | File | Responsibility |
 |---|---|---|
 | HTTP | `app.py` | Routes (`/api/chat`, `/api/health`, `/api/suggestions`, `/api/sync`), CORS, static + demo, request validation (message 1–1000 chars), `latency_ms` measurement |
-| Agent | `agent/core.py` | `run_agent()` → fast or agentic path; auto-RAG context injection; trash-history trimming; tool-call-echo defence; citation harvesting; the grounded-answer safety net |
+| Agent | `agent/core.py` | `run_agent()` → clarify pre-pass, then fast or agentic path; auto-RAG context injection; trash-history trimming; tool-call-echo defence; citation harvesting; the grounded-answer safety net |
+| Clarify | `agent/clarify.py` | Deterministic, zero-LLM ambiguity check (Boys/Girls hostel, programme/branch) → `mode:"clarify"` + `options` chips |
 | Retrieval | `agent/retriever.py` | PDF/URL/manifest ingestion, page-marked text files, chunking (incl. contact tables), tokenizer+stemmer, BM25 indexes, doc routing, query expansion, phrase rerank |
 | Tools | `agent/tools.py` | Tool JSON schemas + safe implementations (search / calculator / search_web) |
 | Prompts | `agent/prompts.py` | `SYSTEM_PROMPT` (agent), `FAST_SYSTEM_PROMPT` (tool-free), `FALLBACK_PROMPT` (safety net); all forbid claiming absence from missing context |
@@ -308,12 +312,16 @@ pushes refreshed content.
 
 | `mode` | Meaning |
 |---|---|
-| `fast` | single LLM call, grounded by auto-context (default) |
+| `fast` | single LLM call, grounded by auto-context (default `AGENT_MODE=fast`) |
 | `fast-fallback` | single-call path failed → grounded direct answer |
-| `agent` | model used tools in the loop |
-| `rag-fallback` | provider rejected tools / first call errored → grounded direct answer |
+| `clarify` | deterministic clarify pre-pass (zero LLM cost): asked a one-tap disambiguating question first, `options` holds the chips |
+| `agent` | model used tools in the loop (`AGENT_MODE=agent`) |
+| `rag-fallback` | provider rejected tools → grounded direct answer |
 | `rag-fallback-midloop` | errored mid-loop → grounded direct answer |
 | `error` | unexpected exception → safe generic message (still HTTP 200) |
+
+Responses that ask a clarifying question (mode `clarify`) also carry an `options`
+array the widget renders as one-tap chips, e.g. `["Boys Hostel", "Girls Hostel"]`.
 
 ### Tool-call echo defence
 Free models sometimes echo a tool-call payload (`{"query": "…", "topk": 5}`) as plain
@@ -368,6 +376,21 @@ with its own citation"). Citations always name the document: `(R23 Handbook p. 5
   rendered as tap-able chips under the input. Stateless, JSON-persisted
   (`data/query_stats.json`), swappable for a model-based recommender behind the same
   interface.
+- **Deterministic clarify pre-pass (zero LLM cost)** — before any LLM call,
+  `agent/clarify.py` checks whether the question is ambiguous on a dimension the
+  handbook genuinely splits and asks **one question first**:
+  - *Boys/Girls hostel* — any hostel/dining/mess/fee/room question asks
+    "Boys or Girls hostel?" (rules, facilities and contacts differ per side)
+    when the student hasn't already said, whether in the query, recent chat
+    history, or a future `profile.hostel` field.
+  - *Programme/branch* — when the retrieved chunks for the question actually mix
+    ≥2 programmes (e.g. "How many total credits do I need to graduate?") and the
+    profile/branch is unknown, it asks "Which programme or branch are you in?".
+  - neither fires when a regulation (e.g. "in R23") is named — doc routing
+    already disambiguates that axis — and both are suppressed once the student
+    declared the value. The reply is `mode:"clarify"` with an `options` array
+    the widget renders as one-tap chips. Same rule is echoed in the prompts for
+    the LLM-generated path, so the model never mixes the two sides' details.
 - **History** — the widget keeps the conversation in memory and sends messages with each
   request (stateless server, no user accounts); the server keeps the last 6 (fast) or 10
   (agent) rounds.
@@ -622,8 +645,9 @@ Production checklist (details in `PRODUCTIONIZATION.md`):
 ```
 app.py                 Flask routes (chat/health/suggestions/sync), CORS, static + demo
 agent/
-  core.py              agent loop: fast single-call default, agentic toolbox, fallbacks,
-                       auto-RAG context injection, tool-call echo defence, citations
+  core.py              agent loop: clarify pre-pass, fast single-call default, agentic
+                       toolbox, fallbacks, auto-RAG context, tool-call echo defence
+  clarify.py           deterministic clarify pre-pass (hostel gender / branch) - zero LLM cost
   retriever.py         PDF/URL/manifest ingestion, email-break repair, chunking incl.
                        contact tables, tokenizer+stemmer, BM25, two-stage rerank, routing,
                        query expansion
@@ -640,11 +664,12 @@ data/                  handbook PDFs + extracted text + runtime state
 tests/golden_set.json  29 golden Q&A cases (both regulations, top_k=6)
 scripts/
   run_eval.py          retrieval + full-pipeline scoring (CI exit code)
+  check_clarify.py     no-cost clarification probes for agent/clarify.py
   extract_handbook.py  rebuild /<slug>.txt from PDFs
 docs/
   API.md              integration contract
   PORTAL_INTEGRATION.md  widget embed + on-demand handbook fetch (no bundled PDFs)
-ARCHITECTURE.md        design decision record (D1…D14)
+ARCHITECTURE.md        design decision record (D1…D15)
 PRODUCTIONIZATION.md   university-infra upgrade path
 render.yaml            Render Blueprint (deploy-ready)
 requirements.txt       5 dependencies only
@@ -694,6 +719,12 @@ requirements.txt       5 dependencies only
 - **D14 · Repair PDF line-splits in text extraction** — `_repair_email_breaks()` rejoins
   addresses the PDF text layer broke across lines (`sru.edu.i\n` → `@sru.edu.in`), because
   a "the handbook has a typo" bug is really a PDF-extraction artifact.
+- **D15 · Deterministic clarify pre-pass** — asking (Boys/Girls hostel, programme/branch)
+  is decided in *code* before any LLM call (`agent/clarify.py`, zero token cost), not left
+  to the model: the hostel facet uses a document-level fact (both hostels exist), the
+  branch facet requires the retrieved chunks to actually mix ≥2 programmes, both respect
+  query/history/profile and skip regulation-named questions. Fixes the "gave the other
+  side's info" failure class without spending LLM quota.
 
 ---
 
@@ -721,6 +752,11 @@ requirements.txt       5 dependencies only
   and avoid this entirely.
 - **No streaming** — answers arrive as one JSON message. Roadmap: SSE streaming
   (`stream=True` on the client), already deploy-geared via gunicorn + nginx.
+- **Clarify turns add a round-trip (by design)** — Boys/Girls hostel and
+  programme/branch questions that don't declare the dimension pause for exactly
+  one clarifying question (`mode:"clarify"`, one-tap chips) before answering.
+  Suppressions (query/history/profile, regulation-named questions) are pinned by
+  `python scripts/check_clarify.py`, so the check stays cheap and deterministic.
 - Also on the roadmap (see `PRODUCTIONIZATION.md`): Postgres callbacks/persistence,
   Redis caching for repeat FAQs, rate limiting, "view sources" expander in the widget,
   multilingual intake, BI/analytics on Q&A logs.

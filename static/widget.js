@@ -327,7 +327,8 @@
         addMsg("bot", ans, data.citations);
         history.push({ role: "user", content: text });
         history.push({ role: "assistant", content: ans });
-        maybeClarifyChips(ans);
+        if (data.options && data.options.length) setChips(data.options);
+        else maybeClarifyChips(ans);
         refreshSuggestions();
       })
       .catch(function () {
@@ -368,7 +369,9 @@
   function maybeClarifyChips(ans) {
     if (!ans || ans.length > 260 || !/\?["']?\s*$/.test(ans.trim())) return;
     var opts = null;
-    if (/programme|program\b|b\.?tech|bba|bca|b\.?sc|diploma/i.test(ans)) {
+    if (/boys? hostel|girls? hostel|which hostel|boys or girls|hostel .* boys?/i.test(ans)) {
+      opts = ["Boys Hostel", "Girls Hostel"];
+    } else if (/programme|program\b|b\.?tech|bba|bca|b\.?sc|diploma/i.test(ans)) {
       opts = ["B.Tech", "BBA", "BCA", "B.Sc."];
     } else if (/branch|speciali[sz]ation|stream|course offered/i.test(ans)) {
       opts = ["CSE", "ECE", "EEE", "Mechanical", "Civil"];

@@ -53,10 +53,15 @@ Ask a question. Returns a grounded answer with handbook citations.
 | `answer` | Markdown: paragraphs, `- ` bullets, pipe tables, `**bold**`. No LaTeX. |
 | `citations` | Sorted `"<doc> p.<page>"` strings actually grounding the answer |
 | `tool_calls` | Tools the agent invoked this turn (for transparency/debug UIs) |
-| `mode` | One of: `fast` (single call, default) · `fast-fallback` · `agent` (used tools) · `rag-fallback` · `rag-fallback-midloop` (grounded direct answer after a failure) · `error` |
+| `mode` | One of: `fast` (single call, default) · `fast-fallback` · `clarify` (asked a disambiguating question, `options` holds one-tap chips) · `agent` (used tools) · `rag-fallback` · `rag-fallback-midloop` (grounded direct answer after a failure) · `error` |
+| `options` | Present only when `mode:"clarify"` — short answer chips the widget renders as tap targets (e.g. `["Boys Hostel", "Girls Hostel"]`) |
 | `latency_ms` | Server round-trip including the LLM call |
 
 Behavior notes:
+- If the question is ambiguous on a dimension the handbook splits (Boys/Girls
+  hostel, or programme/branch when the retrieved text mixes ≥2 programmes) and
+  the value is unknown, the API answers with `mode:"clarify"` and an `options`
+  list — no LLM call is made, so clarify turns cost nothing.
 - If the question's rule differs by programme/year and `profile` lacks it, the
   agent replies with exactly ONE clarifying question instead of guessing.
 - Questions outside university scope are politely refused.

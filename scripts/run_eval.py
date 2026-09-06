@@ -60,13 +60,22 @@ def eval_retrieval(cases, k):
 
 def eval_full(cases):
     from agent.core import run_agent
+    from agent.retriever import get_retriever
 
     cite_hits, n = 0, len(cases)
     for c in cases:
+        want_doc = c.get("doc", DEFAULT_DOC)
         t0 = time.time()
         result = run_agent(c["q"], history=[])
         cites = result.get("citations", [])
-        want_doc = c.get("doc", DEFAULT_DOC)
+        if result.get("mode") == "clarify":
+            # A clarify reply carries no citations by design. Grade the question's
+            # retrieval grounding directly so an honest "ask a dimension first"
+            # turn still counts once the answer WOULD be grounded.
+            _, cites = get_retriever().format_hits(c["q"], top_k=6)
+            kind = "clarify"
+        else:
+            kind = ""
         ok = any(
             cite.startswith(want_doc) and int(cite.rsplit("p.", 1)[1]) in c["expect_pages"]
             for cite in cites
@@ -74,7 +83,7 @@ def eval_full(cases):
         )
         cite_hits += ok
         snippet = result["answer"][:70].replace("\n", " ")
-        print(f"[{'OK ' if ok else 'MISS'}] {c['id']:16} "
+        print(f"[{'OK ' if ok else 'MISS'}] {c['id']:16} {kind:8} "
               f"cited={cites} ({time.time() - t0:.1f}s) {snippet}...")
     print(f"\nFULL-PIPELINE HIT-RATE: {cite_hits}/{n} = {cite_hits / n:.0%}")
 
