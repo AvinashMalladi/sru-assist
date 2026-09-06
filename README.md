@@ -1,6 +1,3 @@
-Open **https://sru-assist.onrender.com/** -> Render Deployed
-
-
 # SRU Assist — Agentic Student Handbook Chatbot
 
 **SRU Assist** is an *agentic RAG (Retrieval-Augmented Generation) chatbot* built for the
