@@ -1,13 +1,22 @@
-"""Agentic loop: auto-RAG grounding + optional tool calling with fallbacks."""
+"""Agent loop: auto-RAG grounding + optional tool calling with fallbacks.
+
+LATENCY MODE (default): exactly ONE LLM call per question. Auto-RAG context is
+injected so answers stay grounded, but tools are not offered - fastest path,
+~1 round-trip. Set AGENT_MODE=agent to re-enable the multi-step tool loop
+(AGENT_MAX_STEPS tool rounds) for models where tool-calling is reliable.
+"""
 import json
+import os
 import re
 
 from . import llm, tools
 from .prompts import FALLBACK_PROMPT, SYSTEM_PROMPT
 from .retriever import get_retriever
 
-MAX_STEPS = 4
+MAX_STEPS = int(os.environ.get("AGENT_MAX_STEPS", "4"))
 MAX_HISTORY = 10
+FAST_HISTORY = 6
+AUTO_CONTEXT_TOP_K = int(os.environ.get("AUTO_CONTEXT_TOP_K", "4"))
 
 CITE_RE = re.compile(r"\[([^\]]+?) · page (\d+)\]")
 
@@ -19,9 +28,10 @@ def _cites_from(text):
 
 def _auto_context(question):
     """Always retrieve for the newest question; guarantees grounded answers
-    even when the model chooses not to call tools."""
+    even when the model chooses not to call tools. Uses a SMALLER top_k in
+    fast mode so prompts stay short (faster time-to-first-token)."""
     retriever = get_retriever()
-    text, cites = retriever.format_hits(question, top_k=6)
+    text, cites = retriever.format_hits(question, top_k=AUTO_CONTEXT_TOP_K)
     if not cites:
         return None
     return (
@@ -31,9 +41,9 @@ def _auto_context(question):
     )
 
 
-def _trim_history(history):
+def _trim_history(history, keep=MAX_HISTORY):
     clean = []
-    for m in history[-MAX_HISTORY:]:
+    for m in history[-keep:]:
         role = m.get("role")
         content = (m.get("content") or "").strip()
         if role in ("user", "assistant") and content:
@@ -59,6 +69,56 @@ def _profile_block(profile):
 
 def run_agent(question, history=None, profile=None):
     """Returns {"answer", "citations", "tool_calls", "mode"}."""
+    if _fast_mode():
+        return _fast_answer(question, history, profile)
+    return _agentic_answer(question, history, profile)
+
+
+def _fast_mode():
+    """Default is fast (single call). AGENT_MODE=agent re-enables the loop."""
+    return os.environ.get("AGENT_MODE", "fast").lower() != "agent"
+
+
+def _fast_answer(question, history, profile):
+    """One LLM call, no tools. Grounded purely by auto-retrieved context."""
+    history = _trim_history(history or [], keep=FAST_HISTORY)
+    citations = set()
+    profile_line = _profile_block(profile)
+
+    messages = [{"role": "system", "content": SYSTEM_PROMPT + profile_line}]
+    messages.extend(history)
+
+    ctx = _auto_context(question)
+    user_msg = question if not ctx else f"{question}\n\n[system note] {ctx}"
+    messages.append({"role": "user", "content": user_msg})
+
+    try:
+        reply = llm.chat(messages, tools=None, max_tokens=_max_tokens())
+    except Exception:
+        answer = _grounded_answer(messages, question)
+        citations |= _cites_from(ctx or "")
+        return {
+            "answer": answer,
+            "citations": sorted(citations),
+            "tool_calls": [],
+            "mode": "fast-fallback",
+        }
+
+    answer = (reply.content or "").strip()
+    if not answer:
+        answer = _grounded_answer(messages, question)
+    citations |= _cites_from(ctx or "")
+
+    return {
+        "answer": answer,
+        "citations": sorted(citations),
+        "tool_calls": [],
+        "mode": "fast",
+    }
+
+
+def _agentic_answer(question, history, profile):
+    """Full agentic loop with tools (AGENT_MODE=agent)."""
     history = _trim_history(history or [])
     citations = set()
     used_tools = []
@@ -74,7 +134,7 @@ def run_agent(question, history=None, profile=None):
     specs = tools.tool_specs(enable_web=bool(_web_enabled()))
 
     try:
-        reply = llm.chat(messages, tools=specs)
+        reply = llm.chat(messages, tools=specs, max_tokens=_max_tokens())
     except Exception:
         # Model/provider rejected tools -> plain grounded answer path.
         answer = _grounded_answer(messages, question)
@@ -124,7 +184,7 @@ def run_agent(question, history=None, profile=None):
             )
 
         try:
-            reply = llm.chat(messages, tools=specs)
+            reply = llm.chat(messages, tools=specs, max_tokens=_max_tokens())
         except Exception:
             answer = _grounded_answer(messages, question)
             return {
@@ -147,6 +207,13 @@ def run_agent(question, history=None, profile=None):
         "tool_calls": used_tools,
         "mode": "agent",
     }
+
+
+def _max_tokens():
+    try:
+        return int(os.environ.get("MAX_TOKENS", "700"))
+    except ValueError:
+        return 700
 
 
 def _grounded_answer(messages, question):

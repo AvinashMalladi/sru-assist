@@ -87,6 +87,20 @@ bubble" failure class observed in testing.
 Normalized question counts persisted to `data/query_stats.json` power dynamic
 suggestion chips. Swap for Redis/analytics later; interface stays.
 
+### D9 · Latency-first fast mode
+Default is a single LLM call grounded by auto-context (`AGENT_MODE=fast`).
+The multi-step tool loop remains opt-in (`AGENT_MODE=agent`) for models with
+solid tool-calling. The real latency lever is model choice (~5 tok/s free model
+vs fast paid tiers); server-side knobs (`AUTO_CONTEXT_TOP_K`, `MAX_TOKENS`,
+`LLM_TIMEOUT`) shrink prompt size and generation caps. `/api/chat` returns
+`latency_ms` so every change is measurable.
+
+### D10 · Content from the portal, not the repo
+Sources may be `file` (bundled PDF), `url` (portal-hosted PDF/JSON/text, fetched
+at boot), or `txt` (pushed via `POST /api/sync`, registered in
+`data/documents.json`, rebuilt in place). The portal stays the single source of
+truth; the backend stores only a cacheable text copy and needs no PDF.
+
 ## Layout
 ```
 app.py               Flask routes, CORS, static serving

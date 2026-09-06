@@ -4,6 +4,7 @@ Drop any PDF into data/ and register it in DOC_SOURCES (label + filename).
 Text is auto-extracted on first load; chunks carry their document label so
 answers can cite "(R23 Handbook p. 57)" vs "(Handbook 2026-27 p. 34)".
 """
+import json
 import math
 import os
 import re
@@ -12,6 +13,7 @@ from dataclasses import dataclass
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
+SYNC_REGISTRY = os.path.join(DATA, "documents.json")
 
 PAGE_RE = re.compile(r"===== PAGE (\d+) =====")
 TOKEN_RE = re.compile(r"[a-z0-9]+")
@@ -25,10 +27,51 @@ STOPWORDS = {
 }
 
 # Register documents here: pdf file in data/ -> citation label.
+# A source may use "file" (local PDF), "url" (portal-hosted PDF/JSON/text), or
+# "txt" (content pushed via POST /api/sync, no PDF stored).
 DOC_SOURCES = [
     {"file": "student_handbook.pdf", "label": "Handbook 2026-27"},
     {"file": "R23_BTECH_20240322.pdf", "label": "R23 Handbook"},
 ]
+
+
+def add_source(entry):
+    """Register a source (label-unique) and persist it to data/documents.json.
+
+    Portal-pushed ("txt") and portal-fetched ("url") sources survive restarts
+    without any PDF living in the repo.
+    """
+    for i, s in enumerate(DOC_SOURCES):
+        if s.get("label") == entry.get("label"):
+            DOC_SOURCES[i] = entry
+            break
+    else:
+        DOC_SOURCES.append(entry)
+    os.makedirs(DATA, exist_ok=True)
+    with open(SYNC_REGISTRY, "w", encoding="utf-8") as f:
+        json.dump(DOC_SOURCES, f, indent=1)
+    return DOC_SOURCES
+
+
+def _merge_sync_registry():
+    """On import, re-attach sources persisted via /api/sync so portal-pushed
+    content stays loaded across restarts (no code edits, no PDFs)."""
+    try:
+        with open(SYNC_REGISTRY, encoding="utf-8") as f:
+            remote = json.load(f)
+    except Exception:  # noqa: BLE001 - missing/corrupt registry -> code list wins
+        return
+    for entry in remote:
+        if isinstance(entry, dict) and entry.get("label"):
+            for i, s in enumerate(DOC_SOURCES):
+                if s.get("label") == entry["label"]:
+                    DOC_SOURCES[i] = entry
+                    break
+            else:
+                DOC_SOURCES.append(entry)
+
+
+_merge_sync_registry()
 
 
 @dataclass
@@ -69,6 +112,13 @@ def _slug(name):
     return re.sub(r"[^a-zA-Z0-9]+", "_", base).strip("_").lower()[:40]
 
 
+def _slug_url(url):
+    """Slug from a URL path, robust to trailing slashes/query strings."""
+    path = url.split("?")[0].rstrip("/")
+    base = os.path.basename(path) or "remote_doc"
+    return re.sub(r"[^a-zA-Z0-9]+", "_", base).strip("_").lower()[:40]
+
+
 def extract_pdf(pdf_path):
     """PDF -> data/<slug>.txt with page markers. Returns txt path."""
     from pypdf import PdfReader
@@ -100,6 +150,119 @@ def load_pages(txt_path):
         if text:
             pages.append((page_no, text))
     return pages
+
+
+def sync_from_json(txt_path, label, payload):
+    """Write a text file from a JSON manifest so the bot needs no PDFs.
+
+    Accepted shapes:
+      {"label": "2026 Handbook", "sections": [{"page": 5, "text": "..."}, ...]}
+      {"pages": [{"page": 5, "text": "..."}, ...]}
+      {"chunks":  [{"page": 5, "text": "..."}, ...]}   (same as above)
+      each section may also be a plain string -> page number = index + 1
+    Returns the txt path (also used by load_pages).
+    """
+    sections = payload.get("sections") or payload.get("pages") or payload.get("chunks") or []
+    parts = []
+    for i, sec in enumerate(sections, start=1):
+        if isinstance(sec, str):
+            page_no, text = i, sec
+        elif isinstance(sec, dict):
+            page_no = int(sec.get("page") or sec.get("page_no") or sec.get("n") or i)
+            text = sec.get("text") or sec.get("content") or ""
+        else:
+            continue
+        text = text.strip()
+        if text:
+            parts.append(f"\n\n===== PAGE {page_no} =====\n{text}")
+    if not parts:
+        raise ValueError("manifest has no sections/pages/chunks with text")
+    with open(txt_path, "w", encoding="utf-8") as f:
+        f.write("".join(parts))
+    return txt_path
+
+
+def _write_remote_text(txt_path, text, step=100):
+    """Plain text response -> labeled page chunks (page per ~step lines)."""
+    lines = [ln for ln in text.splitlines() if ln.strip()]
+    if not lines:
+        raise ValueError("remote content is empty")
+    parts = []
+    for i in range(0, len(lines), step):
+        parts.append(f"\n\n===== PAGE {i // step + 1} =====\n" + "\n".join(lines[i:i + step]))
+    with open(txt_path, "w", encoding="utf-8") as f:
+        f.write("".join(parts))
+    return txt_path
+
+
+def fetch_remote(url, label):
+    """Download a handbook source from the portal instead of shipping a PDF.
+
+    Supports three content types:
+      * *.pdf          -> downloaded then extracted like a local PDF
+      * *.json or JSON -> manifest sections/pages/chunks -> page-labeled text
+      * anything else  -> raw text, split into page-sized blocks
+    Returns the cached txt path under data/.
+    """
+    import requests
+
+    resp = requests.get(url, timeout=30)
+    resp.raise_for_status()
+
+    sl = url.lower()
+    if sl.endswith(".pdf"):
+        pdf_path = os.path.join(DATA, f"{_slug_url(url)}.pdf")
+        with open(pdf_path, "wb") as f:
+            f.write(resp.content)
+        return extract_pdf(pdf_path)
+
+    slug = _slug_url(url)
+    txt_path = os.path.join(DATA, f"{slug}.txt")
+    ctype = resp.headers.get("content-type", "")
+    if "json" in ctype or sl.endswith(".json") or (resp.text.lstrip() or " ")[:1] == "{":
+        try:
+            return sync_from_json(txt_path, label, resp.json())
+        except ValueError:
+            return _write_remote_text(txt_path, resp.text)
+    return _write_remote_text(txt_path, resp.text)
+
+
+def _ensure_source(src):
+    """Return a local txt path for a source entry.
+
+    Supports:
+      {"file": "x.pdf",     "label": "..."}   PDF shipped in data/
+      {"url":  "https://…", "label": "..."}   remote PDF / JSON manifest / text
+    Local txt is cached next to the source so repeated boots skip the fetch.
+    """
+    if src.get("file"):
+        pdf = os.path.join(DATA, src["file"])
+        txt = os.path.join(DATA, f"{_slug(src['file'])}.txt")
+        if not os.path.exists(txt):
+            print(f"* extracting {src['file']} ...")
+            txt = extract_pdf(pdf)
+        return txt
+
+    if src.get("txt"):
+        # A text file written by /api/sync (portal-pushed content, no PDF).
+        txt = os.path.join(DATA, src["txt"])
+        if not os.path.exists(txt):
+            print(f"* WARNING: sync text missing: {src['txt']}")
+            return ""
+        return txt
+
+    if src.get("url"):
+        txt = os.path.join(DATA, f"{_slug_url(src['url'])}.txt")
+        if not os.path.exists(txt):
+            print(f"* fetching {src['url']} ...")
+            try:
+                txt = fetch_remote(src["url"], src["label"])
+            except Exception as exc:  # noqa: BLE001 - skip a dead source, keep the rest
+                print(f"* WARNING: could not fetch {src['url']}: {exc}")
+                return ""
+        return txt
+
+    raise ValueError(f"source needs 'file' or 'url': {src}")
 
 
 def split_page(text, page_no, doc_label):
@@ -166,16 +329,16 @@ class MultiDocRetriever:
         self.chunks = []
         loaded = []
         for src in sources:
-            pdf = os.path.join(DATA, src["file"])
-            txt = os.path.join(DATA, f"{_slug(src['file'])}.txt")
-            if not os.path.exists(txt):
-                print(f"* extracting {src['file']} ...")
-                txt = extract_pdf(pdf)
+            txt = _ensure_source(src)
+            if not txt:
+                continue
             doc_chunks = []
             for page_no, text in load_pages(txt):
                 doc_chunks.extend(split_page(text, page_no, src["label"]))
             self.chunks.extend(doc_chunks)
             loaded.append(src["label"])
+        if not self.chunks:
+            raise RuntimeError("no documents loaded - check DOC_SOURCES in agent/retriever.py")
         self.labels = loaded
         self.default_label = loaded[0]
         # Per-document sub-indexes so each regulation gets fair representation.
@@ -278,3 +441,13 @@ def get_retriever():
     if _retriever is None:
         _retriever = MultiDocRetriever()
     return _retriever
+
+
+def rebuild():
+    """Drop cached index so new/updated sources are re-ingested on next call.
+
+    Used by /api/sync after the portal pushes refreshed handbook content.
+    """
+    global _retriever
+    _retriever = None
+    return get_retriever()

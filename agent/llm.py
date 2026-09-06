@@ -15,6 +15,7 @@ def get_client():
         _client = OpenAI(
             base_url=os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"),
             api_key=api_key,
+            timeout=int(os.environ.get("LLM_TIMEOUT", "90")),
         )
     return _client
 
@@ -23,13 +24,18 @@ def get_model():
     return os.environ.get("MODEL_NAME", "nvidia/nemotron-3-ultra-550b-a55b:free")
 
 
-def chat(messages, tools=None, temperature=0.2):
+def chat(messages, tools=None, temperature=0.2, max_tokens=None):
     """One LLM call. Returns the assistant message object."""
+    if max_tokens is None:
+        try:
+            max_tokens = int(os.environ.get("MAX_TOKENS", "1200"))
+        except ValueError:
+            max_tokens = 1200
     kwargs = dict(
         model=get_model(),
         messages=messages,
         temperature=temperature,
-        max_tokens=1200,
+        max_tokens=max_tokens,
     )
     if tools:
         kwargs["tools"] = tools

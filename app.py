@@ -3,6 +3,7 @@
 Run:  python app.py   (serves API + demo portal on http://localhost:5000)
 """
 import os
+import time
 
 from flask import Flask, jsonify, request, send_from_directory
 
@@ -55,6 +56,7 @@ def chat():
 
     track_query(question)
 
+    t0 = time.time()
     try:
         result = run_agent(question, history, profile=profile)
     except Exception as exc:  # noqa: BLE001 - never crash the widget
@@ -67,13 +69,74 @@ def chat():
                     "citations": [],
                     "tool_calls": [],
                     "mode": "error",
+                    "latency_ms": int((time.time() - t0) * 1000),
                     "detail": str(exc),
                 }
             ),
             200,
         )
-
+    result["latency_ms"] = int((time.time() - t0) * 1000)
     return jsonify(result)
+
+
+@app.post("/api/sync")
+def sync_documents():
+    """Portal-push content ingestion - no PDFs need to ship with the backend.
+
+    Body (JSON):
+      {"label": "2026 Handbook",
+       "sections": [{"page": 5, "text": "..."}, ...]}   -> content passed in
+      -- or --
+      {"label": "2026 Handbook", "url": "https://…/handbook.json"}   -> fetch
+
+    Optional auth: set SYNC_TOKEN in .env; clients send
+    `Authorization: Bearer <token>`. Responds 401 when token required/missing.
+    """
+    expected = os.environ.get("SYNC_TOKEN", "").strip()
+    supplied = (
+        request.headers.get("Authorization", "").replace("Bearer ", "").strip()
+        or request.headers.get("X-Sync-Token", "").strip()
+    )
+    if expected and supplied != expected:
+        return jsonify({"error": "unauthorized"}), 401
+
+    data = request.get_json(silent=True) or {}
+    label = (data.get("label") or "").strip()
+    if not label:
+        return jsonify({"error": "label is required"}), 400
+
+    from agent import retriever
+    from agent.retriever import rebuild
+
+    try:
+        if data.get("url"):
+            txt_path = retriever.fetch_remote(data["url"], label)
+        elif data.get("sections") or data.get("pages") or data.get("chunks"):
+            slug = retriever._slug(label)
+            txt_path = os.path.join(retriever.DATA, f"{slug}.txt")
+            retriever.sync_from_json(txt_path, label, data)
+        else:
+            return (
+                jsonify({"error": "send a 'url', or 'sections'/'pages' with text"}),
+                400,
+            )
+    except Exception as exc:  # noqa: BLE001
+        app.logger.exception("sync failure")
+        return jsonify({"error": f"sync failed: {exc}"}), 400
+
+    # Register the pushed/remote source so it survives restart.
+    txt_name = os.path.basename(txt_path)
+    retriever.add_source({"txt": txt_name, "label": label})
+
+    r = rebuild()
+    return jsonify(
+        {
+            "ok": True,
+            "label": label,
+            "chunks": len(r.chunks),
+            "source": txt_name,
+        }
+    )
 
 
 if __name__ == "__main__":
