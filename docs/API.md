@@ -32,27 +32,29 @@ Ask a question. Returns a grounded answer with handbook citations.
 | Field | Type | Rules |
 |---|---|---|
 | `message` | string | required, 1–1000 chars |
-| `history` | array | optional, last 10 messages kept; roles `user`/`assistant` only |
+| `history` | array | optional, last 10 messages sent; server keeps the near-most 6 (fast mode) / 10 (agent mode); roles `user`/`assistant` only |
 | `profile` | object | optional; keys `programme`, `branch`, `year`, `semester`; each ≤40 chars |
 
 ### Response `200`
 ```json
 {
   "answer": "…markdown text with (Handbook p. X) citations…",
-  "citations": [26, 30, 31],
+  "citations": ["Handbook 2026-27 p.34"],
   "tool_calls": [
-    { "tool": "search_handbook", "args": { "query": "pass marks", "top_k": 3 } }
+    { "tool": "search_handbook", "args": { "query": "pass marks", "top_k": 5 } }
   ],
-  "mode": "agent"
+  "mode": "fast",
+  "latency_ms": 4123
 }
 ```
 
 | Field | Meaning |
 |---|---|
 | `answer` | Markdown: paragraphs, `- ` bullets, pipe tables, `**bold**`. No LaTeX. |
-| `citations` | Sorted handbook page numbers actually grounding the answer |
+| `citations` | Sorted `"<doc> p.<page>"` strings actually grounding the answer |
 | `tool_calls` | Tools the agent invoked this turn (for transparency/debug UIs) |
-| `mode` | `agent` (model used tools) · `rag-fallback` (grounded direct answer) · `error` |
+| `mode` | One of: `fast` (single call, default) · `fast-fallback` · `agent` (used tools) · `rag-fallback` · `rag-fallback-midloop` (grounded direct answer after a failure) · `error` |
+| `latency_ms` | Server round-trip including the LLM call |
 
 Behavior notes:
 - If the question's rule differs by programme/year and `profile` lacks it, the

@@ -13,12 +13,14 @@ student question
 Flask  POST /api/chat  ──►  agent/core.run_agent()
       │
       ├─1► auto-retrieve: BM25 over handbook chunks (always; grounds the model)
+      │      + query expansion + two-stage phrase rerank + doc routing
       │
-      ├─2► LLM (OpenRouter, OpenAI-compatible) with tools:
-      │      search_handbook(query)   more retrieval on demand
-      │      calculator(expr)         safe arithmetic for CGPA math
-      │      search_web(query)        Tavily fallback ONLY if handbook lacks it
-      │    loop up to MAX_STEPS=4 tool rounds
+      ├─2► LLM (OpenRouter, OpenAI-compatible):
+      │      fast  (default): exactly ONE call, tool-free prompt, grounded by context
+      │      agent (opt-in):  tools loop up to MAX_STEPS=4 rounds
+      │        search_handbook(query)   more retrieval on demand
+      │        calculator(expr)         safe arithmetic for CGPA math
+      │        search_web(query)        Tavily fallback ONLY if handbook lacks it
       │
       └─3► answer + page citations  (+ mode/tool_calls metadata)
 ```
@@ -28,11 +30,12 @@ grounded no-tool answer instead of failing — the widget never shows a crash.
 ## Decisions and their reasons
 
 ### D1 · BM25 first, vector DB later
-Pure-python BM25 (no numpy/torch/langchain). At handbook scale it is instant,
-deterministic, dependency-free, and trivially portable. The retriever exposes
+Pure-python BM25 (no numpy/torch/langchain). At handbook scale it is instant
+(~10 ms over the full 690-chunk index), deterministic, dependency-free, and
+trivially portable. The retriever exposes
 one interface (`search(query, top_k)`), so swapping in embeddings/FAISS/Chroma
-later changes one file. Measured on the 27-case golden set spanning two
-regulations: 100% hit-rate @6, MRR 0.76 — after adding a second retrieval
+later changes one file. Measured on the 29-case golden set spanning two
+regulations: 100% hit-rate @6, MRR 0.79 — after adding a second retrieval
 stage: BM25 candidates are promoted when their text contains the query's
 adjacent term pairs as an exact phrase (handles hyphen/compound variants,
 e.g. "non-credit" vs the PDF's "noncredit"). Remaining headroom is semantic
@@ -93,8 +96,8 @@ model-based recommender/Redis later; the `get_suggestions` interface stays.
 ### D9 · Latency-first fast mode
 Default is a single LLM call grounded by auto-context (`AGENT_MODE=fast`).
 The multi-step tool loop remains opt-in (`AGENT_MODE=agent`) for models with
-solid tool-calling. The real latency lever is model choice (~5 tok/s free model
-vs fast paid tiers); server-side knobs (`AUTO_CONTEXT_TOP_K`, `MAX_TOKENS`,
+solid tool-calling. The real latency lever is model choice (~3 tok/s free model
+vs fast paid tiers, per the OpenRouter model page snapshot); server-side knobs (`AUTO_CONTEXT_TOP_K`, `MAX_TOKENS`,
 `LLM_TIMEOUT`) shrink prompt size and generation caps. `/api/chat` returns
 `latency_ms` so every change is measurable.
 
@@ -111,6 +114,30 @@ tool-free `FAST_SYSTEM_PROMPT` names no tools in fast mode; `_normalize_question
 unwraps a pasted tool-call JSON to the real query up front; and `_cleanup_answer`
 + `_looks_like_tool_call` strip stray JSON/regenerate a grounded answer if the
 model slips. `_grounded_answer` is the final net with an explicit non-answer.
+
+### D12 · Contact-directory row chunking
+Paragraphs that read as contact directories (contain both an email and a
+10-digit mobile number) are split into row groups of ≤ `CONTACT_TARGET_CHARS=400`
+chars instead of living in the page's packed contact blob. A query for one
+service ("wifi", "scholarship", "transport") then hits ITS row, not a ~1500-char
+dump of every entry sharing `sru.edu.in` / `Block-I` noise. Measured: WiFi
+contact ranks 0-1 for the top phrasings; the regression baseline (all paragraphs
+split uniformly) was worse, so only contact tables are special-cased.
+
+### D13 · Query-side synonym expansion
+High-value synonyms are appended to the query string only — the index is left
+untouched so indexing statistics and the golden-set baseline cannot drift
+(`QUERY_EXPANSIONS` / `expand_query()` in `retriever.py`). BM25 + the phrase
+rerank still favor exact matches; expansion widens recall for questions that
+name a thing differently than the handbook does ("internet not working" vs the
+handbook's "Wi-Fi related issues"). Cheap, deterministic, zero-dependency.
+
+### D14 · Repair PDF line-splits in extraction
+The PDF text layer itself sometimes breaks an address across lines
+(`g.rajeshwarreddy@sru.edu.i\nn`). `_repair_email_breaks()` stitches such
+fragments back into one address only when the combined tail is a known TLD, so
+ordinary line breaks are untouched. Applied per page inside `extract_pdf()` so
+the on-disk text is clean without hand-editing data files.
 
 ## Layout
 ```
