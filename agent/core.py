@@ -11,6 +11,7 @@ import re
 
 from . import llm, tools
 from .clarify import check as clarify_check
+from .counts import check as counts_check
 from .prompts import FALLBACK_PROMPT, FAST_SYSTEM_PROMPT, SYSTEM_PROMPT
 from .retriever import get_retriever
 
@@ -144,12 +145,17 @@ def run_agent(question, history=None, profile=None):
 
     A deterministic clarify pre-pass (zero LLM cost) fires first for ambiguous
     questions (Boys/Girls hostel, programme/branch) so the model never guesses
-    and serves the wrong side's info.
+    and serves the wrong side's info. A deterministic count pre-pass fires next
+    for "how many clubs" style questions so exact numbers never depend on the
+    model's arithmetic.
     """
     question = _normalize_question(question)
     clarify = clarify_check(question, history, profile)
     if clarify:
         return clarify
+    counts = counts_check(question, history, profile)
+    if counts:
+        return counts
     if _fast_mode():
         return _fast_answer(question, history, profile)
     return _agentic_answer(question, history, profile)
