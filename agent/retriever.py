@@ -531,6 +531,68 @@ class MultiDocRetriever:
             sub = [c for c in self.chunks if c.doc == label]
             self.index_by_doc[label] = BM25(sub)
         self.index = BM25(self.chunks)
+        self._load_vector_embeddings()
+
+    def _load_vector_embeddings(self):
+        """Loads precomputed dense embeddings if available."""
+        self.vectors_by_doc = {}
+        emb_file = os.path.join(DATA, "embeddings.json")
+        if not os.path.exists(emb_file):
+            return
+        try:
+            with open(emb_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            # Match embeddings to chunk objects
+            chunk_map = {(c.doc, c.page, c.text[:60]): c for c in self.chunks}
+            for item in data:
+                doc = item.get("doc")
+                page = item.get("page")
+                txt_prefix = item.get("text", "")[:60]
+                ch = chunk_map.get((doc, page, txt_prefix))
+                if ch and "vector" in item:
+                    vec = item["vector"]
+                    norm = math.sqrt(sum(x * x for x in vec)) or 1.0
+                    norm_vec = [x / norm for x in vec]
+                    if doc not in self.vectors_by_doc:
+                        self.vectors_by_doc[doc] = []
+                    self.vectors_by_doc[doc].append((norm_vec, ch))
+        except Exception as e:
+            # Fall back safely to BM25 if embeddings cannot be loaded
+            pass
+
+    def _semantic_search(self, query, label, top_k=15):
+        """Fetches query embedding and scores against precomputed chunk embeddings."""
+        api_key = os.environ.get("GEMINI_API_KEY")
+        doc_vectors = self.vectors_by_doc.get(label)
+        if not api_key or not doc_vectors:
+            return []
+        try:
+            import urllib.request
+            req_body = {
+                "model": "models/gemini-embedding-001",
+                "content": {"parts": [{"text": query[:500]}]},
+                "outputDimensionality": 256,
+            }
+            req = urllib.request.Request(
+                "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent",
+                data=json.dumps(req_body).encode("utf-8"),
+                headers={"Content-Type": "application/json", "x-goog-api-key": api_key},
+            )
+            with urllib.request.urlopen(req, timeout=3) as resp:
+                res_data = json.loads(resp.read().decode("utf-8"))
+                q_vec = res_data.get("embedding", {}).get("values", [])
+            if not q_vec:
+                return []
+            q_norm = math.sqrt(sum(x * x for x in q_vec)) or 1.0
+            q_norm_vec = [x / q_norm for x in q_vec]
+            scored = []
+            for norm_vec, ch in doc_vectors:
+                sim = sum(a * b for a, b in zip(q_norm_vec, norm_vec))
+                scored.append((sim, ch))
+            scored.sort(key=lambda x: x[0], reverse=True)
+            return [ch for sim, ch in scored[:top_k] if sim > 0.55]
+        except Exception:
+            return []
 
     def _match_doc_label(self, text):
         t = (text or "").lower()
@@ -609,11 +671,10 @@ class MultiDocRetriever:
         return hits + [c for c in pool if id(c) not in hit_ids]
 
     def search(self, query, top_k=6, history=None, profile=None):
-        """Intent-aware routing:
-        - named regulation (in query, history or profile) -> search that regulation
-        - unhinted regulation-sensitive query -> retrieve from BOTH handbooks so AI has both
-        - general campus queries -> search default handbook (Handbook 2026-27)
-        Results are re-ranked by exact-phrase matches.
+        """Hybrid Intent-aware routing:
+        - BM25 keyword search + phrase rerank
+        - Dense semantic vector search via Gemini embeddings
+        - Interleaves results to guarantee both precise term hits & conceptual understanding
         """
         hinted = self._doc_hints(query, history=history, profile=profile)
         if not hinted:
@@ -629,8 +690,28 @@ class MultiDocRetriever:
         expanded = expand_query(query)
         pools = {}
         for label in labels:
-            raw = self.index_by_doc[label].search(expanded, max(top_k * 6, 30))
-            pools[label] = self._phrase_rerank(query, raw)
+            bm25_raw = self.index_by_doc[label].search(expanded, max(top_k * 6, 30))
+            bm25_ranked = self._phrase_rerank(query, bm25_raw)
+            semantic_ranked = self._semantic_search(query, label, top_k=top_k * 2)
+
+            # Hybrid blend: Interleave top semantic matches with top BM25 matches
+            combined = []
+            seen_chunk_ids = set()
+            sem_idx, bm25_idx = 0, 0
+            while len(combined) < max(top_k * 4, 20) and (sem_idx < len(semantic_ranked) or bm25_idx < len(bm25_ranked)):
+                if bm25_idx < len(bm25_ranked):
+                    c = bm25_ranked[bm25_idx]
+                    bm25_idx += 1
+                    if id(c) not in seen_chunk_ids:
+                        combined.append(c)
+                        seen_chunk_ids.add(id(c))
+                if sem_idx < len(semantic_ranked):
+                    c = semantic_ranked[sem_idx]
+                    sem_idx += 1
+                    if id(c) not in seen_chunk_ids:
+                        combined.append(c)
+                        seen_chunk_ids.add(id(c))
+            pools[label] = combined
 
         out, seen = [], set()
         # keep the intended doc balance: round-robin in label order
