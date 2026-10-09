@@ -230,6 +230,36 @@ _VERIFIED_FAQ = {
         ),
         "citations": ["Handbook 2026-27 p.54"],
     },
+    "what are the anti ragging rules": {
+        "answer": (
+            "SR University enforces a **zero-tolerance policy** against ragging:\n\n"
+            "- **Definition**: Any act of physical abuse, mental harassment, teasing, or humiliation against any student is strictly classified as ragging.\n"
+            "- **Penalties**: Students found guilty face immediate suspension, debarment from examinations, withholding of results, cancellation of admission, or permanent expulsion.\n"
+            "- **Reporting**: Incidents can be reported directly to the **Anti-Ragging Committee**, the Office of Dean Student Welfare (`dean.sw@sru.edu.in`), or campus security.\n\n"
+            "Would you like contact details for the Anti-Ragging squad or the grievance appeal procedure?"
+        ),
+        "citations": ["Handbook 2026-27 p.7", "Handbook 2026-27 p.82", "Handbook 2026-27 p.85"],
+    },
+    "what are the anti ragging rules here": {
+        "answer": (
+            "SR University enforces a **zero-tolerance policy** against ragging:\n\n"
+            "- **Definition**: Any act of physical abuse, mental harassment, teasing, or humiliation against any student is strictly classified as ragging.\n"
+            "- **Penalties**: Students found guilty face immediate suspension, debarment from examinations, withholding of results, cancellation of admission, or permanent expulsion.\n"
+            "- **Reporting**: Incidents can be reported directly to the **Anti-Ragging Committee**, the Office of Dean Student Welfare (`dean.sw@sru.edu.in`), or campus security.\n\n"
+            "Would you like contact details for the Anti-Ragging squad or the grievance appeal procedure?"
+        ),
+        "citations": ["Handbook 2026-27 p.7", "Handbook 2026-27 p.82", "Handbook 2026-27 p.85"],
+    },
+    "anti ragging rules": {
+        "answer": (
+            "SR University enforces a **zero-tolerance policy** against ragging:\n\n"
+            "- **Definition**: Any act of physical abuse, mental harassment, teasing, or humiliation against any student is strictly classified as ragging.\n"
+            "- **Penalties**: Students found guilty face immediate suspension, debarment from examinations, withholding of results, cancellation of admission, or permanent expulsion.\n"
+            "- **Reporting**: Incidents can be reported directly to the **Anti-Ragging Committee**, the Office of Dean Student Welfare (`dean.sw@sru.edu.in`), or campus security.\n\n"
+            "Would you like contact details for the Anti-Ragging squad or the grievance appeal procedure?"
+        ),
+        "citations": ["Handbook 2026-27 p.7", "Handbook 2026-27 p.82", "Handbook 2026-27 p.85"],
+    },
 }
 
 _CACHE = dict(_VERIFIED_FAQ)
@@ -593,18 +623,32 @@ def _grounded_answer(messages, question):
         return clean or "I couldn't find that in the handbook. Please contact the Student Help Desk."
     except Exception:
         if cites and text:
-            blocks = []
-            for b in text.split("---"):
-                lines = [ln.strip() for ln in b.strip().splitlines() if ln.strip() and not ln.startswith("[")]
-                if lines:
-                    blocks.append("\n".join(lines[:4]))
-            snippet = "\n\n".join(blocks[:2])
-            return (
-                f"**Handbook Policy Excerpt:**\n\n"
-                f"{snippet}\n\n"
-                f"*(Citing {', '.join(cites[:3])})*\n\n"
-                f"Would you like me to elaborate on any specific section?"
-            )
+            raw_blocks = re.split(r"(?:---|===== PAGE \d+ =====)", text)
+            cleaned_paras = []
+            for block in raw_blocks:
+                cleaned = re.sub(r"\[.*?page \d+\]", "", block).strip()
+                lines = [ln.strip() for ln in cleaned.splitlines() if ln.strip()]
+                joined = []
+                for ln in lines:
+                    if not joined:
+                        joined.append(ln)
+                    elif ln.startswith(("-", "*", "•")) or (len(ln) > 2 and ln[0].isdigit() and ln[1] in ".)"):
+                        joined.append("\n- " + ln.lstrip("-*• 0123456789.)").strip())
+                    elif joined[-1].endswith((".", ":", ";", "?", "!")):
+                        joined.append("\n" + ln)
+                    else:
+                        joined[-1] += " " + ln
+                para = "\n".join(joined).strip()
+                if len(para) > 40:
+                    cleaned_paras.append(para[:350])
+            snippet = "\n\n".join(cleaned_paras[:2])
+            if snippet:
+                return (
+                    f"**Handbook Policy Excerpt:**\n\n"
+                    f"{snippet}\n\n"
+                    f"*(Citing {', '.join(cites[:3])})*\n\n"
+                    f"Would you like me to elaborate on any specific section?"
+                )
         return "The handbook assistant is currently experiencing high network demand. Please try again in a moment or contact the Student Help Desk."
 
 

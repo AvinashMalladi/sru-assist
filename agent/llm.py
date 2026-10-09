@@ -84,6 +84,8 @@ def chat(messages, tools=None, temperature=0.2, max_tokens=None):
         except Exception as exc:
             logger.warning("Model %s exception: %s. Trying fallback...", model_name, exc)
             last_err = exc
+            if "free-models-per-day" in str(exc) or "Rate limit exceeded" in str(exc):
+                break
             continue
 
     if last_err:
