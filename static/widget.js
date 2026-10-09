@@ -1,4 +1,4 @@
-﻿/*
+/*
  * SRU Assist - embeddable chat widget for the university portal.
  *
  * INTEGRATION (for portal developers):
@@ -75,7 +75,9 @@
     ".srucw-input{flex:1;border:1px solid #d1d5db;border-radius:10px;padding:9px 12px;font-size:13.5px;outline:none}",
     ".srucw-input:focus{border-color:#23468A}",
     ".srucw-send{background:#23468A;color:#fff;border:none;border-radius:10px;padding:9px 16px;",
-    "font-size:13.5px;font-weight:600;cursor:pointer}",
+    "font-size:13.5px;font-weight:600;cursor:pointer;transition:background .2s ease}",
+    ".srucw-send.srucw-stop{background:#dc2626;color:#fff}",
+    ".srucw-send.srucw-stop:hover{background:#b91c1c}",
     ".srucw-send:disabled{opacity:.55;cursor:default}",
     ".srucw-typing span{display:inline-block;width:6px;height:6px;margin:0 1.5px;border-radius:50%;",
     "background:#9ca3af;animation:srucwBlink 1.2s infinite}",
@@ -310,23 +312,49 @@
     suggBox.appendChild(b);
   });
 
+  var currentAbort = null;
+
+  function stopCurrentTask() {
+    if (currentAbort) {
+      try { currentAbort.abort(); } catch (e) {}
+      currentAbort = null;
+    }
+    typing(false);
+    busy = false;
+    sendBtn.textContent = "Send";
+    sendBtn.classList.remove("srucw-stop");
+    sendBtn.disabled = false;
+    addMsg("bot", "⏹️ Response stopped.");
+    input.focus();
+  }
+
   function ask(text) {
+    if (busy) {
+      stopCurrentTask();
+      return;
+    }
     text = (text || input.value).trim();
-    if (!text || busy) return;
+    if (!text) return;
     captureProfile(text);
     input.value = "";
     busy = true;
-    sendBtn.disabled = true;
+    sendBtn.textContent = "Stop";
+    sendBtn.classList.add("srucw-stop");
+    sendBtn.disabled = false;
     addMsg("user", text);
     typing(true);
+
+    currentAbort = typeof AbortController !== "undefined" ? new AbortController() : null;
 
     fetch(API + "/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: text, history: history, profile: profile }),
+      signal: currentAbort ? currentAbort.signal : undefined,
     })
       .then(function (r) { return r.json(); })
       .then(function (data) {
+        currentAbort = null;
         typing(false);
         var ans = data.answer || data.error || "Something went wrong.";
         addMsg("bot", ans, data.citations);
@@ -336,20 +364,33 @@
         else maybeClarifyChips(ans);
         refreshSuggestions();
       })
-      .catch(function () {
+      .catch(function (err) {
+        if (err && (err.name === "AbortError" || err.message === "The user aborted a request.")) {
+          return; // Already stopped by stopCurrentTask()
+        }
         typing(false);
         addMsg("bot", "⚠️ Could not reach the server. Is the API running?");
       })
       .then(function () {
-        busy = false;
-        sendBtn.disabled = false;
-        input.focus();
+        if (busy) {
+          currentAbort = null;
+          busy = false;
+          sendBtn.textContent = "Send";
+          sendBtn.classList.remove("srucw-stop");
+          sendBtn.disabled = false;
+          input.focus();
+        }
       });
   }
 
   sendBtn.onclick = function () { ask(); };
   input.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") ask();
+    var isEnter = e.key === "Enter" || e.keyCode === 13 || e.which === 13;
+    if (isEnter && !e.shiftKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!busy) ask();
+    }
   });
 
   // ---------- suggestion chips (capped: 3 for recency-bandit, 8 for clarifications) ----------

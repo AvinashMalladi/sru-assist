@@ -137,10 +137,40 @@ def _stem(token):
     return token
 
 
+TYPO_CORRECTIONS = [
+    (re.compile(r"\bmis[- ]?exam\b", re.I), "mid exam"),
+    (re.compile(r"\bmidsem\b", re.I), "mid semester"),
+    (re.compile(r"\bmid-sem\b", re.I), "mid semester"),
+    (re.compile(r"\battendence\b", re.I), "attendance"),
+    (re.compile(r"\bhostle\b", re.I), "hostel"),
+    (re.compile(r"\breval\b", re.I), "revaluation"),
+    (re.compile(r"\breeval\b", re.I), "revaluation"),
+    (re.compile(r"\breevaluation\b", re.I), "re-evaluation"),
+    (re.compile(r"\bsuplementary\b", re.I), "supplementary"),
+    (re.compile(r"\bsuplimentary\b", re.I), "supplementary"),
+    (re.compile(r"\binvigilater\b", re.I), "invigilator"),
+    (re.compile(r"\bmalpractise\b", re.I), "malpractice"),
+    (re.compile(r"\braging\b", re.I), "ragging"),
+]
+
 # Query-side expansion for high-value synonyms. Retrieved content is untouched,
 # so this cannot disturb indexing statistics or the golden-set baseline. It only
 # widens the query string (and phrase-candidates) before BM25 + rerank.
 QUERY_EXPANSIONS = {
+    # Malpractice / cheating / unfair means / slips
+    "slip": "slip slips unfair means malpractice invigilator CPAM seize evidence",
+    "slips": "slips unfair means malpractice invigilator CPAM seize answer script",
+    "chit": "chits slips unfair means malpractice invigilator CPAM",
+    "chits": "chits slips unfair means malpractice invigilator CPAM",
+    "cheating": "cheating unfair means malpractice invigilator CPAM misconduct",
+    "cheat": "cheating unfair means malpractice invigilator CPAM",
+    "copying": "copying unfair means malpractice invigilator CPAM",
+    "invigilator": "invigilator seize answer script unfair means CPAM statement evidence",
+    "malpractice": "malpractice unfair means CPAM invigilator disciplinary action",
+    "unfair means": "unfair means malpractice CPAM invigilator seize answer script",
+    "caught": "caught invigilator seize answer script unfair means malpractice",
+
+    # Wi-Fi / connectivity
     "wifi": "wifi wi-fi wireless network",
     "wi-fi": "wifi wi-fi wireless network",
     "wireless": "wifi wi-fi wireless network",
@@ -152,24 +182,44 @@ QUERY_EXPANSIONS = {
     "issue": "issue problem complaint help",
     "problem": "problem issue complaint help",
     "complaint": "complaint issue problem help",
+
+    # Backlogs / Supplementary / Promotion
+    "backlog": "backlog supplementary F grade clearing exam",
+    "arrear": "arrear backlog supplementary F grade",
+    "supply": "supply supplementary exam F grade",
+    "supplementary": "supplementary advance supplementary backlog F grade",
+    "detained": "detained detention promotion criteria credits attendance",
+    "detention": "detention detained promotion criteria credits attendance",
+
+    # Condonation / Attendance
+    "condonation": "condonation attendance shortage medical 65 75 percentage",
+    "medical leave": "medical leave condonation attendance shortage certificate",
+
+    # Re-evaluation
+    "revaluation": "revaluation re-evaluation answer script verification recounting",
+    "re-evaluation": "re-evaluation revaluation answer script verification",
 }
 
 
 def expand_query(query):
-    """Widen a query string with synonym variants before tokenization.
+    """Normalize typos and widen a query string with synonym variants before tokenization.
 
     Aggressive expansion would drown exact-match precision, so we only append
     extra terms, never replace; BM25 + the two-stage phrase rerank still favor
     exact matches, while synonym variants improve recall for queries that name
     a thing differently than the handbook does (e.g. 'internet not working'
-    vs 'Wi-Fi related issues')."""
-    q = query.lower()
-    parts = [query]
+    vs 'Wi-Fi related issues', 'slips' vs 'unfair means / malpractice')."""
+    q_norm = query or ""
+    for pattern, replacement in TYPO_CORRECTIONS:
+        q_norm = pattern.sub(replacement, q_norm)
+
+    q_lower = q_norm.lower()
+    parts = [q_norm]
     for key, value in QUERY_EXPANSIONS.items():
-        if key in q:
+        if key in q_lower:
             parts.append(value)
     if len(parts) == 1:
-        return query
+        return q_norm
     return " ".join(dict.fromkeys(parts))
 
 

@@ -321,11 +321,15 @@ def _grounded_answer(messages, question):
         *trimmed[-6:],
         {"role": "user", "content": f"HANDBOOK CONTEXT:\n{text}\n\nQUESTION: {question}"},
     ]
-    reply = llm.chat(msgs, tools=None)
-    clean = _cleanup_answer(reply.content or "")
-    if _looks_like_tool_call(clean):
-        return "I couldn't retrieve a clear answer from the handbook for that question. Please contact the Student Help Desk."
-    return clean or "I couldn't find that in the handbook. Please contact the Student Help Desk."
+    try:
+        reply = llm.chat(msgs, tools=None)
+        clean = _cleanup_answer(reply.content or "")
+        if _looks_like_tool_call(clean):
+            return "I couldn't retrieve a clear answer from the handbook for that question. Please contact the Student Help Desk."
+        return clean or "I couldn't find that in the handbook. Please contact the Student Help Desk."
+    except Exception:
+        return "The handbook assistant is currently experiencing high network demand. Please try again in a moment or contact the Student Help Desk."
+
 
 
 def _web_enabled():

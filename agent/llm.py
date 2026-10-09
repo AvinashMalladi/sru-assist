@@ -1,9 +1,19 @@
 """OpenRouter chat-completions wrapper (OpenAI-compatible)."""
+import logging
 import os
+import re
 
 from openai import OpenAI
 
+logger = logging.getLogger(__name__)
+
 _client = None
+
+FALLBACK_MODELS = [
+    "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "nvidia/nemotron-3.5-lightning:free",
+    "google/gemma-4-31b-it:free",
+]
 
 
 def get_client():
@@ -15,7 +25,7 @@ def get_client():
         _client = OpenAI(
             base_url=os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"),
             api_key=api_key,
-            timeout=int(os.environ.get("LLM_TIMEOUT", "90")),
+            timeout=int(os.environ.get("LLM_TIMEOUT", "45")),
         )
     return _client
 
@@ -24,19 +34,59 @@ def get_model():
     return os.environ.get("MODEL_NAME", "nvidia/nemotron-3-ultra-550b-a55b:free")
 
 
+def _strip_thinking(text):
+    if not text:
+        return text
+    # Strip <think>...</think>
+    text = re.sub(r"(?s)<think>.*?</think>", "", text).strip()
+    # Strip "Here's a thinking process: ..." blocks
+    text = re.sub(r"(?s)^Here'?s a thinking process:.*?\n\n(?=[A-Z0-9#*])", "", text).strip()
+    # Strip numbered thinking trace blocks like "1.  **Analyze User Input:** ... "
+    text = re.sub(r"(?s)^\d+\.\s+\*\*Analyze User Input:.*?\n\n(?=[A-Z#*])", "", text).strip()
+    return text
+
+
 def chat(messages, tools=None, temperature=0.2, max_tokens=None):
-    """One LLM call. Returns the assistant message object."""
+    """One LLM call with automated fallbacks if the primary model is overloaded."""
     if max_tokens is None:
         try:
             max_tokens = int(os.environ.get("MAX_TOKENS", "1200"))
         except ValueError:
             max_tokens = 1200
-    kwargs = dict(
-        model=get_model(),
-        messages=messages,
-        temperature=temperature,
-        max_tokens=max_tokens,
-    )
-    if tools:
-        kwargs["tools"] = tools
-    return get_client().chat.completions.create(**kwargs).choices[0].message
+
+    primary_model = get_model()
+    models_to_try = [primary_model]
+    for m in FALLBACK_MODELS:
+        if m not in models_to_try:
+            models_to_try.append(m)
+
+    last_err = None
+    for model_name in models_to_try:
+        kwargs = dict(
+            model=model_name,
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
+        if tools:
+            kwargs["tools"] = tools
+
+        try:
+            resp = get_client().chat.completions.create(**kwargs)
+            if resp and getattr(resp, "choices", None) and len(resp.choices) > 0:
+                msg = resp.choices[0].message
+                if getattr(msg, "content", None):
+                    msg.content = _strip_thinking(msg.content)
+                return msg
+            err_info = getattr(resp, "error", None) or "Empty choices"
+            logger.warning("Model %s failed: %s. Trying fallback...", model_name, err_info)
+            last_err = RuntimeError(f"Model {model_name} returned no choices: {err_info}")
+        except Exception as exc:
+            logger.warning("Model %s exception: %s. Trying fallback...", model_name, exc)
+            last_err = exc
+            continue
+
+    if last_err:
+        raise last_err
+    raise RuntimeError("All LLM models failed to respond.")
+
