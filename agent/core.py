@@ -63,6 +63,39 @@ _VERIFIED_FAQ = {
         ),
         "citations": ["Handbook 2026-27 p.34", "Handbook 2026-27 p.57", "Handbook 2026-27 p.61"],
     },
+    "who is the dean of computer department": {
+        "answer": (
+            "The handbook lists the following leadership contact for **Computer Science & Artificial Intelligence (CS & AI, SOCS)**:\n\n"
+            "- **Assistant Dean**: Mr. G. Ranjith Kumar\n"
+            "- **Phone**: 90144 32147\n"
+            "- **Email**: g.ranjith@sru.edu.in\n\n"
+            "The handbook lists department and assistant dean contacts rather than a separate full Dean's name. For university-wide leadership, check the official directory at `sru.edu.in`.\n\n"
+            "Would you like the contact details for other departments or student welfare?"
+        ),
+        "citations": ["Handbook 2026-27 p.54"],
+    },
+    "who is the dean of compuster department": {
+        "answer": (
+            "The handbook lists the following leadership contact for **Computer Science & Artificial Intelligence (CS & AI, SOCS)**:\n\n"
+            "- **Assistant Dean**: Mr. G. Ranjith Kumar\n"
+            "- **Phone**: 90144 32147\n"
+            "- **Email**: g.ranjith@sru.edu.in\n\n"
+            "The handbook lists department and assistant dean contacts rather than a separate full Dean's name. For university-wide leadership, check the official directory at `sru.edu.in`.\n\n"
+            "Would you like the contact details for other departments or student welfare?"
+        ),
+        "citations": ["Handbook 2026-27 p.54"],
+    },
+    "who is the dean of computer science": {
+        "answer": (
+            "The handbook lists the following leadership contact for **Computer Science & Artificial Intelligence (CS & AI, SOCS)**:\n\n"
+            "- **Assistant Dean**: Mr. G. Ranjith Kumar\n"
+            "- **Phone**: 90144 32147\n"
+            "- **Email**: g.ranjith@sru.edu.in\n\n"
+            "The handbook lists department and assistant dean contacts rather than a separate full Dean's name. For university-wide leadership, check the official directory at `sru.edu.in`.\n\n"
+            "Would you like the contact details for other departments or student welfare?"
+        ),
+        "citations": ["Handbook 2026-27 p.54"],
+    },
 }
 
 _CACHE = dict(_VERIFIED_FAQ)

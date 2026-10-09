@@ -198,6 +198,13 @@ QUERY_EXPANSIONS = {
     # Re-evaluation
     "revaluation": "revaluation re-evaluation answer script verification recounting",
     "re-evaluation": "re-evaluation revaluation answer script verification",
+
+    # Department leadership & Computer Science
+    "computer": "computer cse cs & ai socs computer science",
+    "compuster": "computer cse cs & ai socs computer science",
+    "cse": "cse computer science cs & ai socs",
+    "dean": "dean assistant dean associate dean head hod contact",
+    "hod": "hod head department dean assistant dean coordinator",
 }
 
 
