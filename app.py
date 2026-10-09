@@ -26,6 +26,22 @@ def add_cors(resp):
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
+# Lightweight in-memory rate limiter to protect OpenRouter quotas from request floods
+_IP_REQUESTS = {}
+_RATE_LIMIT_WINDOW = 60.0  # seconds
+_MAX_REQUESTS_PER_WINDOW = 25  # max 25 reqs/min per IP
+
+
+def _is_rate_limited(ip):
+    now = time.time()
+    history = _IP_REQUESTS.setdefault(ip, [])
+    # Evict requests older than the rolling window
+    _IP_REQUESTS[ip] = [t for t in history if now - t < _RATE_LIMIT_WINDOW]
+    if len(_IP_REQUESTS[ip]) >= _MAX_REQUESTS_PER_WINDOW:
+        return True
+    _IP_REQUESTS[ip].append(now)
+    return False
+
 
 @app.get("/")
 def demo_portal():
@@ -45,6 +61,24 @@ def suggestions():
 
 @app.post("/api/chat")
 def chat():
+    client_ip = (
+        request.headers.get("X-Forwarded-For", request.remote_addr or "127.0.0.1")
+        .split(",")[0]
+        .strip()
+    )
+    if _is_rate_limited(client_ip):
+        return (
+            jsonify(
+                {
+                    "answer": "You are sending messages too quickly. Please pause a moment before asking another question.",
+                    "citations": [],
+                    "tool_calls": [],
+                    "mode": "rate_limited",
+                }
+            ),
+            429,
+        )
+
     data = request.get_json(silent=True) or {}
     question = (data.get("message") or "").strip()
     history = data.get("history") or []

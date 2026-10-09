@@ -181,7 +181,9 @@
   panel.innerHTML =
     '<div class="srucw-head"><div class="srucw-avatar">🎓</div><div>' +
     '<div class="srucw-title"></div><div class="srucw-sub">Student Handbook AI</div></div>' +
-    '<button class="srucw-close" aria-label="Close chat">×</button></div>';
+    '<div style="margin-left:auto;display:flex;align-items:center;gap:6px">' +
+    '<button class="srucw-clear" title="Clear chat & reset" aria-label="Clear chat" style="background:none;border:none;color:#fff;font-size:15px;cursor:pointer;opacity:.85;padding:2px 4px">🔄</button>' +
+    '<button class="srucw-close" aria-label="Close chat">×</button></div></div>';
   panel.querySelector(".srucw-title").textContent = BOT_NAME;
 
   var msgsBox = el("div", "srucw-msgs");
@@ -207,6 +209,41 @@
   var history = [];
   var busy = false;
   var PF_KEY = "sru_profile";
+  var SESS_KEY = "sru_chat_msgs";
+
+  function saveSessionMsgs() {
+    try { sessionStorage.setItem(SESS_KEY, JSON.stringify(history)); } catch (e) {}
+  }
+
+  function loadSessionMsgs() {
+    try {
+      var saved = JSON.parse(sessionStorage.getItem(SESS_KEY) || "[]");
+      if (Array.isArray(saved) && saved.length) {
+        history = saved;
+        msgsBox.innerHTML = "";
+        history.forEach(function (m) {
+          addMsg(m.role === "user" ? "user" : "bot", m.content, m.citations);
+        });
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  var clearBtn = panel.querySelector(".srucw-clear");
+  if (clearBtn) {
+    clearBtn.onclick = function (e) {
+      e.stopPropagation();
+      if (busy) stopCurrentTask();
+      history = [];
+      try { sessionStorage.removeItem(SESS_KEY); } catch (err) {}
+      msgsBox.innerHTML = "";
+      addMsg("bot", WELCOME);
+      history.push({ role: "assistant", content: WELCOME });
+      saveSessionMsgs();
+      refreshSuggestions();
+    };
+  }
 
   function loadProfile() {
     try { return JSON.parse(localStorage.getItem(PF_KEY) || "{}") || {}; }
@@ -359,7 +396,7 @@
     fetch(API + "/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text, history: history, profile: profile }),
+      body: JSON.stringify({ message: text, history: history.slice(-8), profile: profile }),
       signal: currentAbort ? currentAbort.signal : undefined,
     })
       .then(function (r) { return r.json(); })
@@ -370,6 +407,7 @@
         addMsg("bot", ans, data.citations);
         history.push({ role: "user", content: text });
         history.push({ role: "assistant", content: ans });
+        saveSessionMsgs();
         if (data.options && data.options.length) setChips(data.options, 8);
         else maybeClarifyChips(ans);
         refreshSuggestions();
@@ -454,11 +492,23 @@
     bubble.textContent = open ? "×" : "💬";
     if (open) {
       if (!msgsBox.children.length) {
-        addMsg("bot", WELCOME);
-        history.push({ role: "assistant", content: WELCOME });
+        if (!loadSessionMsgs()) {
+          addMsg("bot", WELCOME);
+          history.push({ role: "assistant", content: WELCOME });
+          saveSessionMsgs();
+        }
       }
       refreshSuggestions();
       input.focus();
     }
   };
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", function () {
+      if (panel.classList.contains("open") && window.innerWidth <= 640) {
+        panel.style.height = Math.min(window.visualViewport.height - 16, 680) + "px";
+        msgsBox.scrollTop = msgsBox.scrollHeight;
+      }
+    });
+  }
 })();

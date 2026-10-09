@@ -151,6 +151,12 @@ TYPO_CORRECTIONS = [
     (re.compile(r"\binvigilater\b", re.I), "invigilator"),
     (re.compile(r"\bmalpractise\b", re.I), "malpractice"),
     (re.compile(r"\braging\b", re.I), "ragging"),
+    (re.compile(r"\bhall[- ]?ticket\b", re.I), "admit card examination hall ticket"),
+    (re.compile(r"\bhallticket\b", re.I), "admit card examination hall ticket"),
+    (re.compile(r"\bdabbulu\b", re.I), "fee payment refund"),
+    (re.compile(r"\bentha\b", re.I), "how much minimum"),
+    (re.compile(r"\bfail ayya\b", re.I), "failed course backlog F grade"),
+    (re.compile(r"\bfail ayanu\b", re.I), "failed course backlog F grade"),
 ]
 
 # Query-side expansion for high-value synonyms. Retrieved content is untouched,
