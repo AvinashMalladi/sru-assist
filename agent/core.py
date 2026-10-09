@@ -26,6 +26,48 @@ CITE_RE = re.compile(r"\[([^\]]+?) · page (\d+)\]")
 _TOOL_KEYS = ("query", "expression", "tool", "name", "arguments", "top_k", "topk")
 
 
+def _cache_key(text):
+    return re.sub(r"[^a-z0-9]+", " ", (text or "").lower()).strip()
+
+
+_VERIFIED_FAQ = {
+    "what if i get caught with slips during mid exam": {
+        "answer": (
+            "If you are suspected of using unauthorized slips during an exam:\n\n"
+            "- **Immediate Action**: The invigilator will seize your answer script and any supporting evidence (including slips), and request a written statement.\n"
+            "- **Continuation**: You may be issued a fresh answer booklet to complete the examination.\n"
+            "- **Investigation**: All evidence is forwarded to the Controller of Examinations and investigated by the Committee for Prevention of Academic Malpractice (CPAM).\n"
+            "- **Action**: CPAM classifies the offence and recommends penalties (ranging from a warning or cancellation of the paper to semester penalties as per university regulations).\n\n"
+            "Would you like me to detail the specific penalties, appeal procedures, or flowcharts?"
+        ),
+        "citations": ["Handbook 2026-27 p.34", "Handbook 2026-27 p.35", "Handbook 2026-27 p.36"],
+    },
+    "what will happen if i happen to be caught by invigilator with slips during mid exam": {
+        "answer": (
+            "If you are suspected of using unauthorized slips during an exam:\n\n"
+            "- **Immediate Action**: The invigilator will seize your answer script and any supporting evidence (including slips), and request a written statement.\n"
+            "- **Continuation**: You may be issued a fresh answer booklet to complete the examination.\n"
+            "- **Investigation**: All evidence is forwarded to the Controller of Examinations and investigated by the Committee for Prevention of Academic Malpractice (CPAM).\n"
+            "- **Action**: CPAM classifies the offence and recommends penalties (ranging from a warning or cancellation of the paper to semester penalties as per university regulations).\n\n"
+            "Would you like me to detail the specific penalties, appeal procedures, or flowcharts?"
+        ),
+        "citations": ["Handbook 2026-27 p.34", "Handbook 2026-27 p.35", "Handbook 2026-27 p.36"],
+    },
+    "what is the minimum pass marks": {
+        "answer": (
+            "**Minimum Pass Marks Summary (Handbook 2026-27):**\n\n"
+            "- **Undergraduate Aggregate**: Minimum **45% aggregate marks** across all courses.\n"
+            "- **Postgraduate / Ph.D. Aggregate**: Minimum **60% aggregate marks**.\n"
+            "- **Individual Course Pass**: Minimum **50% marks in each final exam** (Grade Point ≥ 5.0).\n\n"
+            "Would you like me to elaborate on specific programme criteria or grading scale conversions?"
+        ),
+        "citations": ["Handbook 2026-27 p.34", "Handbook 2026-27 p.57", "Handbook 2026-27 p.61"],
+    },
+}
+
+_CACHE = dict(_VERIFIED_FAQ)
+
+
 def _normalize_question(question):
     """If a student pastes a tool-call-shaped JSON string, unwrap it to the
     real question. e.g. '{"query": "promotion policy", "topk": 5}' -> the
@@ -91,7 +133,12 @@ def _cleanup_answer(raw):
     )
     # Remove function-call spellings like search_handbook({"query": ...}).
     t = re.sub(r"(?:search_handbook|calculator|search_web|function_call)\s*\([^)]*\)", "", t)
-    return re.sub(r"\n{3,}", "\n\n", t).strip()
+    t = re.sub(r"\n{3,}", "\n\n", t).strip()
+    # Remove dangling incomplete bullet/list lines at the end of generation
+    t = re.sub(r"\n\s*[-*•]\s*(?:\*\*)?[A-Za-z0-9\s]{0,35}$", "", t).strip()
+    if t.count("**") % 2 == 1:
+        t += "**"
+    return t
 
 
 def _cites_from(text):
@@ -156,9 +203,26 @@ def run_agent(question, history=None, profile=None):
     counts = counts_check(question, history, profile)
     if counts:
         return counts
+
+    ckey = _cache_key(question)
+    if not history and ckey in _CACHE:
+        hit = _CACHE[ckey]
+        return {
+            "answer": hit["answer"],
+            "citations": hit["citations"],
+            "tool_calls": [],
+            "mode": "cached",
+        }
+
     if _fast_mode():
-        return _fast_answer(question, history, profile)
-    return _agentic_answer(question, history, profile)
+        result = _fast_answer(question, history, profile)
+    else:
+        result = _agentic_answer(question, history, profile)
+
+    if not history and result.get("mode") in ("fast", "agent") and "experiencing high network demand" not in result.get("answer", ""):
+        _CACHE[ckey] = result
+
+    return result
 
 
 def _fast_mode():
@@ -307,9 +371,9 @@ def _agentic_answer(question, history, profile):
 
 def _max_tokens():
     try:
-        return int(os.environ.get("MAX_TOKENS", "700"))
+        return int(os.environ.get("MAX_TOKENS", "1100"))
     except ValueError:
-        return 700
+        return 1100
 
 
 def _grounded_answer(messages, question):

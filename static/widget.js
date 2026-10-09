@@ -411,21 +411,28 @@
       .catch(function () {});
   }
 
-  // When the bot asks a clarifying question, offer one-tap answers.
+  // When the bot asks a clarifying question or offers a follow-up, offer one-tap chips.
   function maybeClarifyChips(ans) {
-    if (!ans || ans.length > 260 || !/\?["']?\s*$/.test(ans.trim())) return;
+    if (!ans) return;
+    var trimmed = ans.trim();
+    var endsWithQ = /\?["']?\s*$/.test(trimmed);
     var opts = null;
-    if (/boys? hostel|girls? hostel|which hostel|boys or girls|hostel .* boys?/i.test(ans)) {
-      opts = ["Boys Hostel", "Girls Hostel"];
-    } else if (/sem(?:ester)?\b/i.test(ans)) {
-      opts = ["Semester 1", "Semester 2", "Semester 3", "Semester 4",
-              "Semester 5", "Semester 6", "Semester 7", "Semester 8"];
-    } else if (/programme|program\b|b\.?tech|bba|bca|b\.?sc|diploma/i.test(ans)) {
-      opts = ["B.Tech", "BBA", "BCA", "B.Sc.", "M.Tech", "Diploma"];
-    } else if (/branch|speciali[sz]ation|stream|course offered/i.test(ans)) {
-      opts = ["CSE", "ECE", "EEE", "Mechanical", "Civil"];
-    } else if (/\byear\b|\byr\b/i.test(ans)) {
-      opts = ["Year 1", "Year 2", "Year 3", "Year 4"];
+
+    if (/would you like (?:me to )?(?:detail|explain|more details|elaborate)|want me to (?:brief|elaborate)|need more details/i.test(trimmed)) {
+      opts = ["Yes, explain in detail", "What are the exact penalties?", "Tell me the appeal process"];
+    } else if (endsWithQ && trimmed.length <= 320) {
+      if (/boys? hostel|girls? hostel|which hostel|boys or girls|hostel .* boys?/i.test(trimmed)) {
+        opts = ["Boys Hostel", "Girls Hostel"];
+      } else if (/sem(?:ester)?\b/i.test(trimmed)) {
+        opts = ["Semester 1", "Semester 2", "Semester 3", "Semester 4",
+                "Semester 5", "Semester 6", "Semester 7", "Semester 8"];
+      } else if (/programme|program\b|b\.?tech|bba|bca|b\.?sc|diploma/i.test(trimmed)) {
+        opts = ["B.Tech", "BBA", "BCA", "B.Sc.", "M.Tech", "Diploma"];
+      } else if (/branch|speciali[sz]ation|stream|course offered/i.test(trimmed)) {
+        opts = ["CSE", "ECE", "EEE", "Mechanical", "Civil"];
+      } else if (/\byear\b|\byr\b/i.test(trimmed)) {
+        opts = ["Year 1", "Year 2", "Year 3", "Year 4"];
+      }
     }
     if (opts) setChips(opts, 8);
   }
