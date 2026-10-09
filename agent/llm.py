@@ -11,8 +11,8 @@ _client = None
 _client_provider = None
 
 FALLBACK_MODELS = [
-    "gemini-3.8-flash",
     "gemini-3.5-flash-lite",
+    "gemini-3.8-flash",
     "nvidia/nemotron-3-ultra-550b-a55b:free",
     "nvidia/nemotron-3.5-lightning:free",
     "google/gemma-4-31b-it:free",
@@ -58,7 +58,7 @@ def get_client(provider=None):
 
 def get_model():
     gemini_key = os.environ.get("GEMINI_API_KEY")
-    default_model = "gemini-3.8-flash" if gemini_key else "nvidia/nemotron-3-ultra-550b-a55b:free"
+    default_model = "gemini-3.5-flash-lite" if gemini_key else "nvidia/nemotron-3-ultra-550b-a55b:free"
     return os.environ.get("MODEL_NAME", default_model)
 
 
@@ -78,9 +78,9 @@ def chat(messages, tools=None, temperature=0.2, max_tokens=None):
     """One LLM call with automated fallbacks across Gemini and OpenRouter."""
     if max_tokens is None:
         try:
-            max_tokens = int(os.environ.get("MAX_TOKENS", "1200"))
+            max_tokens = int(os.environ.get("MAX_TOKENS", "2048"))
         except ValueError:
-            max_tokens = 1200
+            max_tokens = 2048
 
     primary_model = get_model()
     models_to_try = [primary_model]

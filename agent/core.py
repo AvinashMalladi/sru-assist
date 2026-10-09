@@ -601,9 +601,9 @@ def _agentic_answer(question, history, profile):
 
 def _max_tokens():
     try:
-        return int(os.environ.get("MAX_TOKENS", "1100"))
+        return int(os.environ.get("MAX_TOKENS", "2048"))
     except ValueError:
-        return 1100
+        return 2048
 
 
 def _grounded_answer(messages, question):
