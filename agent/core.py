@@ -30,6 +30,13 @@ def _cache_key(text):
     return re.sub(r"[^a-z0-9]+", " ", (text or "").lower()).strip()
 
 
+_GREETINGS = {
+    "hello", "hi", "hey", "hii", "hiii", "helloo", "hey there", "good morning",
+    "good afternoon", "good evening", "who are you", "what is your name",
+    "what can you do", "help", "start", "namaste", "namaskaram", "sup",
+}
+
+
 _VERIFIED_FAQ = {
     "what if i get caught with slips during mid exam": {
         "answer": (
@@ -374,6 +381,23 @@ def run_agent(question, history=None, profile=None):
     model's arithmetic.
     """
     question = _normalize_question(question)
+    ckey = _cache_key(question)
+
+    if ckey in _GREETINGS:
+        return {
+            "answer": (
+                "Hello! 👋 I'm **SRU Assist**, your official student handbook assistant.\n\n"
+                "I can help you with:\n"
+                "- **Academics**: Promotion rules, grading scale, SGPA/CGPA calculation, and pass marks\n"
+                "- **Examinations**: Mid/End-sem rules, revaluation, condonation, and malpractice policies\n"
+                "- **Campus Life**: Hostels, Wi-Fi, dress code, scholarships, clubs, and department contacts\n\n"
+                "What would you like to know today?"
+            ),
+            "citations": [],
+            "tool_calls": [],
+            "mode": "greeting",
+        }
+
     clarify = clarify_check(question, history, profile)
     if clarify:
         return clarify
@@ -381,7 +405,6 @@ def run_agent(question, history=None, profile=None):
     if counts:
         return counts
 
-    ckey = _cache_key(question)
     if not history and ckey in _CACHE:
         hit = _CACHE[ckey]
         return {
@@ -569,6 +592,19 @@ def _grounded_answer(messages, question):
             return "I couldn't retrieve a clear answer from the handbook for that question. Please contact the Student Help Desk."
         return clean or "I couldn't find that in the handbook. Please contact the Student Help Desk."
     except Exception:
+        if cites and text:
+            blocks = []
+            for b in text.split("---"):
+                lines = [ln.strip() for ln in b.strip().splitlines() if ln.strip() and not ln.startswith("[")]
+                if lines:
+                    blocks.append("\n".join(lines[:4]))
+            snippet = "\n\n".join(blocks[:2])
+            return (
+                f"**Handbook Policy Excerpt:**\n\n"
+                f"{snippet}\n\n"
+                f"*(Citing {', '.join(cites[:3])})*\n\n"
+                f"Would you like me to elaborate on any specific section?"
+            )
         return "The handbook assistant is currently experiencing high network demand. Please try again in a moment or contact the Student Help Desk."
 
 
