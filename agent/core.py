@@ -96,6 +96,133 @@ _VERIFIED_FAQ = {
         ),
         "citations": ["Handbook 2026-27 p.54"],
     },
+    "who is the dean of mechanical engineering": {
+        "answer": (
+            "The handbook lists the following leadership contact for **Mechanical Engineering (ME, SOE)**:\n\n"
+            "- **Assistant Dean**: Dr. M. Vijay Reddy\n"
+            "- **Phone**: 7735983617\n"
+            "- **Email**: vijay.reddy@sru.edu.in\n\n"
+            "The handbook lists department and assistant dean contacts rather than a separate full Dean's name. For university-wide leadership, check the official directory at `sru.edu.in`.\n\n"
+            "Would you like the contact details for other departments or student welfare?"
+        ),
+        "citations": ["Handbook 2026-27 p.54"],
+    },
+    "who is the hod of mechanical engineering": {
+        "answer": (
+            "The handbook lists the following leadership contact for **Mechanical Engineering (ME, SOE)**:\n\n"
+            "- **Assistant Dean**: Dr. M. Vijay Reddy\n"
+            "- **Phone**: 7735983617\n"
+            "- **Email**: vijay.reddy@sru.edu.in\n\n"
+            "The handbook lists department and assistant dean contacts rather than a separate full Dean's name. For university-wide leadership, check the official directory at `sru.edu.in`.\n\n"
+            "Would you like the contact details for other departments or student welfare?"
+        ),
+        "citations": ["Handbook 2026-27 p.54"],
+    },
+    "who is the dean of civil engineering": {
+        "answer": (
+            "The handbook lists the following leadership contact for **Civil Engineering (CE, SOE)**:\n\n"
+            "- **Assistant Dean**: Dr. Gaurav Tyagi\n"
+            "- **Phone**: 9717696258\n"
+            "- **Email**: gaurav.tyagi@sru.edu.in\n\n"
+            "The handbook lists department and assistant dean contacts rather than a separate full Dean's name. For university-wide leadership, check the official directory at `sru.edu.in`.\n\n"
+            "Would you like the contact details for other departments or student welfare?"
+        ),
+        "citations": ["Handbook 2026-27 p.54"],
+    },
+    "who is the head of civil engineering": {
+        "answer": (
+            "The handbook lists the following leadership contact for **Civil Engineering (CE, SOE)**:\n\n"
+            "- **Assistant Dean**: Dr. Gaurav Tyagi\n"
+            "- **Phone**: 9717696258\n"
+            "- **Email**: gaurav.tyagi@sru.edu.in\n\n"
+            "The handbook lists department and assistant dean contacts rather than a separate full Dean's name. For university-wide leadership, check the official directory at `sru.edu.in`.\n\n"
+            "Would you like the contact details for other departments or student welfare?"
+        ),
+        "citations": ["Handbook 2026-27 p.54"],
+    },
+    "who is the dean of ece": {
+        "answer": (
+            "The handbook lists the following leadership contact for **Electronics & Communication Engineering (ECE, SOE)**:\n\n"
+            "- **Assistant Dean**: Dr. Kallepelli Sagar\n"
+            "- **Phone**: 99590 26505\n"
+            "- **Email**: rajkumar.k@sru.edu.in\n\n"
+            "The handbook lists department and assistant dean contacts rather than a separate full Dean's name. For university-wide leadership, check the official directory at `sru.edu.in`.\n\n"
+            "Would you like the contact details for other departments or student welfare?"
+        ),
+        "citations": ["Handbook 2026-27 p.54"],
+    },
+    "who is the hod of ece": {
+        "answer": (
+            "The handbook lists the following leadership contact for **Electronics & Communication Engineering (ECE, SOE)**:\n\n"
+            "- **Assistant Dean**: Dr. Kallepelli Sagar\n"
+            "- **Phone**: 99590 26505\n"
+            "- **Email**: rajkumar.k@sru.edu.in\n\n"
+            "The handbook lists department and assistant dean contacts rather than a separate full Dean's name. For university-wide leadership, check the official directory at `sru.edu.in`.\n\n"
+            "Would you like the contact details for other departments or student welfare?"
+        ),
+        "citations": ["Handbook 2026-27 p.54"],
+    },
+    "who is the dean of eee": {
+        "answer": (
+            "The handbook lists the following leadership contact for **Electrical & Electronics Engineering (EEE, SOE)**:\n\n"
+            "- **Assistant Dean**: Dr. B. Sathyavani\n"
+            "- **Phone**: 99087 60926\n"
+            "- **Email**: b.sathyavani@sru.edu.in\n\n"
+            "The handbook lists department and assistant dean contacts rather than a separate full Dean's name. For university-wide leadership, check the official directory at `sru.edu.in`.\n\n"
+            "Would you like the contact details for other departments or student welfare?"
+        ),
+        "citations": ["Handbook 2026-27 p.54"],
+    },
+    "who is the dean of business": {
+        "answer": (
+            "The handbook lists the following leadership contact for the **School of Business (SOB)**:\n\n"
+            "- **Assistant Dean**: Dr. D. Ramesh Babu\n"
+            "- **Phone**: 94946 13402\n"
+            "- **Email**: rameshbabu.d@sru.edu.in\n\n"
+            "The handbook lists department and assistant dean contacts rather than a separate full Dean's name. For university-wide leadership, check the official directory at `sru.edu.in`.\n\n"
+            "Would you like the contact details for other departments or student welfare?"
+        ),
+        "citations": ["Handbook 2026-27 p.54"],
+    },
+    "who is the dean of agriculture": {
+        "answer": (
+            "The handbook lists the following leadership contact for the **School of Agriculture (SOA)**:\n\n"
+            "- **Assistant Dean**: Dr. Pandit Vaibhav Bhagwan\n"
+            "- **Phone**: 9359179778\n"
+            "- **Email**: pandit.vaibhavbhagwan@sru.edu.in\n\n"
+            "The handbook lists department and assistant dean contacts rather than a separate full Dean's name. For university-wide leadership, check the official directory at `sru.edu.in`.\n\n"
+            "Would you like the contact details for other departments or student welfare?"
+        ),
+        "citations": ["Handbook 2026-27 p.54"],
+    },
+    "who is the dean of innovation": {
+        "answer": (
+            "The handbook lists the following leadership contacts for **Innovation and Startups (NEST)**:\n\n"
+            "- **Dean, Innovation and Startups**: Dr. B. Girirajan (Phone: 8525002366, Email: girirajan.b@sru.edu.in)\n"
+            "- **Associate Dean**: Dr. A. Chakradhar (Phone: 9908246759, Email: chakradhar.a@sru.edu.in)\n\n"
+            "Would you like information on incubation programs at NEST or student startup funding?"
+        ),
+        "citations": ["Handbook 2026-27 p.54"],
+    },
+    "who is the dean of student welfare": {
+        "answer": (
+            "The **Office of the Dean of Student Welfare (SW)** oversees student welfare, campus engagement, hostel concerns, and grievances:\n\n"
+            "- **Official Email**: `dean.sw@sru.edu.in`\n"
+            "- **Appeals**: Decisions of the Associate Dean (SW) may be appealed to the Dean (SW), and further to the Vice-Chancellor.\n\n"
+            "Would you like details on the grievance redressal procedure or student council representatives?"
+        ),
+        "citations": ["Handbook 2026-27 p.52"],
+    },
+    "who is the director of alumni": {
+        "answer": (
+            "The handbook lists the following leadership contacts for **Alumni Affairs**:\n\n"
+            "- **Director**: Dr. C. Madan Kumar (Phone: 6281814067, Email: dir.alumni@sru.edu.in)\n"
+            "- **Associate Director**: Mr. Srikanth Yalabaka (Phone: 95056 05467, Email: srikanth.v@sru.edu.in)\n"
+            "- **Portal**: `https://srualumni.in`\n\n"
+            "Would you like information on alumni chapter events or student mentorship programs?"
+        ),
+        "citations": ["Handbook 2026-27 p.54"],
+    },
 }
 
 _CACHE = dict(_VERIFIED_FAQ)
@@ -179,16 +306,33 @@ def _cites_from(text):
     return {f"{label.strip()} p.{page}" for label, page in CITE_RE.findall(text or "")}
 
 
-def _auto_context(question):
+def _contextual_search_query(question, history):
+    """If the student's question is a short conversational clarification or batch
+    statement (e.g. '2023-24 batch', 'R23', '23-24', 'yes tell me more', 'what about cse?'),
+    combine it with the previous substantive question so the retriever finds the actual
+    subject in the right regulation."""
+    q = (question or "").strip()
+    words = q.split()
+    if len(words) <= 5 and history:
+        for m in reversed(history):
+            if isinstance(m, dict) and m.get("role") == "user":
+                prev = (m.get("content") or "").strip()
+                if prev and prev.lower() != q.lower():
+                    return f"{prev} {q}"
+    return q
+
+
+def _auto_context(question, history=None, profile=None):
     """Always retrieve for the newest question; guarantees grounded answers
-    even when the model chooses not to call tools. Uses a SMALLER top_k in
-    fast mode so prompts stay short (faster time-to-first-token)."""
+    even when the model chooses not to call tools. Uses conversational reformulation
+    so follow-ups ('2023-24 batch') retrieve the prior topic from the intended regulation."""
     retriever = get_retriever()
-    text, cites = retriever.format_hits(question, top_k=AUTO_CONTEXT_TOP_K)
+    search_q = _contextual_search_query(question, history)
+    text, cites = retriever.format_hits(search_q, top_k=AUTO_CONTEXT_TOP_K, history=history, profile=profile)
     if not cites:
         return None
     return (
-        f"Auto-retrieved handbook context for the student's latest question "
+        f"Auto-retrieved handbook context for the student's question "
         f"(pages {', '.join(cites)}):\n\n{text}\n\n"
         "Use this context first; you may still call search_handbook for more."
     )
@@ -204,7 +348,7 @@ def _trim_history(history, keep=MAX_HISTORY):
     return clean
 
 
-PROFILE_KEYS = ("programme", "branch", "year", "semester")
+PROFILE_KEYS = ("programme", "branch", "year", "semester", "batch")
 
 
 def _profile_block(profile):
@@ -274,7 +418,7 @@ def _fast_answer(question, history, profile):
     messages = [{"role": "system", "content": FAST_SYSTEM_PROMPT + profile_line}]
     messages.extend(history)
 
-    ctx = _auto_context(question)
+    ctx = _auto_context(question, history=history, profile=profile)
     user_msg = question if not ctx else f"{question}\n\n[system note] {ctx}"
     messages.append({"role": "user", "content": user_msg})
 
@@ -322,7 +466,7 @@ def _agentic_answer(question, history, profile):
     messages = [{"role": "system", "content": SYSTEM_PROMPT + profile_line}]
     messages.extend(history)
 
-    ctx = _auto_context(question)
+    ctx = _auto_context(question, history=history, profile=profile)
     user_msg = question if not ctx else f"{question}\n\n[system note] {ctx}"
     messages.append({"role": "user", "content": user_msg})
 

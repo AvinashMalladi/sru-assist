@@ -199,23 +199,49 @@ QUERY_EXPANSIONS = {
     "revaluation": "revaluation re-evaluation answer script verification recounting",
     "re-evaluation": "re-evaluation revaluation answer script verification",
 
-    # Department leadership & Computer Science
-    "computer": "computer cse cs & ai socs computer science",
-    "compuster": "computer cse cs & ai socs computer science",
-    "cse": "cse computer science cs & ai socs",
+    # Department leadership & Engineering Schools (Handbook p.54-55)
+    "computer": "computer cse cs & ai socs computer science ranjith",
+    "compuster": "computer cse cs & ai socs computer science ranjith",
+    "cse": "cse computer science cs & ai socs ranjith",
+    "civil": "civil ce soe assistant dean gaurav tyagi",
+    "ce": "ce civil soe assistant dean gaurav tyagi",
+    "mechanical": "mechanical me soe assistant dean vijay reddy",
+    "mech": "mech mechanical me soe assistant dean vijay reddy",
+    "electrical": "electrical eee soe assistant dean sathyavani",
+    "eee": "eee electrical soe assistant dean sathyavani",
+    "electronics": "electronics ece soe assistant dean kallepelli sagar",
+    "ece": "ece electronics soe assistant dean kallepelli sagar",
+    "business": "business sob management bba mba assistant dean ramesh babu",
+    "sob": "sob business management bba mba assistant dean ramesh babu",
+    "agriculture": "agriculture soa assistant dean pandit vaibhav bhagwan",
+    "soa": "soa agriculture assistant dean pandit vaibhav bhagwan",
+    "innovation": "innovation startups nest girirajan chakradhar srix",
+    "startups": "startups innovation nest girirajan chakradhar",
+    "alumni": "alumni madan kumar srikanth association",
+    "welfare": "welfare student welfare dean sw dean.sw",
+    "sports": "sports physical education srinivas goud gym",
+    "ambulance": "ambulance medical driver emergency sai kumar",
     "dean": "dean assistant dean associate dean head hod contact",
     "hod": "hod head department dean assistant dean coordinator",
+    "head": "head hod department dean assistant dean coordinator in-charge",
+    "incharge": "incharge in-charge coordinator head dean director",
+    "in-charge": "in-charge incharge coordinator head dean director",
+    "director": "director associate director head dean coordinator",
+    "controller": "controller examinations coe exam branch evaluation",
+    "coe": "coe controller examinations exam branch",
 }
+
+REGULATION_TOPIC = re.compile(
+    r"\b(promotion|promoted|detained|detention|regulations?)\b",
+    re.I,
+)
 
 
 def expand_query(query):
     """Normalize typos and widen a query string with synonym variants before tokenization.
 
-    Aggressive expansion would drown exact-match precision, so we only append
-    extra terms, never replace; BM25 + the two-stage phrase rerank still favor
-    exact matches, while synonym variants improve recall for queries that name
-    a thing differently than the handbook does (e.g. 'internet not working'
-    vs 'Wi-Fi related issues', 'slips' vs 'unfair means / malpractice')."""
+    Uses word boundary regex matching so short keys ('ce', 'me', 'soa') never
+    accidentally trigger on substrings of normal words ('percentage', 'placement')."""
     q_norm = query or ""
     for pattern, replacement in TYPO_CORRECTIONS:
         q_norm = pattern.sub(replacement, q_norm)
@@ -223,7 +249,7 @@ def expand_query(query):
     q_lower = q_norm.lower()
     parts = [q_norm]
     for key, value in QUERY_EXPANSIONS.items():
-        if key in q_lower:
+        if re.search(r"\b" + re.escape(key) + r"\b", q_lower):
             parts.append(value)
     if len(parts) == 1:
         return q_norm
@@ -500,22 +526,57 @@ class MultiDocRetriever:
             self.index_by_doc[label] = BM25(sub)
         self.index = BM25(self.chunks)
 
-    def _doc_hints(self, query):
-        """Which regulations does the query name explicitly? Empty = none."""
-        q = query.lower()
-        hinted = []
-        for label in self.labels:
-            tokens = [t.lower() for t in re.findall(r"[a-zA-Z0-9]+", label)]
-            ids = [t for t in tokens if re.fullmatch(r"[a-z]\d{2}|\d{4}", t)] or [
-                t for t in tokens if len(t) >= 4
-            ]
-            if any(re.search(r"\b" + re.escape(t) + r"\b", q) for t in ids):
-                hinted.append(label)
-        if not hinted and re.search(r"\b(old|previous|earlier|last year)\b", q):
+    def _match_doc_label(self, text):
+        t = (text or "").lower()
+        if not t:
+            return []
+        # Explicit R23 / batch 2023-24 patterns
+        if re.search(r"\b(r23|r-23|2023[-–/]?24|23[-–/]?24|2023|2024)\b", t):
+            r23 = next((l for l in self.labels if "r23" in l.lower()), None)
+            if r23:
+                return [r23]
+        # Explicit 2026-27 / R26 patterns
+        if re.search(r"\b(r26|r-26|2026[-–/]?27|26[-–/]?27|2026|2027)\b", t):
+            r26 = next((l for l in self.labels if "2026" in l.lower()), None)
+            if r26:
+                return [r26]
+        # Previous/old regulation hints
+        if re.search(r"\b(old|previous|earlier|last year)\b", t):
             older = next((l for l in self.labels if l != self.default_label), None)
             if older:
-                hinted.append(older)
+                return [older]
+        # Label-token matching fallback
+        hinted = []
+        for label in self.labels:
+            tokens = [tok.lower() for tok in re.findall(r"[a-zA-Z0-9]+", label)]
+            ids = [tok for tok in tokens if re.fullmatch(r"[a-z]\d{2}|\d{4}", tok)] or [
+                tok for tok in tokens if len(tok) >= 4
+            ]
+            if any(re.search(r"\b" + re.escape(tok) + r"\b", t) for tok in ids):
+                hinted.append(label)
         return hinted
+
+    def _doc_hints(self, query, history=None, profile=None):
+        """Which regulations does the query / conversation context name explicitly?"""
+        hinted = self._match_doc_label(query)
+        if hinted:
+            return hinted
+        if history:
+            user_texts = [
+                m.get("content", "")
+                for m in history
+                if isinstance(m, dict) and m.get("role") == "user"
+            ]
+            for ut in reversed(user_texts):
+                h = self._match_doc_label(ut)
+                if h:
+                    return h
+        if isinstance(profile, dict):
+            p_text = " ".join(str(v) for v in profile.values())
+            h = self._match_doc_label(p_text)
+            if h:
+                return h
+        return []
 
     def _phrase_rerank(self, query, pool):
         """Two-stage retrieval: BM25 provides recall; exact query-phrase matches
@@ -541,16 +602,19 @@ class MultiDocRetriever:
         hit_ids = {id(c) for c in hits}
         return hits + [c for c in pool if id(c) not in hit_ids]
 
-    def search(self, query, top_k=6):
+    def search(self, query, top_k=6, history=None, profile=None):
         """Intent-aware routing:
-        - no named regulation -> search the current handbook (proven baseline)
-        - one named -> search that regulation alone
-        - several named (comparison) -> even split across them
-        Results are then re-ranked by exact-phrase matches.
+        - named regulation (in query, history or profile) -> search that regulation
+        - unhinted regulation-sensitive query -> retrieve from BOTH handbooks so AI has both
+        - general campus queries -> search default handbook (Handbook 2026-27)
+        Results are re-ranked by exact-phrase matches.
         """
-        hinted = self._doc_hints(query)
+        hinted = self._doc_hints(query, history=history, profile=profile)
         if not hinted:
-            labels = [self.default_label]
+            if REGULATION_TOPIC.search(query):
+                labels = list(self.labels)
+            else:
+                labels = [self.default_label]
         elif len(hinted) == 1:
             labels = hinted
         else:
@@ -574,8 +638,8 @@ class MultiDocRetriever:
                         seen.add(id(nxt))
         return out
 
-    def format_hits(self, query, top_k=6):
-        hits = self.search(query, top_k)
+    def format_hits(self, query, top_k=6, history=None, profile=None):
+        hits = self.search(query, top_k=top_k, history=history, profile=profile)
         if not hits:
             return "No relevant handbook sections found.", []
         blocks, cites = [], []

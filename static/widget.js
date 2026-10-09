@@ -214,8 +214,13 @@
   }
 
   function profileSummary(p) {
-    return [p.programme, p.branch, p.year ? "Year " + p.year : "", p.semester ? "Sem " + p.semester : ""]
-      .filter(Boolean).join(" · ");
+    return [
+      p.batch || "",
+      p.programme || "",
+      p.branch || "",
+      p.year ? "Year " + p.year : "",
+      p.semester ? "Sem " + p.semester : "",
+    ].filter(Boolean).join(" · ");
   }
 
   var profile = loadProfile();
@@ -230,9 +235,9 @@
     updateSubtitle();
   }
 
-  // The bot asks clarifying questions in the chat (hostel, programme, branch,
-  // year, semester). Whatever the student picks from a chip or types plainly is
-  // remembered, so the bot never asks for the same detail twice.
+  // The bot asks clarifying questions in the chat (batch, hostel, programme,
+  // branch, year, semester). Whatever the student picks from a chip or types
+  // plainly is remembered, so the bot never asks for the same detail twice.
   function captureProfile(text) {
     var t = (text || "").trim(), match;
     if (!t) return;
@@ -240,6 +245,11 @@
     function add(k, v) {
       if (v && profile[k] !== v) { profile[k] = v; changed = true; }
     }
+
+    match = t.match(/\b(2023[-–/]?24|23[-–/]?24|2023|2024|r23)\b/i);
+    if (match) add("batch", "2023-24 (R23)");
+    match = t.match(/\b(2026[-–/]?27|26[-–/]?27|2026|2027|r26)\b/i);
+    if (match) add("batch", "2026-27");
 
     if (/hostel/i.test(t)) {
       if (/\b(?:boys?)\b|bh-?\d/i.test(t)) add("hostel", "Boys");
@@ -421,7 +431,9 @@
     if (/would you like (?:me to )?(?:detail|explain|more details|elaborate)|want me to (?:brief|elaborate)|need more details/i.test(trimmed)) {
       opts = ["Yes, explain in detail", "What are the exact penalties?", "Tell me the appeal process"];
     } else if (endsWithQ && trimmed.length <= 320) {
-      if (/boys? hostel|girls? hostel|which hostel|boys or girls|hostel .* boys?/i.test(trimmed)) {
+      if (/batch|regulation|r23|2023|2026/i.test(trimmed)) {
+        opts = ["2023–24 Batch (R23)", "2026–27 Batch", "Explain both"];
+      } else if (/boys? hostel|girls? hostel|which hostel|boys or girls|hostel .* boys?/i.test(trimmed)) {
         opts = ["Boys Hostel", "Girls Hostel"];
       } else if (/sem(?:ester)?\b/i.test(trimmed)) {
         opts = ["Semester 1", "Semester 2", "Semester 3", "Semester 4",
