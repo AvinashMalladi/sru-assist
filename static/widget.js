@@ -89,6 +89,9 @@
     ".srucw-typing span:nth-child(2){animation-delay:.2s}",
     ".srucw-typing span:nth-child(3){animation-delay:.4s}",
     "@keyframes srucwBlink{0%,80%,100%{opacity:.25}40%{opacity:1}}",
+    ".srucw-history-divider{display:flex;align-items:center;text-align:center;color:#6b7280;font-size:11px;margin:10px 0;gap:8px}",
+    ".srucw-history-divider span{background:#e5e7eb;color:#4b5563;padding:2px 8px;border-radius:10px;font-weight:600}",
+    ".srucw-history-divider::before,.srucw-history-divider::after{content:'';flex:1;border-bottom:1px dashed #cbd5e1}",
   ].join("");
 
   // ---------- mini markdown ----------
@@ -215,6 +218,53 @@
   var busy = false;
   var PF_KEY = "sru_profile";
   var SESS_KEY = "sru_chat_msgs";
+  var SESS_ID_KEY = "sru_session_id";
+
+  function getSessionId() {
+    var sid = localStorage.getItem(SESS_ID_KEY);
+    if (!sid) {
+      sid = "sess_" + Date.now() + "_" + Math.random().toString(36).substring(2, 9);
+      localStorage.setItem(SESS_ID_KEY, sid);
+    }
+    return sid;
+  }
+
+  function fetchAndRestoreHistory(htno, onComplete) {
+    if (!htno) return;
+    fetch(API + "/api/history?htno=" + encodeURIComponent(htno))
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data && data.profile) {
+          for (var k in data.profile) { profile[k] = data.profile[k]; }
+          saveProfile();
+        }
+        if (data && Array.isArray(data.messages) && data.messages.length > 0) {
+          msgsBox.innerHTML = "";
+          history = [];
+          addMsg("bot", WELCOME);
+          history.push({ role: "assistant", content: WELCOME });
+
+          var divRow = el("div", "srucw-history-divider");
+          divRow.innerHTML = "<span>Previous Conversation Restored</span>";
+          msgsBox.appendChild(divRow);
+
+          data.messages.forEach(function (m) {
+            addMsg(m.role === "user" ? "user" : "bot", m.content, m.citations);
+            history.push({ role: m.role, content: m.content });
+          });
+          saveSessionMsgs();
+          msgsBox.scrollTop = msgsBox.scrollHeight;
+        }
+        if (data && Array.isArray(data.suggestions) && data.suggestions.length > 0) {
+          setChips(data.suggestions);
+        }
+        if (typeof onComplete === "function") onComplete(data);
+      })
+      .catch(function (err) {
+        console.warn("History restore failed:", err);
+        if (typeof onComplete === "function") onComplete(null);
+      });
+  }
 
   function saveSessionMsgs() {
     try { sessionStorage.setItem(SESS_KEY, JSON.stringify(history)); } catch (e) {}
@@ -240,6 +290,13 @@
     clearBtn.onclick = function (e) {
       e.stopPropagation();
       if (busy) stopCurrentTask();
+      var oldSid = getSessionId();
+      var oldHtno = profile && profile.roll_number;
+      try {
+        var delUrl = API + "/api/history?" + (oldHtno ? "htno=" + encodeURIComponent(oldHtno) : "session_id=" + encodeURIComponent(oldSid));
+        fetch(delUrl, { method: "DELETE" }).catch(function () {});
+      } catch (err) {}
+      localStorage.removeItem(SESS_ID_KEY);
       history = [];
       try { sessionStorage.removeItem(SESS_KEY); } catch (err) {}
       msgsBox.innerHTML = "";
@@ -422,7 +479,7 @@
     fetch(API + "/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text, history: history.slice(-8), profile: profile }),
+      body: JSON.stringify({ message: text, history: history.slice(-8), profile: profile, session_id: getSessionId(), htno: profile.roll_number || null }),
       signal: currentAbort ? currentAbort.signal : undefined,
     })
       .then(function (r) { return r.json(); })
@@ -434,12 +491,21 @@
         history.push({ role: "user", content: text });
         history.push({ role: "assistant", content: ans });
         saveSessionMsgs();
+        if (data.session_id) localStorage.setItem(SESS_ID_KEY, data.session_id);
+        if (data.htno && !profile.roll_number) {
+          profile.roll_number = data.htno;
+        }
         if (data.profile && typeof data.profile === "object") {
           for (var k in data.profile) { profile[k] = data.profile[k]; }
           saveProfile();
         }
-        if (data.options && data.options.length) setChips(data.options, 8);
-        else maybeClarifyChips(ans);
+        if (data.suggestions && data.suggestions.length) {
+          setChips(data.suggestions);
+        } else if (data.options && data.options.length) {
+          setChips(data.options, 8);
+        } else {
+          maybeClarifyChips(ans);
+        }
         refreshSuggestions();
       })
       .catch(function (err) {
@@ -555,7 +621,11 @@
         panel.classList.add("open");
         bubble.textContent = "×";
       }
-      ask(roll);
+      fetchAndRestoreHistory(roll, function (data) {
+        if (!data || !data.messages || data.messages.length === 0) {
+          ask("My roll number is " + roll);
+        }
+      });
     },
     resetProfile: function () {
       profile = {};

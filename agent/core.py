@@ -9,6 +9,10 @@ import json
 import os
 import re
 
+from .config import load_env
+
+load_env()
+
 from . import llm, tools
 from .clarify import check as clarify_check
 from .counts import check as counts_check
@@ -430,8 +434,9 @@ def run_agent(question, history=None, profile=None):
         badge = format_student_badge(detected_roll)
         
         # If the query was purely declaring the roll number
-        cleaned_no_roll = re.sub(r"(?i)\b(my\s+roll\s+no\s+is|roll\s+no|roll\s+number|enrollment\s+number|i\s+am|my\s+id\s+is)\b", "", question).strip()
+        cleaned_no_roll = re.sub(r"(?i)\b(my\s+(roll\s*(no|number)|htno|id)\s*(is)?|roll\s*(no|number)|enrollment\s*number|htno|i\s*am|my\s*id\s*is|is|am|here\s*is)\b", "", question).strip()
         cleaned_no_roll = re.sub(r"\b" + re.escape(detected_roll["roll_number"]) + r"\b", "", cleaned_no_roll, flags=re.I).strip()
+        cleaned_no_roll = re.sub(r"[^a-zA-Z0-9]+", "", cleaned_no_roll).strip()
         
         if not cleaned_no_roll or len(cleaned_no_roll) <= 3:
             return {

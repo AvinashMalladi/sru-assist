@@ -39,6 +39,13 @@ STUDENT_TYPO_MAP = {
     r"\b(dabbulu|entha fee|challan|tution fee)\b": "fee payment tuition fee",
     r"\b(id card|id-card|identy card|identity card)\b": "university identity card ID card duplicate",
     r"\b(wifi|wi-fi|net problem|internet down)\b": "wifi internet wireless network issue",
+    r"\b(night out|outing|gate pass|curfew)\b": "hostel night out gate pass permission warden timings",
+    r"\b(room change|change room)\b": "hostel room change allotment warden",
+    r"\b(food delivery|swiggy|zomato)\b": "hostel food outside delivery gate security rules",
+    r"\b(pet|pets|dog|dogs|cat|cats)\b": "hostel code of conduct prohibited items pets discipline",
+    r"\b(mass bunk|bunking)\b": "unauthorized absence group absence attendance shortage detention",
+    r"\b(kick out|kicked out|expelled|suspended|rusticated)\b": "disciplinary action rustication expulsion detention",
+    r"\b(slept during exam|missed exam|absent in exam|absent for exam)\b": "absent for semester examination supplementary backlog rules",
 
     # Curriculum & Electives
     r"\b(cg|cgpa|gpa|sg|sgpa)\b": "grade point average CGPA SGPA",

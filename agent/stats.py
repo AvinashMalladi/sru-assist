@@ -122,13 +122,16 @@ def top_topics(now=None):
     return [label for label, _ in ranked]
 
 
-def get_suggestions(limit=DEFAULT_LIMIT):
+def get_suggestions(limit=DEFAULT_LIMIT, profile=None):
     """Return up to `limit` clean topic suggestion phrases.
 
-    1. Decayed, popular topics first (e.g. "Promotion rules").
-    2. Padded with curated defaults so the chip row is never empty.
-    Only labels that exist in TOPICS are ever surfaced.
+    1. Personalized by student batch/regulation/branch if profile is provided.
+    2. Decayed, popular topics next.
+    3. Padded with curated defaults so the chip row is never empty.
     """
+    if profile and isinstance(profile, dict) and any(profile.values()):
+        return get_personalized_suggestions(profile, limit=limit)
+
     ranked = top_topics()
     merged = []
     for label in ranked:
@@ -142,6 +145,45 @@ def get_suggestions(limit=DEFAULT_LIMIT):
         if d not in merged:
             merged.append(d)
     return merged[:limit]
+
+
+def get_personalized_suggestions(profile, limit=DEFAULT_LIMIT):
+    """Generate high-relevance suggestion chips tailored to a specific student."""
+    reg = str(profile.get("regulation", "") or profile.get("batch", "")).lower()
+    prog = str(profile.get("program", "") or profile.get("stream", "") or profile.get("branch", "")).upper()
+
+    res = []
+    if "r23" in reg or "2023" in reg:
+        res.append("R23 Promotion rules")
+        res.append("1st year 0-backlog rule")
+    elif "2026" in reg:
+        res.append("2026-27 Promotion credit %")
+        res.append("UG pass marks (45%)")
+    else:
+        res.append("Promotion rules")
+
+    if "CSE" in prog or "CS" in prog:
+        res.append("CS & AI leadership contact")
+    elif "ECE" in prog:
+        res.append("ECE department contact")
+    elif "MECH" in prog:
+        res.append("Mechanical department contact")
+    elif "CIVIL" in prog:
+        res.append("Civil department contact")
+
+    res.append("Attendance condonation (65-75%)")
+    res.append("CGPA / grading")
+    res.append("Exams & revaluation")
+
+    seen = set()
+    out = []
+    for s in res:
+        if s not in seen:
+            seen.add(s)
+            out.append(s)
+        if len(out) >= limit:
+            break
+    return out
 
 
 # Curated fallback chips (used when a topic has no history yet).

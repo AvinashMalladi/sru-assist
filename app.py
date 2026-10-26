@@ -4,11 +4,14 @@ Run:  python app.py   (serves API + demo portal on http://localhost:5000)
 """
 import os
 import time
+import uuid
 
 from flask import Flask, jsonify, request, send_from_directory
 
 from agent.config import load_env
 from agent.core import run_agent
+from agent import db
+from agent.roll_decoder import parse_roll_number
 from agent.stats import get_suggestions, track_query
 
 load_env()
@@ -56,7 +59,55 @@ def health():
 @app.get("/api/suggestions")
 def suggestions():
     n = int(request.args.get("limit", "3") or "3")
-    return jsonify({"suggestions": get_suggestions(n)})
+    htno = request.args.get("htno", "").strip()
+    profile = None
+    if htno:
+        profile = db.get_student(htno)
+        if not profile:
+            detected = parse_roll_number(htno)
+            if detected:
+                profile = detected
+    return jsonify({"suggestions": get_suggestions(n, profile=profile)})
+
+
+@app.get("/api/history")
+def get_history():
+    htno = request.args.get("htno", "").strip()
+    session_id = request.args.get("session_id", "").strip()
+    limit = int(request.args.get("limit", "50") or "50")
+
+    if not htno and not session_id:
+        return jsonify({"error": "htno or session_id parameter required"}), 400
+
+    profile = None
+    if htno:
+        profile = db.get_student(htno)
+        if not profile:
+            detected = parse_roll_number(htno)
+            if detected:
+                profile = detected
+                db.save_student(htno, profile)
+
+    messages = db.get_conversation_history(htno=htno or None, session_id=session_id or None, limit=limit)
+    suggestions_list = get_suggestions(4, profile=profile)
+
+    return jsonify({
+        "htno": htno,
+        "session_id": session_id,
+        "profile": profile,
+        "messages": messages,
+        "suggestions": suggestions_list,
+    })
+
+
+@app.delete("/api/history")
+def delete_history():
+    htno = request.args.get("htno", "").strip()
+    session_id = request.args.get("session_id", "").strip()
+    if not htno and not session_id:
+        return jsonify({"error": "htno or session_id required"}), 400
+    deleted_count = db.clear_conversation(htno=htno or None, session_id=session_id or None)
+    return jsonify({"status": "cleared", "deleted_count": deleted_count})
 
 
 @app.post("/api/chat")
@@ -83,6 +134,20 @@ def chat():
     question = (data.get("message") or "").strip()
     history = data.get("history") or []
     profile = data.get("profile") or {}
+    session_id = (data.get("session_id") or "").strip() or str(uuid.uuid4())
+    htno = (data.get("htno") or profile.get("roll_number") or "").strip()
+
+    # Detect roll number from question if not already provided
+    detected_roll = parse_roll_number(question)
+    if detected_roll:
+        htno = detected_roll["roll_number"]
+        profile.update(detected_roll)
+        db.link_session_to_htno(session_id, htno)
+        db.save_student(htno, profile)
+    elif htno and not profile.get("regulation"):
+        existing_profile = db.get_student(htno)
+        if existing_profile:
+            profile.update(existing_profile)
 
     if not question:
         return jsonify({"error": "message is required"}), 400
@@ -94,6 +159,22 @@ def chat():
     t0 = time.time()
     try:
         result = run_agent(question, history, profile=profile)
+        if result.get("profile"):
+            profile.update(result["profile"])
+            if result["profile"].get("roll_number"):
+                htno = result["profile"]["roll_number"]
+                db.link_session_to_htno(session_id, htno)
+                db.save_student(htno, profile)
+
+        db.save_turn(
+            session_id=session_id,
+            user_message=question,
+            bot_answer=result.get("answer", ""),
+            htno=htno or None,
+            citations=result.get("citations"),
+            profile=profile,
+            mode=result.get("mode", "normal")
+        )
     except Exception as exc:  # noqa: BLE001 - never crash the widget
         app.logger.exception("agent failure")
         return (
@@ -111,6 +192,9 @@ def chat():
             200,
         )
     result["latency_ms"] = int((time.time() - t0) * 1000)
+    result["session_id"] = session_id
+    result["htno"] = htno
+    result["suggestions"] = get_suggestions(4, profile=profile)
     return jsonify(result)
 
 
