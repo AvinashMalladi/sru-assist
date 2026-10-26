@@ -542,6 +542,12 @@
     });
   }
 
+  // Eager background warmup ping: wakes up sleeping Render containers the moment
+  // the student loads the university portal, before they even click the chat bubble!
+  try {
+    fetch(API + "/api/health", { method: "GET", cache: "no-store" }).catch(function () {});
+  } catch (e) {}
+
   // Global demo hook for portal page buttons
   window.SRU_CHAT_API = {
     setStudentRoll: function (roll) {
