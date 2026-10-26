@@ -11,8 +11,8 @@ _client = None
 _client_provider = None
 
 FALLBACK_MODELS = [
-    "gemini-3.5-flash-lite",
-    "gemini-3.8-flash",
+    "gemini-3.1-flash-lite",
+    "gemini-flash-latest",
     "nvidia/nemotron-3-ultra-550b-a55b:free",
     "nvidia/nemotron-3.5-lightning:free",
     "google/gemma-4-31b-it:free",
@@ -32,7 +32,7 @@ def get_client(provider=None):
     if _client is not None and _client_provider == target_provider:
         return _client
 
-    timeout = int(os.environ.get("LLM_TIMEOUT", "45"))
+    timeout = int(os.environ.get("LLM_TIMEOUT", "15"))
 
     if target_provider == "gemini":
         if not gemini_key:
@@ -58,7 +58,7 @@ def get_client(provider=None):
 
 def get_model():
     gemini_key = os.environ.get("GEMINI_API_KEY")
-    default_model = "gemini-3.5-flash-lite" if gemini_key else "nvidia/nemotron-3-ultra-550b-a55b:free"
+    default_model = "gemini-3.1-flash-lite" if gemini_key else "nvidia/nemotron-3-ultra-550b-a55b:free"
     return os.environ.get("MODEL_NAME", default_model)
 
 
