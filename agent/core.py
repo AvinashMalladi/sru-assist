@@ -14,6 +14,7 @@ from .clarify import check as clarify_check
 from .counts import check as counts_check
 from .prompts import FALLBACK_PROMPT, FAST_SYSTEM_PROMPT, SYSTEM_PROMPT
 from .retriever import get_retriever
+from .roll_decoder import parse_roll_number, format_student_badge
 
 MAX_STEPS = int(os.environ.get("AGENT_MAX_STEPS", "4"))
 MAX_HISTORY = 10
@@ -385,7 +386,7 @@ def _trim_history(history, keep=MAX_HISTORY):
     return clean
 
 
-PROFILE_KEYS = ("programme", "branch", "year", "semester", "batch")
+PROFILE_KEYS = ("programme", "branch", "stream", "degree", "year", "semester", "batch", "regulation", "roll_number")
 
 
 def _profile_block(profile):
@@ -413,10 +414,49 @@ def run_agent(question, history=None, profile=None):
     question = _normalize_question(question)
     ckey = _cache_key(question)
 
+    # 1. Roll Number Extraction & Identification pass
+    detected_roll = parse_roll_number(question)
+    if detected_roll:
+        active_profile = dict(profile or {})
+        active_profile.update(detected_roll)
+        badge = format_student_badge(detected_roll)
+        
+        # If the query was purely declaring the roll number
+        cleaned_no_roll = re.sub(r"(?i)\b(my\s+roll\s+no\s+is|roll\s+no|roll\s+number|enrollment\s+number|i\s+am|my\s+id\s+is)\b", "", question).strip()
+        cleaned_no_roll = re.sub(r"\b" + re.escape(detected_roll["roll_number"]) + r"\b", "", cleaned_no_roll, flags=re.I).strip()
+        
+        if not cleaned_no_roll or len(cleaned_no_roll) <= 3:
+            return {
+                "answer": (
+                    f"🎓 **Student Profile Identified:**\n\n"
+                    f"- **Roll / Enrollment Number:** `{detected_roll['roll_number']}`\n"
+                    f"- **Degree:** {detected_roll['degree']}\n"
+                    f"- **Branch / Stream:** {detected_roll['program']}\n"
+                    f"- **School:** {detected_roll['school']}\n"
+                    f"- **Batch & Regulation:** {detected_roll['batch']} ({detected_roll['regulation']}, citing {detected_roll['handbook_doc']})\n\n"
+                    f"Welcome! I have tailored my knowledge to your specific regulations. "
+                    f"What would you like to check regarding your curriculum, pass marks, attendance, or promotion rules?"
+                ),
+                "citations": [f"{detected_roll['handbook_doc']} p.8"],
+                "tool_calls": [],
+                "mode": "profile_identified",
+                "profile": active_profile,
+            }
+        else:
+            # The student provided a question alongside their roll number: update profile and continue!
+            profile = active_profile
+
     if ckey in _GREETINGS:
+        has_roll = isinstance(profile, dict) and profile.get("roll_number")
+        roll_prompt = (
+            f"You are currently identified as **{format_student_badge(profile)}**."
+            if has_roll else
+            "💡 **Tip:** Share your **10-digit Roll Number** (e.g., `2303A51001`) anytime so I can automatically apply the exact rules for your branch and batch!"
+        )
         return {
             "answer": (
                 "Hello! 👋 I'm **SRU Assist**, your official student handbook assistant.\n\n"
+                f"{roll_prompt}\n\n"
                 "I can help you with:\n"
                 "- **Academics**: Promotion rules, grading scale, SGPA/CGPA calculation, and pass marks\n"
                 "- **Examinations**: Mid/End-sem rules, revaluation, condonation, and malpractice policies\n"
@@ -448,6 +488,10 @@ def run_agent(question, history=None, profile=None):
         result = _fast_answer(question, history, profile)
     else:
         result = _agentic_answer(question, history, profile)
+
+    # Attach profile if updated
+    if isinstance(profile, dict) and "roll_number" in profile:
+        result["profile"] = profile
 
     if not history and result.get("mode") in ("fast", "agent") and "experiencing high network demand" not in result.get("answer", ""):
         _CACHE[ckey] = result

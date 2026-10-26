@@ -42,12 +42,17 @@
     "box-shadow:0 24px 64px rgba(0,0,0,.28);display:none;flex-direction:column;overflow:hidden;",
     "border:1px solid #e5e7eb}",
     ".srucw-panel.open{display:flex}",
-    ".srucw-head{background:linear-gradient(135deg,#23468A,#3E6BC0);color:#fff;padding:14px 16px;",
+    ".srucw-head{background:linear-gradient(135deg,#23468A,#3E6BC0);color:#fff;padding:12px 14px;",
     "display:flex;align-items:center;gap:10px}",
     ".srucw-avatar{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);",
     "display:flex;align-items:center;justify-content:center;font-size:18px}",
     ".srucw-title{font-size:15px;font-weight:600;line-height:1.2}",
-    ".srucw-sub{font-size:11px;opacity:.85}",
+    ".srucw-sub{font-size:11px;opacity:.9;display:flex;align-items:center;gap:4px}",
+    ".srucw-badge{background:rgba(255,255,255,.22);border-radius:10px;padding:2px 7px;font-size:10.5px;",
+    "font-weight:600;display:inline-flex;align-items:center;gap:4px;cursor:pointer}",
+    ".srucw-badge:hover{background:rgba(255,255,255,.35)}",
+    ".srucw-badge-x{font-size:11px;opacity:.8;margin-left:2px}",
+    ".srucw-badge-x:hover{opacity:1;color:#ffcaca}",
     ".srucw-close{margin-left:auto;background:none;border:none;color:#fff;font-size:20px;cursor:pointer;opacity:.9}",
     ".srucw-msgs{flex:1;overflow-y:auto;padding:14px;background:#f6f7fb;display:flex;flex-direction:column;gap:10px}",
     ".srucw-row{display:flex;gap:8px;align-items:flex-end}",
@@ -251,6 +256,10 @@
   }
 
   function profileSummary(p) {
+    if (!p) return "";
+    if (p.roll_number) {
+      return (p.degree || "B.Tech") + " " + (p.stream || p.branch || "") + " (" + (p.regulation || p.batch || "") + ")";
+    }
     return [
       p.batch || "",
       p.programme || "",
@@ -264,7 +273,24 @@
 
   function updateSubtitle() {
     var sub = panel.querySelector(".srucw-sub");
-    sub.textContent = profileSummary(profile) || "Student Handbook AI";
+    if (!sub) return;
+    if (profile && profile.roll_number) {
+      sub.innerHTML = '<span class="srucw-badge" title="Click to change roll number">' +
+        '🎓 ' + esc(profile.roll_number) + ' · ' + esc(profile.stream || profile.degree || "Student") +
+        '<span class="srucw-badge-x" title="Reset roll number">✕</span></span>';
+      var badgeX = sub.querySelector(".srucw-badge-x");
+      if (badgeX) {
+        badgeX.onclick = function (e) {
+          e.stopPropagation();
+          profile = {};
+          try { localStorage.removeItem(PF_KEY); } catch (err) {}
+          updateSubtitle();
+          addMsg("bot", "Profile reset. You can enter another roll number anytime!");
+        };
+      }
+    } else {
+      sub.textContent = profileSummary(profile) || "Student Handbook AI";
+    }
   }
 
   function saveProfile() {
@@ -408,6 +434,10 @@
         history.push({ role: "user", content: text });
         history.push({ role: "assistant", content: ans });
         saveSessionMsgs();
+        if (data.profile && typeof data.profile === "object") {
+          for (var k in data.profile) { profile[k] = data.profile[k]; }
+          saveProfile();
+        }
         if (data.options && data.options.length) setChips(data.options, 8);
         else maybeClarifyChips(ans);
         refreshSuggestions();
@@ -511,4 +541,21 @@
       }
     });
   }
+
+  // Global demo hook for portal page buttons
+  window.SRU_CHAT_API = {
+    setStudentRoll: function (roll) {
+      if (!panel.classList.contains("open")) {
+        panel.classList.add("open");
+        bubble.textContent = "×";
+      }
+      ask(roll);
+    },
+    resetProfile: function () {
+      profile = {};
+      try { localStorage.removeItem(PF_KEY); } catch (e) {}
+      updateSubtitle();
+      if (clearBtn) clearBtn.click();
+    }
+  };
 })();

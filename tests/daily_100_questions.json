@@ -1,0 +1,1355 @@
+{
+  "total_questions": 100,
+  "cases": [
+    {
+      "id": "pass_marks_ug_001",
+      "topic_id": "pass_marks_ug",
+      "topic_name": "Minimum Pass Marks (UG Aggregate & Course)",
+      "question": "What is the minimum pass percentage for undergraduate courses?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        34,
+        57,
+        61
+      ],
+      "canonical_fact": "45% aggregate across all courses for UG; 50% in individual course end-exam (GP >= 5.0)."
+    },
+    {
+      "id": "pass_marks_ug_002",
+      "topic_id": "pass_marks_ug",
+      "topic_name": "Minimum Pass Marks (UG Aggregate & Course)",
+      "question": "How much aggregate percentage is required to clear a semester in B.Tech?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        34,
+        57,
+        61
+      ],
+      "canonical_fact": "45% aggregate across all courses for UG; 50% in individual course end-exam (GP >= 5.0)."
+    },
+    {
+      "id": "pass_marks_ug_003",
+      "topic_id": "pass_marks_ug",
+      "topic_name": "Minimum Pass Marks (UG Aggregate & Course)",
+      "question": "What marks do I need to score to pass an individual subject in end-semester?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        34,
+        57,
+        61
+      ],
+      "canonical_fact": "45% aggregate across all courses for UG; 50% in individual course end-exam (GP >= 5.0)."
+    },
+    {
+      "id": "pass_marks_ug_004",
+      "topic_id": "pass_marks_ug",
+      "topic_name": "Minimum Pass Marks (UG Aggregate & Course)",
+      "question": "Is 40% enough to pass a course in SR University UG?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        34,
+        57,
+        61
+      ],
+      "canonical_fact": "45% aggregate across all courses for UG; 50% in individual course end-exam (GP >= 5.0)."
+    },
+    {
+      "id": "pass_marks_ug_005",
+      "topic_id": "pass_marks_ug",
+      "topic_name": "Minimum Pass Marks (UG Aggregate & Course)",
+      "question": "What is the cutoff score for passing theory courses in university exams?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        34,
+        57,
+        61
+      ],
+      "canonical_fact": "45% aggregate across all courses for UG; 50% in individual course end-exam (GP >= 5.0)."
+    },
+    {
+      "id": "attendance_exam_eligibility_006",
+      "topic_id": "attendance_exam_eligibility",
+      "topic_name": "Attendance Threshold for Writing End Exams",
+      "question": "How much attendance do I need to be eligible for end semester exams?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        27,
+        29,
+        32,
+        55
+      ],
+      "canonical_fact": "Minimum 75% attendance required in each course to write end exams."
+    },
+    {
+      "id": "attendance_exam_eligibility_007",
+      "topic_id": "attendance_exam_eligibility",
+      "topic_name": "Attendance Threshold for Writing End Exams",
+      "question": "What is the mandatory attendance percentage to write finals?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        27,
+        29,
+        32,
+        55
+      ],
+      "canonical_fact": "Minimum 75% attendance required in each course to write end exams."
+    },
+    {
+      "id": "attendance_exam_eligibility_008",
+      "topic_id": "attendance_exam_eligibility",
+      "topic_name": "Attendance Threshold for Writing End Exams",
+      "question": "Can I write semester exams if my attendance is 72%?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        27,
+        29,
+        32,
+        55
+      ],
+      "canonical_fact": "Minimum 75% attendance required in each course to write end exams."
+    },
+    {
+      "id": "attendance_exam_eligibility_009",
+      "topic_id": "attendance_exam_eligibility",
+      "topic_name": "Attendance Threshold for Writing End Exams",
+      "question": "What happens if my attendance in a course falls below 75%?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        27,
+        29,
+        32,
+        55
+      ],
+      "canonical_fact": "Minimum 75% attendance required in each course to write end exams."
+    },
+    {
+      "id": "attendance_exam_eligibility_010",
+      "topic_id": "attendance_exam_eligibility",
+      "topic_name": "Attendance Threshold for Writing End Exams",
+      "question": "What is the minimum required classroom attendance for students?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        27,
+        29,
+        32,
+        55
+      ],
+      "canonical_fact": "Minimum 75% attendance required in each course to write end exams."
+    },
+    {
+      "id": "attendance_condonation_011",
+      "topic_id": "attendance_condonation",
+      "topic_name": "Attendance Condonation on Medical Grounds",
+      "question": "My attendance is short due to hospitalization, can it be condoned?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        56,
+        81
+      ],
+      "canonical_fact": "Attendance between 65% and 75% may be condoned on medical grounds with fee. Below 65% is non-condonable."
+    },
+    {
+      "id": "attendance_condonation_012",
+      "topic_id": "attendance_condonation",
+      "topic_name": "Attendance Condonation on Medical Grounds",
+      "question": "What is the medical condonation policy for attendance shortage?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        56,
+        81
+      ],
+      "canonical_fact": "Attendance between 65% and 75% may be condoned on medical grounds with fee. Below 65% is non-condonable."
+    },
+    {
+      "id": "attendance_condonation_013",
+      "topic_id": "attendance_condonation",
+      "topic_name": "Attendance Condonation on Medical Grounds",
+      "question": "I have 68% attendance because of dengue, can I pay condonation fee?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        56,
+        81
+      ],
+      "canonical_fact": "Attendance between 65% and 75% may be condoned on medical grounds with fee. Below 65% is non-condonable."
+    },
+    {
+      "id": "attendance_condonation_014",
+      "topic_id": "attendance_condonation",
+      "topic_name": "Attendance Condonation on Medical Grounds",
+      "question": "Can attendance below 65% be condoned under any circumstances?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        56,
+        81
+      ],
+      "canonical_fact": "Attendance between 65% and 75% may be condoned on medical grounds with fee. Below 65% is non-condonable."
+    },
+    {
+      "id": "attendance_condonation_015",
+      "topic_id": "attendance_condonation",
+      "topic_name": "Attendance Condonation on Medical Grounds",
+      "question": "What is the procedure and deadline to submit medical certificates for condonation?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        56,
+        81
+      ],
+      "canonical_fact": "Attendance between 65% and 75% may be condoned on medical grounds with fee. Below 65% is non-condonable."
+    },
+    {
+      "id": "letter_grading_scale_016",
+      "topic_id": "letter_grading_scale",
+      "topic_name": "Letter Grade Scale & Grade Points (A+ to F)",
+      "question": "Explain the letter grade scale and grade points used at SRU.",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        30,
+        71
+      ],
+      "canonical_fact": "Letter grades from O/A+ down to F (fail) and I (incomplete) with 10-point scale."
+    },
+    {
+      "id": "letter_grading_scale_017",
+      "topic_id": "letter_grading_scale",
+      "topic_name": "Letter Grade Scale & Grade Points (A+ to F)",
+      "question": "What is the grade point corresponding to an A grade?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        30,
+        71
+      ],
+      "canonical_fact": "Letter grades from O/A+ down to F (fail) and I (incomplete) with 10-point scale."
+    },
+    {
+      "id": "letter_grading_scale_018",
+      "topic_id": "letter_grading_scale",
+      "topic_name": "Letter Grade Scale & Grade Points (A+ to F)",
+      "question": "What does an F grade mean on my grade sheet?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        30,
+        71
+      ],
+      "canonical_fact": "Letter grades from O/A+ down to F (fail) and I (incomplete) with 10-point scale."
+    },
+    {
+      "id": "letter_grading_scale_019",
+      "topic_id": "letter_grading_scale",
+      "topic_name": "Letter Grade Scale & Grade Points (A+ to F)",
+      "question": "Show the complete marks-to-grade-point conversion table.",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        30,
+        71
+      ],
+      "canonical_fact": "Letter grades from O/A+ down to F (fail) and I (incomplete) with 10-point scale."
+    },
+    {
+      "id": "letter_grading_scale_020",
+      "topic_id": "letter_grading_scale",
+      "topic_name": "Letter Grade Scale & Grade Points (A+ to F)",
+      "question": "How are percentage marks converted into grade points in semester results?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        30,
+        71
+      ],
+      "canonical_fact": "Letter grades from O/A+ down to F (fail) and I (incomplete) with 10-point scale."
+    },
+    {
+      "id": "sgpa_calculation_021",
+      "topic_id": "sgpa_calculation",
+      "topic_name": "Semester Grade Point Average (SGPA) Computation",
+      "question": "How is SGPA calculated for a semester at SR University?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        31
+      ],
+      "canonical_fact": "SGPA = sum(Ci * Gi) / sum(Ci) for all courses in the semester."
+    },
+    {
+      "id": "sgpa_calculation_022",
+      "topic_id": "sgpa_calculation",
+      "topic_name": "Semester Grade Point Average (SGPA) Computation",
+      "question": "What is the mathematical formula for computing semester GPA?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        31
+      ],
+      "canonical_fact": "SGPA = sum(Ci * Gi) / sum(Ci) for all courses in the semester."
+    },
+    {
+      "id": "sgpa_calculation_023",
+      "topic_id": "sgpa_calculation",
+      "topic_name": "Semester Grade Point Average (SGPA) Computation",
+      "question": "How do course credits affect my SGPA calculation?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        31
+      ],
+      "canonical_fact": "SGPA = sum(Ci * Gi) / sum(Ci) for all courses in the semester."
+    },
+    {
+      "id": "sgpa_calculation_024",
+      "topic_id": "sgpa_calculation",
+      "topic_name": "Semester Grade Point Average (SGPA) Computation",
+      "question": "Do audit or non-credit courses count towards SGPA?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        31
+      ],
+      "canonical_fact": "SGPA = sum(Ci * Gi) / sum(Ci) for all courses in the semester."
+    },
+    {
+      "id": "sgpa_calculation_025",
+      "topic_id": "sgpa_calculation",
+      "topic_name": "Semester Grade Point Average (SGPA) Computation",
+      "question": "Can you show a step-by-step example of SGPA calculation?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        31
+      ],
+      "canonical_fact": "SGPA = sum(Ci * Gi) / sum(Ci) for all courses in the semester."
+    },
+    {
+      "id": "cgpa_calculation_026",
+      "topic_id": "cgpa_calculation",
+      "topic_name": "Cumulative Grade Point Average (CGPA) Computation",
+      "question": "How do they compute my overall CGPA across all semesters?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        31,
+        46
+      ],
+      "canonical_fact": "CGPA = sum of all credit-weighted grade points across all completed semesters divided by total credits."
+    },
+    {
+      "id": "cgpa_calculation_027",
+      "topic_id": "cgpa_calculation",
+      "topic_name": "Cumulative Grade Point Average (CGPA) Computation",
+      "question": "What is the difference between SGPA and CGPA calculation?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        31,
+        46
+      ],
+      "canonical_fact": "CGPA = sum of all credit-weighted grade points across all completed semesters divided by total credits."
+    },
+    {
+      "id": "cgpa_calculation_028",
+      "topic_id": "cgpa_calculation",
+      "topic_name": "Cumulative Grade Point Average (CGPA) Computation",
+      "question": "If I clear a backlog course, how does my new grade update the CGPA?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        31,
+        46
+      ],
+      "canonical_fact": "CGPA = sum of all credit-weighted grade points across all completed semesters divided by total credits."
+    },
+    {
+      "id": "cgpa_calculation_029",
+      "topic_id": "cgpa_calculation",
+      "topic_name": "Cumulative Grade Point Average (CGPA) Computation",
+      "question": "How is cumulative grade point average updated after supplementary exams?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        31,
+        46
+      ],
+      "canonical_fact": "CGPA = sum of all credit-weighted grade points across all completed semesters divided by total credits."
+    },
+    {
+      "id": "cgpa_calculation_030",
+      "topic_id": "cgpa_calculation",
+      "topic_name": "Cumulative Grade Point Average (CGPA) Computation",
+      "question": "Does an F grade count into CGPA until it is cleared?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        31,
+        46
+      ],
+      "canonical_fact": "CGPA = sum of all credit-weighted grade points across all completed semesters divided by total credits."
+    },
+    {
+      "id": "promotion_rules_ug_031",
+      "topic_id": "promotion_rules_ug",
+      "topic_name": "Academic Promotion Requirements to Next Year",
+      "question": "What are the promotion rules to move to the next academic year?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        36,
+        37,
+        38
+      ],
+      "canonical_fact": "Promotion requires clearing specified credit percentages (40%-50%) and minimum CGPA criteria."
+    },
+    {
+      "id": "promotion_rules_ug_032",
+      "topic_id": "promotion_rules_ug",
+      "topic_name": "Academic Promotion Requirements to Next Year",
+      "question": "What CGPA and credit percentage is required to get promoted to 2nd year?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        36,
+        37,
+        38
+      ],
+      "canonical_fact": "Promotion requires clearing specified credit percentages (40%-50%) and minimum CGPA criteria."
+    },
+    {
+      "id": "promotion_rules_ug_033",
+      "topic_id": "promotion_rules_ug",
+      "topic_name": "Academic Promotion Requirements to Next Year",
+      "question": "How many backlogs am I allowed before getting year-detained?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        36,
+        37,
+        38
+      ],
+      "canonical_fact": "Promotion requires clearing specified credit percentages (40%-50%) and minimum CGPA criteria."
+    },
+    {
+      "id": "promotion_rules_ug_034",
+      "topic_id": "promotion_rules_ug",
+      "topic_name": "Academic Promotion Requirements to Next Year",
+      "question": "What happens if I fail to earn 40% of first-year credits by 2nd year?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        36,
+        37,
+        38
+      ],
+      "canonical_fact": "Promotion requires clearing specified credit percentages (40%-50%) and minimum CGPA criteria."
+    },
+    {
+      "id": "promotion_rules_ug_035",
+      "topic_id": "promotion_rules_ug",
+      "topic_name": "Academic Promotion Requirements to Next Year",
+      "question": "What are the credit clearance criteria to enter the 3rd year of B.Tech?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        36,
+        37,
+        38
+      ],
+      "canonical_fact": "Promotion requires clearing specified credit percentages (40%-50%) and minimum CGPA criteria."
+    },
+    {
+      "id": "academic_malpractice_cpam_036",
+      "topic_id": "academic_malpractice_cpam",
+      "topic_name": "Exam Malpractice, CPAM Committee & Penalties",
+      "question": "What happens if a student is caught using unfair means in an exam?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        34,
+        35,
+        36,
+        80
+      ],
+      "canonical_fact": "Invigilator seizes answer book + slips; CPAM investigates; penalties range from cancellation of paper to debarment."
+    },
+    {
+      "id": "academic_malpractice_cpam_037",
+      "topic_id": "academic_malpractice_cpam",
+      "topic_name": "Exam Malpractice, CPAM Committee & Penalties",
+      "question": "What is the role of the Committee for Prevention of Academic Malpractice (CPAM)?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        34,
+        35,
+        36,
+        80
+      ],
+      "canonical_fact": "Invigilator seizes answer book + slips; CPAM investigates; penalties range from cancellation of paper to debarment."
+    },
+    {
+      "id": "academic_malpractice_cpam_038",
+      "topic_id": "academic_malpractice_cpam",
+      "topic_name": "Exam Malpractice, CPAM Committee & Penalties",
+      "question": "If an invigilator finds paper slips with a student, what immediate action is taken?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        34,
+        35,
+        36,
+        80
+      ],
+      "canonical_fact": "Invigilator seizes answer book + slips; CPAM investigates; penalties range from cancellation of paper to debarment."
+    },
+    {
+      "id": "academic_malpractice_cpam_039",
+      "topic_id": "academic_malpractice_cpam",
+      "topic_name": "Exam Malpractice, CPAM Committee & Penalties",
+      "question": "What are the disciplinary penalties for copying during university exams?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        34,
+        35,
+        36,
+        80
+      ],
+      "canonical_fact": "Invigilator seizes answer book + slips; CPAM investigates; penalties range from cancellation of paper to debarment."
+    },
+    {
+      "id": "academic_malpractice_cpam_040",
+      "topic_id": "academic_malpractice_cpam",
+      "topic_name": "Exam Malpractice, CPAM Committee & Penalties",
+      "question": "Can a student appeal a malpractice penalty imposed by CPAM?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        34,
+        35,
+        36,
+        80
+      ],
+      "canonical_fact": "Invigilator seizes answer book + slips; CPAM investigates; penalties range from cancellation of paper to debarment."
+    },
+    {
+      "id": "revaluation_procedure_041",
+      "topic_id": "revaluation_procedure",
+      "topic_name": "Answer Script Revaluation & Recounting Process",
+      "question": "How do I apply for re-evaluation of my end-semester answer script?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        32,
+        33,
+        56
+      ],
+      "canonical_fact": "Students may apply for revaluation within the notified window after paying the prescribed fee to COE."
+    },
+    {
+      "id": "revaluation_procedure_042",
+      "topic_id": "revaluation_procedure",
+      "topic_name": "Answer Script Revaluation & Recounting Process",
+      "question": "What is the deadline and fee to apply for paper rechecking?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        32,
+        33,
+        56
+      ],
+      "canonical_fact": "Students may apply for revaluation within the notified window after paying the prescribed fee to COE."
+    },
+    {
+      "id": "revaluation_procedure_043",
+      "topic_id": "revaluation_procedure",
+      "topic_name": "Answer Script Revaluation & Recounting Process",
+      "question": "Will my marks decrease if the revaluation score is lower than original?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        32,
+        33,
+        56
+      ],
+      "canonical_fact": "Students may apply for revaluation within the notified window after paying the prescribed fee to COE."
+    },
+    {
+      "id": "revaluation_procedure_044",
+      "topic_id": "revaluation_procedure",
+      "topic_name": "Answer Script Revaluation & Recounting Process",
+      "question": "Where can I get the revaluation application form?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        32,
+        33,
+        56
+      ],
+      "canonical_fact": "Students may apply for revaluation within the notified window after paying the prescribed fee to COE."
+    },
+    {
+      "id": "revaluation_procedure_045",
+      "topic_id": "revaluation_procedure",
+      "topic_name": "Answer Script Revaluation & Recounting Process",
+      "question": "Who processes revaluation requests and announces revised results?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        32,
+        33,
+        56
+      ],
+      "canonical_fact": "Students may apply for revaluation within the notified window after paying the prescribed fee to COE."
+    },
+    {
+      "id": "summer_semester_backlogs_046",
+      "topic_id": "summer_semester_backlogs",
+      "topic_name": "Summer Semester Course Registration & Clearing F Grades",
+      "question": "Can I clear a failed course during the summer semester?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        26,
+        27,
+        28,
+        31,
+        34
+      ],
+      "canonical_fact": "Students with F grades may register for remedial/backlog courses in summer semester subject to credit limits."
+    },
+    {
+      "id": "summer_semester_backlogs_047",
+      "topic_id": "summer_semester_backlogs",
+      "topic_name": "Summer Semester Course Registration & Clearing F Grades",
+      "question": "What is the maximum number of credits I can register for in summer semester?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        26,
+        27,
+        28,
+        31,
+        34
+      ],
+      "canonical_fact": "Students with F grades may register for remedial/backlog courses in summer semester subject to credit limits."
+    },
+    {
+      "id": "summer_semester_backlogs_048",
+      "topic_id": "summer_semester_backlogs",
+      "topic_name": "Summer Semester Course Registration & Clearing F Grades",
+      "question": "Is attendance mandatory for summer term classes?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        26,
+        27,
+        28,
+        31,
+        34
+      ],
+      "canonical_fact": "Students with F grades may register for remedial/backlog courses in summer semester subject to credit limits."
+    },
+    {
+      "id": "summer_semester_backlogs_049",
+      "topic_id": "summer_semester_backlogs",
+      "topic_name": "Summer Semester Course Registration & Clearing F Grades",
+      "question": "How are summer semester course fees calculated?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        26,
+        27,
+        28,
+        31,
+        34
+      ],
+      "canonical_fact": "Students with F grades may register for remedial/backlog courses in summer semester subject to credit limits."
+    },
+    {
+      "id": "summer_semester_backlogs_050",
+      "topic_id": "summer_semester_backlogs",
+      "topic_name": "Summer Semester Course Registration & Clearing F Grades",
+      "question": "Can I register for new advance courses in the summer break?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        26,
+        27,
+        28,
+        31,
+        34
+      ],
+      "canonical_fact": "Students with F grades may register for remedial/backlog courses in summer semester subject to credit limits."
+    },
+    {
+      "id": "hostel_rules_timings_051",
+      "topic_id": "hostel_rules_timings",
+      "topic_name": "Hostel Facilities, Curfews & Biometric Roll Call",
+      "question": "What are the hostel curfew hours and roll call timings?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        6,
+        7,
+        23,
+        86
+      ],
+      "canonical_fact": "Biometric roll call before 9:30 PM on weekdays; late arrival fined; separate Boys and Girls warden offices."
+    },
+    {
+      "id": "hostel_rules_timings_052",
+      "topic_id": "hostel_rules_timings",
+      "topic_name": "Hostel Facilities, Curfews & Biometric Roll Call",
+      "question": "What is the procedure to request roll call extension for hostel students?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        6,
+        7,
+        23,
+        86
+      ],
+      "canonical_fact": "Biometric roll call before 9:30 PM on weekdays; late arrival fined; separate Boys and Girls warden offices."
+    },
+    {
+      "id": "hostel_rules_timings_053",
+      "topic_id": "hostel_rules_timings",
+      "topic_name": "Hostel Facilities, Curfews & Biometric Roll Call",
+      "question": "Who do I contact for maintenance or room allocation in the hostel?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        6,
+        7,
+        23,
+        86
+      ],
+      "canonical_fact": "Biometric roll call before 9:30 PM on weekdays; late arrival fined; separate Boys and Girls warden offices."
+    },
+    {
+      "id": "hostel_rules_timings_054",
+      "topic_id": "hostel_rules_timings",
+      "topic_name": "Hostel Facilities, Curfews & Biometric Roll Call",
+      "question": "Are day scholars or outside guests allowed to stay in hostel rooms?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        6,
+        7,
+        23,
+        86
+      ],
+      "canonical_fact": "Biometric roll call before 9:30 PM on weekdays; late arrival fined; separate Boys and Girls warden offices."
+    },
+    {
+      "id": "hostel_rules_timings_055",
+      "topic_id": "hostel_rules_timings",
+      "topic_name": "Hostel Facilities, Curfews & Biometric Roll Call",
+      "question": "What are the disciplinary consequences of violating hostel curfew?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        6,
+        7,
+        23,
+        86
+      ],
+      "canonical_fact": "Biometric roll call before 9:30 PM on weekdays; late arrival fined; separate Boys and Girls warden offices."
+    },
+    {
+      "id": "anti_ragging_zero_tolerance_056",
+      "topic_id": "anti_ragging_zero_tolerance",
+      "topic_name": "Anti-Ragging Regulations & Reporting Cell",
+      "question": "What are the university's anti-ragging policies and punishments?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        7,
+        82,
+        85,
+        86
+      ],
+      "canonical_fact": "Strict zero-tolerance policy; penalties include suspension, rustication, and police FIR; Anti-Ragging Cell contact."
+    },
+    {
+      "id": "anti_ragging_zero_tolerance_057",
+      "topic_id": "anti_ragging_zero_tolerance",
+      "topic_name": "Anti-Ragging Regulations & Reporting Cell",
+      "question": "Who is the coordinator of the Anti-Ragging Cell and what is their contact number?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        7,
+        82,
+        85,
+        86
+      ],
+      "canonical_fact": "Strict zero-tolerance policy; penalties include suspension, rustication, and police FIR; Anti-Ragging Cell contact."
+    },
+    {
+      "id": "anti_ragging_zero_tolerance_058",
+      "topic_id": "anti_ragging_zero_tolerance",
+      "topic_name": "Anti-Ragging Regulations & Reporting Cell",
+      "question": "What legal and academic actions are taken if a student is found guilty of ragging?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        7,
+        82,
+        85,
+        86
+      ],
+      "canonical_fact": "Strict zero-tolerance policy; penalties include suspension, rustication, and police FIR; Anti-Ragging Cell contact."
+    },
+    {
+      "id": "anti_ragging_zero_tolerance_059",
+      "topic_id": "anti_ragging_zero_tolerance",
+      "topic_name": "Anti-Ragging Regulations & Reporting Cell",
+      "question": "How can a victimized student file an emergency ragging complaint confidentially?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        7,
+        82,
+        85,
+        86
+      ],
+      "canonical_fact": "Strict zero-tolerance policy; penalties include suspension, rustication, and police FIR; Anti-Ragging Cell contact."
+    },
+    {
+      "id": "anti_ragging_zero_tolerance_060",
+      "topic_id": "anti_ragging_zero_tolerance",
+      "topic_name": "Anti-Ragging Regulations & Reporting Cell",
+      "question": "Does the university have anti-ragging squad patrols on campus?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        7,
+        82,
+        85,
+        86
+      ],
+      "canonical_fact": "Strict zero-tolerance policy; penalties include suspension, rustication, and police FIR; Anti-Ragging Cell contact."
+    },
+    {
+      "id": "campus_dress_code_061",
+      "topic_id": "campus_dress_code",
+      "topic_name": "Campus Dress Code & ID Card Policy",
+      "question": "Is there a formal dress code on campus and which days is it compulsory?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        8,
+        47,
+        81
+      ],
+      "canonical_fact": "Formal attire mandatory on Mondays and Tuesdays and presentations; ID cards must be worn at all times."
+    },
+    {
+      "id": "campus_dress_code_062",
+      "topic_id": "campus_dress_code",
+      "topic_name": "Campus Dress Code & ID Card Policy",
+      "question": "What attire is required during lab sessions, workshops, and placement drives?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        8,
+        47,
+        81
+      ],
+      "canonical_fact": "Formal attire mandatory on Mondays and Tuesdays and presentations; ID cards must be worn at all times."
+    },
+    {
+      "id": "campus_dress_code_063",
+      "topic_id": "campus_dress_code",
+      "topic_name": "Campus Dress Code & ID Card Policy",
+      "question": "Are jeans, round-neck T-shirts, or casual sandals permitted on formal days?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        8,
+        47,
+        81
+      ],
+      "canonical_fact": "Formal attire mandatory on Mondays and Tuesdays and presentations; ID cards must be worn at all times."
+    },
+    {
+      "id": "campus_dress_code_064",
+      "topic_id": "campus_dress_code",
+      "topic_name": "Campus Dress Code & ID Card Policy",
+      "question": "What is the penalty if a student fails to wear their university ID card?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        8,
+        47,
+        81
+      ],
+      "canonical_fact": "Formal attire mandatory on Mondays and Tuesdays and presentations; ID cards must be worn at all times."
+    },
+    {
+      "id": "campus_dress_code_065",
+      "topic_id": "campus_dress_code",
+      "topic_name": "Campus Dress Code & ID Card Policy",
+      "question": "Where can I get a duplicate ID card if I lose mine?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        8,
+        47,
+        81
+      ],
+      "canonical_fact": "Formal attire mandatory on Mondays and Tuesdays and presentations; ID cards must be worn at all times."
+    },
+    {
+      "id": "library_facilities_timings_066",
+      "topic_id": "library_facilities_timings",
+      "topic_name": "Central Library Timings, Membership & Book Borrowing",
+      "question": "What are the working hours and facilities of the Central Library?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        21,
+        22,
+        23,
+        24
+      ],
+      "canonical_fact": "Bar-coded member ID card issued; OPAC search terminals; borrowing limits and renewal rules."
+    },
+    {
+      "id": "library_facilities_timings_067",
+      "topic_id": "library_facilities_timings",
+      "topic_name": "Central Library Timings, Membership & Book Borrowing",
+      "question": "How many books can an undergraduate student borrow at one time?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        21,
+        22,
+        23,
+        24
+      ],
+      "canonical_fact": "Bar-coded member ID card issued; OPAC search terminals; borrowing limits and renewal rules."
+    },
+    {
+      "id": "library_facilities_timings_068",
+      "topic_id": "library_facilities_timings",
+      "topic_name": "Central Library Timings, Membership & Book Borrowing",
+      "question": "What is the fine per day for overdue library books?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        21,
+        22,
+        23,
+        24
+      ],
+      "canonical_fact": "Bar-coded member ID card issued; OPAC search terminals; borrowing limits and renewal rules."
+    },
+    {
+      "id": "library_facilities_timings_069",
+      "topic_id": "library_facilities_timings",
+      "topic_name": "Central Library Timings, Membership & Book Borrowing",
+      "question": "How can I access digital journals and IEEE databases from the library?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        21,
+        22,
+        23,
+        24
+      ],
+      "canonical_fact": "Bar-coded member ID card issued; OPAC search terminals; borrowing limits and renewal rules."
+    },
+    {
+      "id": "library_facilities_timings_070",
+      "topic_id": "library_facilities_timings",
+      "topic_name": "Central Library Timings, Membership & Book Borrowing",
+      "question": "Is the library open on weekends and during examination periods?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        21,
+        22,
+        23,
+        24
+      ],
+      "canonical_fact": "Bar-coded member ID card issued; OPAC search terminals; borrowing limits and renewal rules."
+    },
+    {
+      "id": "transport_bus_services_071",
+      "topic_id": "transport_bus_services",
+      "topic_name": "Transportation Routes, Bus Passes & Registration",
+      "question": "What districts and areas are covered by the university bus service?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        6,
+        7
+      ],
+      "canonical_fact": "Buses cover Kazipet, Hanamkonda, Warangal, and nearby districts; full-year fee payment; designated stops."
+    },
+    {
+      "id": "transport_bus_services_072",
+      "topic_id": "transport_bus_services",
+      "topic_name": "Transportation Routes, Bus Passes & Registration",
+      "question": "Where do I register for a student bus pass and who is the in-charge?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        6,
+        7
+      ],
+      "canonical_fact": "Buses cover Kazipet, Hanamkonda, Warangal, and nearby districts; full-year fee payment; designated stops."
+    },
+    {
+      "id": "transport_bus_services_073",
+      "topic_id": "transport_bus_services",
+      "topic_name": "Transportation Routes, Bus Passes & Registration",
+      "question": "Can I change my boarding bus stop mid-semester?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        6,
+        7
+      ],
+      "canonical_fact": "Buses cover Kazipet, Hanamkonda, Warangal, and nearby districts; full-year fee payment; designated stops."
+    },
+    {
+      "id": "transport_bus_services_074",
+      "topic_id": "transport_bus_services",
+      "topic_name": "Transportation Routes, Bus Passes & Registration",
+      "question": "Are transport fees refundable if a student relocates or vacates?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        6,
+        7
+      ],
+      "canonical_fact": "Buses cover Kazipet, Hanamkonda, Warangal, and nearby districts; full-year fee payment; designated stops."
+    },
+    {
+      "id": "transport_bus_services_075",
+      "topic_id": "transport_bus_services",
+      "topic_name": "Transportation Routes, Bus Passes & Registration",
+      "question": "What are the morning arrival and evening departure timings for university buses?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        6,
+        7
+      ],
+      "canonical_fact": "Buses cover Kazipet, Hanamkonda, Warangal, and nearby districts; full-year fee payment; designated stops."
+    },
+    {
+      "id": "scholarship_fee_support_076",
+      "topic_id": "scholarship_fee_support",
+      "topic_name": "Scholarships, Fee Concessions & Verification",
+      "question": "What scholarship schemes are available for students at SR University?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        6,
+        20,
+        23,
+        56
+      ],
+      "canonical_fact": "Merit and state scholarships available; Mr. G. Raju (Room 1002) in charge of UG/PG scholarships."
+    },
+    {
+      "id": "scholarship_fee_support_077",
+      "topic_id": "scholarship_fee_support",
+      "topic_name": "Scholarships, Fee Concessions & Verification",
+      "question": "Who is the concerned staff member for scholarship documentation and issues?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        6,
+        20,
+        23,
+        56
+      ],
+      "canonical_fact": "Merit and state scholarships available; Mr. G. Raju (Room 1002) in charge of UG/PG scholarships."
+    },
+    {
+      "id": "scholarship_fee_support_078",
+      "topic_id": "scholarship_fee_support",
+      "topic_name": "Scholarships, Fee Concessions & Verification",
+      "question": "Where is the scholarship section located in the administrative block?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        6,
+        20,
+        23,
+        56
+      ],
+      "canonical_fact": "Merit and state scholarships available; Mr. G. Raju (Room 1002) in charge of UG/PG scholarships."
+    },
+    {
+      "id": "scholarship_fee_support_079",
+      "topic_id": "scholarship_fee_support",
+      "topic_name": "Scholarships, Fee Concessions & Verification",
+      "question": "What academic performance criteria must be maintained to retain merit scholarships?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        6,
+        20,
+        23,
+        56
+      ],
+      "canonical_fact": "Merit and state scholarships available; Mr. G. Raju (Room 1002) in charge of UG/PG scholarships."
+    },
+    {
+      "id": "scholarship_fee_support_080",
+      "topic_id": "scholarship_fee_support",
+      "topic_name": "Scholarships, Fee Concessions & Verification",
+      "question": "How do I submit state e-pass scholarship application forms?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        6,
+        20,
+        23,
+        56
+      ],
+      "canonical_fact": "Merit and state scholarships available; Mr. G. Raju (Room 1002) in charge of UG/PG scholarships."
+    },
+    {
+      "id": "mentor_advising_system_081",
+      "topic_id": "mentor_advising_system",
+      "topic_name": "Faculty Mentoring & Academic Advising Framework",
+      "question": "Who is my faculty mentor and what support do they provide?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        9,
+        11,
+        15,
+        18
+      ],
+      "canonical_fact": "Each student assigned a faculty mentor at enrollment; at least one individual and one group session per semester."
+    },
+    {
+      "id": "mentor_advising_system_082",
+      "topic_id": "mentor_advising_system",
+      "topic_name": "Faculty Mentoring & Academic Advising Framework",
+      "question": "How frequently are individual mentoring sessions conducted each semester?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        9,
+        11,
+        15,
+        18
+      ],
+      "canonical_fact": "Each student assigned a faculty mentor at enrollment; at least one individual and one group session per semester."
+    },
+    {
+      "id": "mentor_advising_system_083",
+      "topic_id": "mentor_advising_system",
+      "topic_name": "Faculty Mentoring & Academic Advising Framework",
+      "question": "Can my faculty mentor assist with course registration and elective choices?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        9,
+        11,
+        15,
+        18
+      ],
+      "canonical_fact": "Each student assigned a faculty mentor at enrollment; at least one individual and one group session per semester."
+    },
+    {
+      "id": "mentor_advising_system_084",
+      "topic_id": "mentor_advising_system",
+      "topic_name": "Faculty Mentoring & Academic Advising Framework",
+      "question": "Where can I find the name and contact details of my assigned mentor?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        9,
+        11,
+        15,
+        18
+      ],
+      "canonical_fact": "Each student assigned a faculty mentor at enrollment; at least one individual and one group session per semester."
+    },
+    {
+      "id": "mentor_advising_system_085",
+      "topic_id": "mentor_advising_system",
+      "topic_name": "Faculty Mentoring & Academic Advising Framework",
+      "question": "What should I do if I need academic counseling or career guidance?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        9,
+        11,
+        15,
+        18
+      ],
+      "canonical_fact": "Each student assigned a faculty mentor at enrollment; at least one individual and one group session per semester."
+    },
+    {
+      "id": "r23_honors_minor_086",
+      "topic_id": "r23_honors_minor",
+      "topic_name": "R23 Regulations: Honors & Minor Degree Requirements",
+      "question": "What are the eligibility criteria to register for an Honors degree under R23?",
+      "doc": "R23 Handbook",
+      "expect_pages": [
+        53,
+        54,
+        60,
+        61,
+        62,
+        73,
+        129
+      ],
+      "canonical_fact": "R23 students can register for Honors/Minor earning 18-20 additional credits with CGPA >= 7.5."
+    },
+    {
+      "id": "r23_honors_minor_087",
+      "topic_id": "r23_honors_minor",
+      "topic_name": "R23 Regulations: Honors & Minor Degree Requirements",
+      "question": "How many additional credits are required to earn a Minor degree in R23?",
+      "doc": "R23 Handbook",
+      "expect_pages": [
+        53,
+        54,
+        60,
+        61,
+        62,
+        73,
+        129
+      ],
+      "canonical_fact": "R23 students can register for Honors/Minor earning 18-20 additional credits with CGPA >= 7.5."
+    },
+    {
+      "id": "r23_honors_minor_088",
+      "topic_id": "r23_honors_minor",
+      "topic_name": "R23 Regulations: Honors & Minor Degree Requirements",
+      "question": "Can a student with backlogs enroll in an Honors or Minor track in R23?",
+      "doc": "R23 Handbook",
+      "expect_pages": [
+        53,
+        54,
+        60,
+        61,
+        62,
+        73,
+        129
+      ],
+      "canonical_fact": "R23 students can register for Honors/Minor earning 18-20 additional credits with CGPA >= 7.5."
+    },
+    {
+      "id": "r23_honors_minor_089",
+      "topic_id": "r23_honors_minor",
+      "topic_name": "R23 Regulations: Honors & Minor Degree Requirements",
+      "question": "What happens if I fail an Honors course in R23?",
+      "doc": "R23 Handbook",
+      "expect_pages": [
+        53,
+        54,
+        60,
+        61,
+        62,
+        73,
+        129
+      ],
+      "canonical_fact": "R23 students can register for Honors/Minor earning 18-20 additional credits with CGPA >= 7.5."
+    },
+    {
+      "id": "r23_honors_minor_090",
+      "topic_id": "r23_honors_minor",
+      "topic_name": "R23 Regulations: Honors & Minor Degree Requirements",
+      "question": "Does a Minor degree appear separately on the final degree certificate in R23?",
+      "doc": "R23 Handbook",
+      "expect_pages": [
+        53,
+        54,
+        60,
+        61,
+        62,
+        73,
+        129
+      ],
+      "canonical_fact": "R23 students can register for Honors/Minor earning 18-20 additional credits with CGPA >= 7.5."
+    },
+    {
+      "id": "r23_professional_electives_091",
+      "topic_id": "r23_professional_electives",
+      "topic_name": "R23 Regulations: Professional & Open Electives",
+      "question": "What are professional electives in the R23 regulation curriculum?",
+      "doc": "R23 Handbook",
+      "expect_pages": [
+        53,
+        56,
+        61,
+        64,
+        166,
+        167,
+        168,
+        172
+      ],
+      "canonical_fact": "Professional electives are specialized domain courses; Open electives are interdisciplinary courses offered across departments."
+    },
+    {
+      "id": "r23_professional_electives_092",
+      "topic_id": "r23_professional_electives",
+      "topic_name": "R23 Regulations: Professional & Open Electives",
+      "question": "How do open electives work and can I take them from other engineering departments in R23?",
+      "doc": "R23 Handbook",
+      "expect_pages": [
+        53,
+        56,
+        61,
+        64,
+        166,
+        167,
+        168,
+        172
+      ],
+      "canonical_fact": "Professional electives are specialized domain courses; Open electives are interdisciplinary courses offered across departments."
+    },
+    {
+      "id": "r23_professional_electives_093",
+      "topic_id": "r23_professional_electives",
+      "topic_name": "R23 Regulations: Professional & Open Electives",
+      "question": "What is the minimum enrollment required for an elective track to be offered in R23?",
+      "doc": "R23 Handbook",
+      "expect_pages": [
+        53,
+        56,
+        61,
+        64,
+        166,
+        167,
+        168,
+        172
+      ],
+      "canonical_fact": "Professional electives are specialized domain courses; Open electives are interdisciplinary courses offered across departments."
+    },
+    {
+      "id": "r23_professional_electives_094",
+      "topic_id": "r23_professional_electives",
+      "topic_name": "R23 Regulations: Professional & Open Electives",
+      "question": "Can an R23 student change their registered elective course during add/drop period?",
+      "doc": "R23 Handbook",
+      "expect_pages": [
+        53,
+        56,
+        61,
+        64,
+        166,
+        167,
+        168,
+        172
+      ],
+      "canonical_fact": "Professional electives are specialized domain courses; Open electives are interdisciplinary courses offered across departments."
+    },
+    {
+      "id": "r23_professional_electives_095",
+      "topic_id": "r23_professional_electives",
+      "topic_name": "R23 Regulations: Professional & Open Electives",
+      "question": "Are MOOCs / NPTEL courses allowed in place of professional electives in R23?",
+      "doc": "R23 Handbook",
+      "expect_pages": [
+        53,
+        56,
+        61,
+        64,
+        166,
+        167,
+        168,
+        172
+      ],
+      "canonical_fact": "Professional electives are specialized domain courses; Open electives are interdisciplinary courses offered across departments."
+    },
+    {
+      "id": "student_enrollment_id_schema_096",
+      "topic_id": "student_enrollment_id_schema",
+      "topic_name": "10-Digit Roll Number / Enrollment Framework",
+      "question": "What is the structure of the 10-digit student enrollment number at SRU?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        8
+      ],
+      "canonical_fact": "10-digit number: Year (2), School Code (2), Degree Code (1), Program Code (2), Serial (3). Example: 2303A51001."
+    },
+    {
+      "id": "student_enrollment_id_schema_097",
+      "topic_id": "student_enrollment_id_schema",
+      "topic_name": "10-Digit Roll Number / Enrollment Framework",
+      "question": "How does the university roll number represent admission year, school, and branch?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        8
+      ],
+      "canonical_fact": "10-digit number: Year (2), School Code (2), Degree Code (1), Program Code (2), Serial (3). Example: 2303A51001."
+    },
+    {
+      "id": "student_enrollment_id_schema_098",
+      "topic_id": "student_enrollment_id_schema",
+      "topic_name": "10-Digit Roll Number / Enrollment Framework",
+      "question": "Explain the components of roll number 2303A51001 as described in the handbook.",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        8
+      ],
+      "canonical_fact": "10-digit number: Year (2), School Code (2), Degree Code (1), Program Code (2), Serial (3). Example: 2303A51001."
+    },
+    {
+      "id": "student_enrollment_id_schema_099",
+      "topic_id": "student_enrollment_id_schema",
+      "topic_name": "10-Digit Roll Number / Enrollment Framework",
+      "question": "Which digits in the enrollment number represent the student's degree and program code?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        8
+      ],
+      "canonical_fact": "10-digit number: Year (2), School Code (2), Degree Code (1), Program Code (2), Serial (3). Example: 2303A51001."
+    },
+    {
+      "id": "student_enrollment_id_schema_100",
+      "topic_id": "student_enrollment_id_schema",
+      "topic_name": "10-Digit Roll Number / Enrollment Framework",
+      "question": "How can I know my school code and degree code from my roll number?",
+      "doc": "Handbook 2026-27",
+      "expect_pages": [
+        8
+      ],
+      "canonical_fact": "10-digit number: Year (2), School Code (2), Degree Code (1), Program Code (2), Serial (3). Example: 2303A51001."
+    }
+  ]
+}

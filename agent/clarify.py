@@ -130,13 +130,19 @@ def check(question, history=None, profile=None):
                 ["Boys Hostel", "Girls Hostel"],
             )
 
-    if BRANCH_TOPIC.search(q) and not _PROGRAMME.search(ctx):
+    # If a student's profile already has a decoded degree/programme/stream, do not ask for branch
+    profile_has_branch = False
+    if isinstance(profile, dict):
+        if any(profile.get(k) for k in ("degree", "program", "stream", "branch", "programme", "roll_number")):
+            profile_has_branch = True
+
+    if BRANCH_TOPIC.search(q) and not _PROGRAMME.search(ctx) and not profile_has_branch:
         if len(_top_programme_labels(question)) >= 2:
             return _reply(
                 "branch",
                 "Which programme or branch are you in? Rules like graduation "
                 "credits and promotion differ between programmes (e.g. B.Tech, "
-                "BBA, BCA or B.Sc.).",
+                "BBA, BCA or B.Sc.). You can also simply share your 10-digit roll number!",
                 ["B.Tech", "BBA", "BCA", "B.Sc."],
             )
 
