@@ -15,6 +15,8 @@ from .counts import check as counts_check
 from .prompts import FALLBACK_PROMPT, FAST_SYSTEM_PROMPT, SYSTEM_PROMPT
 from .retriever import get_retriever
 from .roll_decoder import parse_roll_number, format_student_badge
+from .normalize import normalize_student_text
+from .scope_guard import check_out_of_scope
 
 MAX_STEPS = int(os.environ.get("AGENT_MAX_STEPS", "4"))
 MAX_HISTORY = 10
@@ -411,7 +413,13 @@ def run_agent(question, history=None, profile=None):
     for "how many clubs" style questions so exact numbers never depend on the
     model's arithmetic.
     """
-    question = _normalize_question(question)
+    # 0. Scope & Jailbreak boundary check
+    out_of_scope = check_out_of_scope(question)
+    if out_of_scope:
+        return out_of_scope
+
+    # Normalize student slang & shortcuts
+    question = normalize_student_text(_normalize_question(question))
     ckey = _cache_key(question)
 
     # 1. Roll Number Extraction & Identification pass
