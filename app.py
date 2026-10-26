@@ -1,4 +1,4 @@
-"""SRU Assist - Flask API for the agentic student handbook chatbot.
+"""AURA - Autonomous University RAG Agent for SR University.
 
 Run:  python app.py   (serves API + demo portal on http://localhost:5000)
 """

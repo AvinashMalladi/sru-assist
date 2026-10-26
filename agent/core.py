@@ -468,7 +468,7 @@ def run_agent(question, history=None, profile=None):
         )
         return {
             "answer": (
-                "Hello! 👋 I'm **SRU Assist**, your official student handbook assistant.\n\n"
+                "Hello! 👋 I'm **AURA** (Autonomous University RAG Agent), your official student handbook assistant.\n\n"
                 f"{roll_prompt}\n\n"
                 "I can help you with:\n"
                 "- **Academics**: Promotion rules, grading scale, SGPA/CGPA calculation, and pass marks\n"

@@ -1,7 +1,7 @@
 # AGENTS.md - conventions for AI coding tools working in this repo
 
 ## Project
-SRU Assist: an agentic RAG chatbot over the SR University Student Handbook,
+AURA: Autonomous University RAG Agent over the SR University Student Handbook,
 shipped as an embeddable portal widget. Owner team: student project team, 2026.
 
 ## Stack (do not change without team discussion)

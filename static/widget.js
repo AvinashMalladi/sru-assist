@@ -18,10 +18,10 @@
     return s ? new URL("/", s).origin : "";
   })()).replace(/\/$/, "");
 
-  var BOT_NAME = cfg.botName || "SRU Assist";
+  var BOT_NAME = cfg.botName || "AURA";
   var WELCOME =
     cfg.welcome ||
-    "Hi! I'm SRU Assist 🤖\nAsk me about credits, grading, CGPA, pass marks, attendance, exams or any handbook rule.";
+    "Hi! I'm AURA 🤖\n(Autonomous University RAG Agent)\n\nAsk me about credits, grading, CGPA, pass marks, attendance, exams or any handbook rule.";
 
   var SUGGESTIONS = [
     "Promotion rules",
@@ -346,7 +346,7 @@
         };
       }
     } else {
-      sub.textContent = profileSummary(profile) || "Student Handbook AI";
+      sub.textContent = profileSummary(profile) || "Autonomous University RAG Agent";
     }
   }
 
