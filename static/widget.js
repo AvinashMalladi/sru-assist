@@ -207,7 +207,7 @@
   panel.appendChild(inputBar);
 
   var bubble = el("button", "srucw-bubble", "💬");
-  bubble.setAttribute("aria-label", "Open SRU Assist chat");
+  bubble.setAttribute("aria-label", "Open AURA chat");
 
   root.appendChild(panel);
   root.appendChild(bubble);
@@ -274,11 +274,15 @@
     try {
       var saved = JSON.parse(sessionStorage.getItem(SESS_KEY) || "[]");
       if (Array.isArray(saved) && saved.length) {
+        if (saved[0] && saved[0].role === "assistant" && /SRU Assist/i.test(saved[0].content)) {
+          saved[0].content = WELCOME;
+        }
         history = saved;
         msgsBox.innerHTML = "";
         history.forEach(function (m) {
           addMsg(m.role === "user" ? "user" : "bot", m.content, m.citations);
         });
+        saveSessionMsgs();
         return true;
       }
     } catch (e) {}

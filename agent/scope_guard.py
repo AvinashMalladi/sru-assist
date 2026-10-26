@@ -29,7 +29,7 @@ OFF_TOPIC_REGEX = re.compile(
 )
 
 REFUSAL_MESSAGE = (
-    "I am **SRU Assist**, the official student handbook assistant for SR University.\n\n"
+    "I am **AURA** (Autonomous University RAG Agent), the official student handbook assistant for SR University.\n\n"
     "I am strictly dedicated to assisting with **university academic regulations, student handbook rules, "
     "examinations, attendance, grading, hostel policies, and campus facilities**.\n\n"
     "I cannot assist with general programming, entertainment, jokes, or off-topic queries. "
