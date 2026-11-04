@@ -76,7 +76,7 @@ def init_db() -> None:
 
 def save_student(htno: str, profile: Dict[str, Any]) -> None:
     """Insert or update a student's profile."""
-    if not htno:
+    if not htno or not profile or profile.get("is_valid") is False:
         return
     htno = htno.strip().upper()
     conn = _get_connection()
@@ -152,7 +152,7 @@ def save_message(
         """, (session_id, clean_htno, role, message, citations_json, profile_json, mode))
         msg_id = cur.lastrowid
 
-    if clean_htno and profile:
+    if clean_htno and profile and profile.get("is_valid", True):
         save_student(clean_htno, profile)
 
     return msg_id

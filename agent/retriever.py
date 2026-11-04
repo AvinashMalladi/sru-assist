@@ -98,7 +98,31 @@ def _merge_sync_registry():
                 DOC_SOURCES.append(entry)
 
 
+def _auto_discover_data_pdfs():
+    """Auto-detect and register any regulation PDFs dropped into data/ (e.g. R24_BTECH.pdf, R25_BTECH.pdf)."""
+    if not os.path.exists(DATA):
+        return
+    existing_files = {s.get("file") for s in DOC_SOURCES if s.get("file")}
+    for fname in os.listdir(DATA):
+        if fname.lower().endswith(".pdf") and fname not in existing_files:
+            lower = fname.lower()
+            if "r24" in lower:
+                DOC_SOURCES.append({"file": fname, "label": "R24 Handbook"})
+            elif "r25" in lower:
+                DOC_SOURCES.append({"file": fname, "label": "R25 Handbook"})
+            elif "r23" in lower:
+                DOC_SOURCES.append({"file": fname, "label": "R23 Handbook"})
+            elif any(k in lower for k in ("r20", "r21", "r22")):
+                m = re.search(r"r\d{2}", lower)
+                reg_name = m.group(0).upper() if m else "Regulation"
+                DOC_SOURCES.append({"file": fname, "label": f"{reg_name} Handbook"})
+            else:
+                label_name = os.path.splitext(fname)[0].replace("_", " ").title()
+                DOC_SOURCES.append({"file": fname, "label": label_name})
+
+
 _merge_sync_registry()
+_auto_discover_data_pdfs()
 
 
 @dataclass

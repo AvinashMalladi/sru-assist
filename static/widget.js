@@ -53,7 +53,8 @@
     ".srucw-badge:hover{background:rgba(255,255,255,.35)}",
     ".srucw-badge-x{font-size:11px;opacity:.8;margin-left:2px}",
     ".srucw-badge-x:hover{opacity:1;color:#ffcaca}",
-    ".srucw-close{margin-left:auto;background:none;border:none;color:#fff;font-size:20px;cursor:pointer;opacity:.9}",
+    ".srucw-clear{margin-left:auto;background:rgba(255,255,255,.16);border:none;color:#fff;border-radius:6px;font-size:13px;cursor:pointer;opacity:.9;padding:4px 7px;display:flex;align-items:center;transition:background .15s ease}",
+    ".srucw-clear:hover{background:rgba(255,255,255,.28);opacity:1}",
     ".srucw-msgs{flex:1;overflow-y:auto;padding:14px;background:#f6f7fb;display:flex;flex-direction:column;gap:10px}",
     ".srucw-row{display:flex;gap:8px;align-items:flex-end}",
     ".srucw-row.user{flex-direction:row-reverse}",
@@ -190,8 +191,7 @@
     '<div class="srucw-head"><div class="srucw-avatar">🎓</div><div>' +
     '<div class="srucw-title"></div><div class="srucw-sub">Student Handbook AI</div></div>' +
     '<div style="margin-left:auto;display:flex;align-items:center;gap:6px">' +
-    '<button class="srucw-clear" title="Clear chat & reset" aria-label="Clear chat" style="background:none;border:none;color:#fff;font-size:15px;cursor:pointer;opacity:.85;padding:2px 4px">🔄</button>' +
-    '<button class="srucw-close" aria-label="Close chat">×</button></div></div>';
+    '<button class="srucw-clear" title="Clear chat & reset" aria-label="Clear chat">🔄</button></div></div>';
   panel.querySelector(".srucw-title").textContent = BOT_NAME;
 
   var msgsBox = el("div", "srucw-msgs");
@@ -602,6 +602,13 @@
       input.focus();
     }
   };
+
+  // Close when clicking anywhere outside the chat panel on the portal
+  document.addEventListener("click", function (e) {
+    if (panel.classList.contains("open") && !root.contains(e.target)) {
+      bubble.click();
+    }
+  });
 
   if (window.visualViewport) {
     window.visualViewport.addEventListener("resize", function () {

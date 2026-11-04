@@ -51,6 +51,10 @@ STUDENT_TYPO_MAP = {
     r"\b(cg|cgpa|gpa|sg|sgpa)\b": "grade point average CGPA SGPA",
     r"\b(pe|prof elective|dept elective)\b": "professional elective",
     r"\b(oe|open elective|interdisciplinary elective)\b": "open elective",
+
+    # Lateral Entry, Diploma & Transfer Pathways
+    r"\b(lateral entry|lateral|le student|diploma entry|ecet entry|ecet)\b": "lateral entry diploma admission directly second year semester III 120 credits",
+    r"\b(transfer entry|credit transfer|transferred from|migrated from)\b": "credit transfer framework equivalence committee section 3.12 page 19",
 }
 
 COMPILED_TYPO_RULES = [

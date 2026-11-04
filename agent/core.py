@@ -8,6 +8,7 @@ injected so answers stay grounded, but tools are not offered - fastest path,
 import json
 import os
 import re
+import time
 
 from .config import load_env
 
@@ -392,7 +393,7 @@ def _trim_history(history, keep=MAX_HISTORY):
     return clean
 
 
-PROFILE_KEYS = ("programme", "branch", "stream", "degree", "year", "semester", "batch", "regulation", "roll_number")
+PROFILE_KEYS = ("programme", "branch", "stream", "degree", "entry_type", "year", "semester", "batch", "regulation", "roll_number")
 
 
 def _profile_block(profile):
@@ -405,7 +406,12 @@ def _profile_block(profile):
             parts.append(f"{k}={v[:40]}")
     if not parts:
         return "\n\nSTUDENT PROFILE: unknown"
-    return "\n\nSTUDENT PROFILE: " + "; ".join(parts)
+    block = "\n\nSTUDENT PROFILE: " + "; ".join(parts)
+    if profile.get("is_lateral_entry"):
+        block += "\n[LATERAL ENTRY CANDIDATE: Admitted directly into 2nd year (Semester III). Prescribed graduation credits: 110–130 credits (Handbook 2026-27 p. 19 / R23 p. 59, 91), NEVER 160 credits. 1st-year promotion checks are not applicable.]"
+    if profile.get("regulation_disclaimer"):
+        block += f"\n[REGULATION STATUS: {profile['regulation_disclaimer']}]"
+    return block
 
 
 def run_agent(question, history=None, profile=None):
@@ -429,6 +435,25 @@ def run_agent(question, history=None, profile=None):
     # 1. Roll Number Extraction & Identification pass
     detected_roll = parse_roll_number(question)
     if detected_roll:
+        # Check validation bounds
+        if not detected_roll.get("is_valid", True):
+            return {
+                "answer": (
+                    f"⚠️ **Enrollment Number Verification Notice:**\n\n"
+                    f"The roll number `{detected_roll['roll_number']}` could not be validated:\n"
+                    f"- **Reason:** {detected_roll['validation_error']}\n\n"
+                    f"**Suggestions:**\n"
+                    f"- Please verify your 10-digit roll number format (e.g., `2303A51001` or `2403L51001`).\n"
+                    f"- If you are a prospective, guest, or alumni student, feel free to ask your academic or campus questions directly without a roll number!"
+                ),
+                "citations": ["Handbook 2026-27 p.8"],
+                "tool_calls": [],
+                "mode": "invalid_roll_number",
+                "profile": profile,
+                "retrieval_ms": 0.0,
+                "llm_ms": 0.0,
+            }
+
         active_profile = dict(profile or {})
         active_profile.update(detected_roll)
         badge = format_student_badge(detected_roll)
@@ -439,25 +464,57 @@ def run_agent(question, history=None, profile=None):
         cleaned_no_roll = re.sub(r"[^a-zA-Z0-9]+", "", cleaned_no_roll).strip()
         
         if not cleaned_no_roll or len(cleaned_no_roll) <= 3:
-            return {
-                "answer": (
+            disclaimer_part = f"\n\nℹ️ **Notice:** {detected_roll['regulation_disclaimer']}" if detected_roll.get("regulation_disclaimer") else ""
+            
+            if detected_roll.get("is_lateral_entry"):
+                msg = (
+                    f"🎓 **Lateral Entry Student Profile Identified:**\n\n"
+                    f"- **Roll / Enrollment Number:** `{detected_roll['roll_number']}`\n"
+                    f"- **Entry Pathway:** Lateral Entry (Admitted directly to Semester III / 2nd Year)\n"
+                    f"- **Degree & Branch:** {detected_roll['degree']} · {detected_roll['program']}\n"
+                    f"- **School:** {detected_roll['school']}\n"
+                    f"- **Batch & Regulation:** {detected_roll['batch']} ({detected_roll['regulation']})\n"
+                    f"- **Prescribed Graduation Credits:** {detected_roll['prescribed_credits']}\n"
+                    f"- **Academic Promotion:** {detected_roll['promotion_summary']}"
+                    f"{disclaimer_part}\n\n"
+                    f"Welcome! I have tailored my knowledge specifically to your lateral entry curriculum and regulation criteria. "
+                    f"What would you like to check regarding your required credits, pass marks, attendance, or promotion rules?"
+                )
+            else:
+                msg = (
                     f"🎓 **Student Profile Identified:**\n\n"
                     f"- **Roll / Enrollment Number:** `{detected_roll['roll_number']}`\n"
                     f"- **Degree:** {detected_roll['degree']}\n"
                     f"- **Branch / Stream:** {detected_roll['program']}\n"
                     f"- **School:** {detected_roll['school']}\n"
-                    f"- **Batch & Regulation:** {detected_roll['batch']} ({detected_roll['regulation']}, citing {detected_roll['handbook_doc']})\n\n"
+                    f"- **Batch & Regulation:** {detected_roll['batch']} ({detected_roll['regulation']}, citing {detected_roll['handbook_doc']})\n"
+                    f"- **Prescribed Graduation Credits:** {detected_roll['prescribed_credits']}"
+                    f"{disclaimer_part}\n\n"
                     f"Welcome! I have tailored my knowledge to your specific regulations. "
                     f"What would you like to check regarding your curriculum, pass marks, attendance, or promotion rules?"
-                ),
+                )
+
+            return {
+                "answer": msg,
                 "citations": [f"{detected_roll['handbook_doc']} p.8"],
                 "tool_calls": [],
                 "mode": "profile_identified",
                 "profile": active_profile,
+                "retrieval_ms": 0.0,
+                "llm_ms": 0.0,
             }
         else:
             # The student provided a question alongside their roll number: update profile and continue!
             profile = active_profile
+
+    # Check if query explicitly declares lateral entry without a roll number
+    if re.search(r"\b(lateral entry|lateral student|diploma entry|ecet)\b", question, re.I):
+        if not isinstance(profile, dict):
+            profile = {}
+        profile["is_lateral_entry"] = True
+        profile["entry_type"] = "Lateral Entry"
+        if not profile.get("degree"):
+            profile["degree"] = "B.Tech (Lateral Entry)"
 
     if ckey in _GREETINGS:
         has_roll = isinstance(profile, dict) and profile.get("roll_number")
@@ -509,6 +566,8 @@ def run_agent(question, history=None, profile=None):
     if not history and result.get("mode") in ("fast", "agent") and "experiencing high network demand" not in result.get("answer", ""):
         _CACHE[ckey] = result
 
+    result.setdefault("retrieval_ms", 0.0)
+    result.setdefault("llm_ms", 0.0)
     return result
 
 
@@ -528,13 +587,19 @@ def _fast_answer(question, history, profile):
     messages = [{"role": "system", "content": FAST_SYSTEM_PROMPT + profile_line}]
     messages.extend(history)
 
+    t_ret_0 = time.perf_counter()
     ctx = _auto_context(question, history=history, profile=profile)
+    retrieval_ms = round((time.perf_counter() - t_ret_0) * 1000, 2)
+
     user_msg = question if not ctx else f"{question}\n\n[system note] {ctx}"
     messages.append({"role": "user", "content": user_msg})
 
+    t_llm_0 = time.perf_counter()
     try:
         reply = llm.chat(messages, tools=None, max_tokens=_max_tokens())
+        llm_ms = round((time.perf_counter() - t_llm_0) * 1000, 2)
     except Exception:
+        llm_ms = round((time.perf_counter() - t_llm_0) * 1000, 2)
         answer = _finalize_answer("", messages, question)
         citations |= _cites_from(ctx or "")
         return {
@@ -542,6 +607,8 @@ def _fast_answer(question, history, profile):
             "citations": sorted(citations),
             "tool_calls": [],
             "mode": "fast-fallback",
+            "retrieval_ms": retrieval_ms,
+            "llm_ms": llm_ms,
         }
 
     answer = _finalize_answer(reply.content, messages, question)
@@ -552,6 +619,8 @@ def _fast_answer(question, history, profile):
         "citations": sorted(citations),
         "tool_calls": [],
         "mode": "fast",
+        "retrieval_ms": retrieval_ms,
+        "llm_ms": llm_ms,
     }
 
 
@@ -576,15 +645,22 @@ def _agentic_answer(question, history, profile):
     messages = [{"role": "system", "content": SYSTEM_PROMPT + profile_line}]
     messages.extend(history)
 
+    t_ret_0 = time.perf_counter()
     ctx = _auto_context(question, history=history, profile=profile)
+    retrieval_ms = round((time.perf_counter() - t_ret_0) * 1000, 2)
+
     user_msg = question if not ctx else f"{question}\n\n[system note] {ctx}"
     messages.append({"role": "user", "content": user_msg})
 
     specs = tools.tool_specs(enable_web=bool(_web_enabled()))
 
+    llm_ms_total = 0.0
+    t_llm_0 = time.perf_counter()
     try:
         reply = llm.chat(messages, tools=specs, max_tokens=_max_tokens())
+        llm_ms_total += (time.perf_counter() - t_llm_0) * 1000
     except Exception:
+        llm_ms_total += (time.perf_counter() - t_llm_0) * 1000
         # Model/provider rejected tools -> plain grounded answer path.
         answer = _grounded_answer(messages, question)
         return {
@@ -592,6 +668,8 @@ def _agentic_answer(question, history, profile):
             "citations": sorted(citations),
             "tool_calls": used_tools,
             "mode": "rag-fallback",
+            "retrieval_ms": retrieval_ms,
+            "llm_ms": round(llm_ms_total, 2),
         }
 
     step = 0
@@ -632,15 +710,20 @@ def _agentic_answer(question, history, profile):
                 }
             )
 
+        t_llm_step = time.perf_counter()
         try:
             reply = llm.chat(messages, tools=specs, max_tokens=_max_tokens())
+            llm_ms_total += (time.perf_counter() - t_llm_step) * 1000
         except Exception:
+            llm_ms_total += (time.perf_counter() - t_llm_step) * 1000
             answer = _grounded_answer(messages, question)
             return {
                 "answer": answer,
                 "citations": sorted(citations),
                 "tool_calls": used_tools,
                 "mode": "rag-fallback-midloop",
+                "retrieval_ms": retrieval_ms,
+                "llm_ms": round(llm_ms_total, 2),
             }
 
     answer = _finalize_answer(reply.content, messages, question)
@@ -653,6 +736,8 @@ def _agentic_answer(question, history, profile):
         "citations": sorted(citations),
         "tool_calls": used_tools,
         "mode": "agent",
+        "retrieval_ms": retrieval_ms,
+        "llm_ms": round(llm_ms_total, 2),
     }
 
 
