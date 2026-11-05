@@ -503,14 +503,16 @@
           for (var k in data.profile) { profile[k] = data.profile[k]; }
           saveProfile();
         }
-        if (data.suggestions && data.suggestions.length) {
+        if (data.mode === "clarify" || (data.options && data.options.length)) {
+          var opts = (data.options && data.options.length) ? data.options : data.suggestions;
+          setChips(opts, 8);
+        } else if (data.suggestions && data.suggestions.length) {
           setChips(data.suggestions);
-        } else if (data.options && data.options.length) {
-          setChips(data.options, 8);
+          refreshSuggestions();
         } else {
           maybeClarifyChips(ans);
+          refreshSuggestions();
         }
-        refreshSuggestions();
       })
       .catch(function (err) {
         if (err && (err.name === "AbortError" || err.message === "The user aborted a request.")) {

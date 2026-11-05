@@ -16,6 +16,7 @@ load_env()
 
 from . import llm, tools
 from .clarify import check as clarify_check
+from .context_resolver import resolve_contextual_query
 from .counts import check as counts_check
 from .prompts import FALLBACK_PROMPT, FAST_SYSTEM_PROMPT, SYSTEM_PROMPT
 from .retriever import get_retriever
@@ -351,20 +352,11 @@ def _cites_from(text):
     return {f"{label.strip()} p.{page}" for label, page in CITE_RE.findall(text or "")}
 
 
-def _contextual_search_query(question, history):
-    """If the student's question is a short conversational clarification or batch
-    statement (e.g. '2023-24 batch', 'R23', '23-24', 'yes tell me more', 'what about cse?'),
-    combine it with the previous substantive question so the retriever finds the actual
-    subject in the right regulation."""
-    q = (question or "").strip()
-    words = q.split()
-    if len(words) <= 5 and history:
-        for m in reversed(history):
-            if isinstance(m, dict) and m.get("role") == "user":
-                prev = (m.get("content") or "").strip()
-                if prev and prev.lower() != q.lower():
-                    return f"{prev} {q}"
-    return q
+def _contextual_search_query(question, history, profile=None):
+    """Reconstruct a complete, context-rich search query from multi-turn dialogue,
+    resolving short answers, option selections, ordinals ('second one'), and sub-topics."""
+    resolved = resolve_contextual_query(question, history=history, profile=profile)
+    return resolved.get("resolved_query") or question
 
 
 def _auto_context(question, history=None, profile=None):
@@ -372,7 +364,7 @@ def _auto_context(question, history=None, profile=None):
     even when the model chooses not to call tools. Uses conversational reformulation
     so follow-ups ('2023-24 batch') retrieve the prior topic from the intended regulation."""
     retriever = get_retriever()
-    search_q = _contextual_search_query(question, history)
+    search_q = _contextual_search_query(question, history, profile=profile)
     text, cites = retriever.format_hits(search_q, top_k=AUTO_CONTEXT_TOP_K, history=history, profile=profile)
     if not cites:
         return None

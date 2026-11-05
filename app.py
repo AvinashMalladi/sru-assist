@@ -131,11 +131,11 @@ def chat():
         )
 
     data = request.get_json(silent=True) or {}
-    question = (data.get("message") or "").strip()
+    question = str(data.get("message") or "").strip()
     history = data.get("history") or []
     profile = data.get("profile") or {}
-    session_id = (data.get("session_id") or "").strip() or str(uuid.uuid4())
-    htno = (data.get("htno") or profile.get("roll_number") or "").strip()
+    session_id = str(data.get("session_id") or "").strip()[:64] or str(uuid.uuid4())
+    htno = str(data.get("htno") or profile.get("roll_number") or "").strip()[:20]
 
     # Detect roll number from question if not already provided
     detected_roll = parse_roll_number(question)
@@ -194,7 +194,7 @@ def chat():
     result["latency_ms"] = int((time.time() - t0) * 1000)
     result["session_id"] = session_id
     result["htno"] = htno
-    result["suggestions"] = get_suggestions(4, profile=profile)
+    result["suggestions"] = result["options"] if result.get("options") else get_suggestions(4, profile=profile)
     return jsonify(result)
 
 
