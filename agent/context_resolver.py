@@ -221,3 +221,4 @@ def resolve_contextual_query(question, history=None, profile=None):
         "active_topic": active_topic,
         "is_continuation": is_continuation,
     }
+
