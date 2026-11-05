@@ -51,12 +51,6 @@ def demo_portal():
     return send_from_directory(os.path.join(ROOT, "demo"), "index.html")
 
 
-@app.get("/presentation")
-@app.get("/presentation.html")
-def presentation_deck():
-    return send_from_directory(ROOT, "presentation.html")
-
-
 @app.get("/api/health")
 def health():
     return jsonify({"status": "ok", "model": os.environ.get("MODEL_NAME", "default")})
@@ -118,7 +112,6 @@ def delete_history():
 
 @app.post("/api/chat")
 def chat():
-    t_start = time.perf_counter()
     client_ip = (
         request.headers.get("X-Forwarded-For", request.remote_addr or "127.0.0.1")
         .split(",")[0]
@@ -138,27 +131,22 @@ def chat():
         )
 
     data = request.get_json(silent=True) or {}
-    question = str(data.get("message") or "").strip()
-    raw_history = data.get("history")
-    history = raw_history[-10:] if isinstance(raw_history, list) else []
-    profile = data.get("profile") if isinstance(data.get("profile"), dict) else {}
-    session_id = str(data.get("session_id") or "").strip()[:64] or str(uuid.uuid4())
-    htno = str(data.get("htno") or profile.get("roll_number") or "").strip()[:20]
-    if htno:
-        parsed_incoming = parse_roll_number(htno)
-        if not (parsed_incoming and parsed_incoming.get("is_valid", True)):
-            htno = ""
+    question = (data.get("message") or "").strip()
+    history = data.get("history") or []
+    profile = data.get("profile") or {}
+    session_id = (data.get("session_id") or "").strip() or str(uuid.uuid4())
+    htno = (data.get("htno") or profile.get("roll_number") or "").strip()
 
     # Detect roll number from question if not already provided
     detected_roll = parse_roll_number(question)
-    if detected_roll and detected_roll.get("is_valid", True):
+    if detected_roll:
         htno = detected_roll["roll_number"]
         profile.update(detected_roll)
         db.link_session_to_htno(session_id, htno)
         db.save_student(htno, profile)
     elif htno and not profile.get("regulation"):
         existing_profile = db.get_student(htno)
-        if existing_profile and existing_profile.get("is_valid", True):
+        if existing_profile:
             profile.update(existing_profile)
 
     if not question:
@@ -168,11 +156,12 @@ def chat():
 
     track_query(question)
 
+    t0 = time.time()
     try:
         result = run_agent(question, history, profile=profile)
         if result.get("profile"):
             profile.update(result["profile"])
-            if result["profile"].get("roll_number") and result["profile"].get("is_valid", True):
+            if result["profile"].get("roll_number"):
                 htno = result["profile"]["roll_number"]
                 db.link_session_to_htno(session_id, htno)
                 db.save_student(htno, profile)
@@ -188,7 +177,6 @@ def chat():
         )
     except Exception as exc:  # noqa: BLE001 - never crash the widget
         app.logger.exception("agent failure")
-        elapsed_ms = (time.perf_counter() - t_start) * 1000
         return (
             jsonify(
                 {
@@ -197,18 +185,13 @@ def chat():
                     "citations": [],
                     "tool_calls": [],
                     "mode": "error",
-                    "latency_ms": int(round(elapsed_ms)),
-                    "retrieval_ms": 0.0,
-                    "llm_ms": 0.0,
+                    "latency_ms": int((time.time() - t0) * 1000),
                     "detail": str(exc),
                 }
             ),
             200,
         )
-    elapsed_ms = (time.perf_counter() - t_start) * 1000
-    result["latency_ms"] = int(round(elapsed_ms))
-    result["retrieval_ms"] = float(result.get("retrieval_ms", 0.0))
-    result["llm_ms"] = float(result.get("llm_ms", 0.0))
+    result["latency_ms"] = int((time.time() - t0) * 1000)
     result["session_id"] = session_id
     result["htno"] = htno
     result["suggestions"] = get_suggestions(4, profile=profile)
