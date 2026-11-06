@@ -27,7 +27,7 @@ DEFAULT_DIRECTORY = {
         "keywords": [
             "vinay", "vinay kumar", "ch vinay kumar", "administrative officer hostels",
             "hostel administrative officer", "hostel ao", "ao hostel", "head of hostels",
-            "hostel management", "hostel admin"
+            "hostel management", "hostel admin", "ao", "ao contact", "ao number", "administrative officer"
         ],
         "current_name": "Mr. Ch. Vinay Kumar (Administrative Officer, Hostels)",
         "previous_name": "Mr. Ch. Vinay Kumar",
@@ -504,42 +504,46 @@ def match_contact_override(query: str) -> dict | None:
     """
     if not query:
         return None
-    q = query.lower().strip()
+    from .normalize import normalize_student_text
+    raw_q = query.lower().strip()
+    norm_q = normalize_student_text(raw_q).lower().strip()
     directory = load_contacts()
 
     # --- 1. Semantic High-Priority Patterns ---
-    # a) Administrative Officer (AO) of Hostels
-    if re.search(r"\b(ao|administrative officer)\b", q) and re.search(r"\b(hostel|hostels|accommodation)\b", q):
-        return directory.get("hostel_admin_officer")
+    # a) Administrative Officer (AO) - Hostels / General Administration
+    for candidate_q in (raw_q, norm_q):
+        if re.search(r"\b(ao|administrative officer)\b", candidate_q):
+            if not re.search(r"\b(exam|coe|library|sports)\b", candidate_q):
+                return directory.get("hostel_admin_officer")
 
-    # b) Boys Hostel in-charge / warden / manager / complaints / who to call
-    if re.search(r"\b(boys?|bh-?\d?)\b", q) and re.search(r"\b(hostel|hostels)\b", q) and re.search(r"\b(warden|incharge|in-charge|manager|call|contact|who|problem|complaint|emergency)\b", q):
-        return directory.get("hostel_boys_manager")
+        # b) Boys Hostel in-charge / warden / manager / complaints / who to call
+        if re.search(r"\b(boys?|bh-?\d?)\b", candidate_q) and re.search(r"\b(hostel|hostels)\b", candidate_q) and re.search(r"\b(warden|incharge|in-charge|manager|call|contact|who|problem|complaint|emergency)\b", candidate_q):
+            return directory.get("hostel_boys_manager")
 
-    # c) Girls Hostel in-charge / warden / manager / complaints / who to call
-    if re.search(r"\b(girls?|gh-?\d?)\b", q) and re.search(r"\b(hostel|hostels)\b", q) and re.search(r"\b(warden|incharge|in-charge|manager|call|contact|who|problem|complaint|emergency)\b", q):
-        return directory.get("hostel_girls_manager")
+        # c) Girls Hostel in-charge / warden / manager / complaints / who to call
+        if re.search(r"\b(girls?|gh-?\d?)\b", candidate_q) and re.search(r"\b(hostel|hostels)\b", candidate_q) and re.search(r"\b(warden|incharge|in-charge|manager|call|contact|who|problem|complaint|emergency)\b", candidate_q):
+            return directory.get("hostel_girls_manager")
 
-    # d) Department Leadership & Deans (Civil, Mech, EEE, ECE, CSE, Business, Agri, Innovation)
-    if re.search(r"\b(dean|hod|head)\b", q):
-        if re.search(r"\b(civil|ce)\b", q):
-            return directory.get("dean_civil")
-        if re.search(r"\b(mechanical|mech|me)\b", q):
-            return directory.get("dean_mechanical")
-        if re.search(r"\b(eee|electrical)\b", q):
-            return directory.get("dean_eee")
-        if re.search(r"\b(ece|electronics)\b", q):
-            return directory.get("dean_ece")
-        if re.search(r"\b(computer|cse|csai|socs|cs & ai)\b", q):
-            return directory.get("dean_computer_science")
-        if re.search(r"\b(business|sob|bba|mba)\b", q):
-            return directory.get("dean_business")
-        if re.search(r"\b(agriculture|soa|agri)\b", q):
-            return directory.get("dean_agriculture")
-        if re.search(r"\b(innovation|nest|startup)\b", q):
-            return directory.get("dean_innovation")
-        if re.search(r"\b(student welfare|sw)\b", q):
-            return directory.get("dean_student_welfare")
+        # d) Department Leadership & Deans (Civil, Mech, EEE, ECE, CSE, Business, Agri, Innovation)
+        if re.search(r"\b(dean|hod|head)\b", candidate_q):
+            if re.search(r"\b(civil|ce)\b", candidate_q):
+                return directory.get("dean_civil")
+            if re.search(r"\b(mechanical|mech|me)\b", candidate_q):
+                return directory.get("dean_mechanical")
+            if re.search(r"\b(eee|electrical)\b", candidate_q):
+                return directory.get("dean_eee")
+            if re.search(r"\b(ece|electronics)\b", candidate_q):
+                return directory.get("dean_ece")
+            if re.search(r"\b(computer|cse|csai|socs|cs & ai)\b", candidate_q):
+                return directory.get("dean_computer_science")
+            if re.search(r"\b(business|sob|bba|mba)\b", candidate_q):
+                return directory.get("dean_business")
+            if re.search(r"\b(agriculture|soa|agri)\b", candidate_q):
+                return directory.get("dean_agriculture")
+            if re.search(r"\b(innovation|nest|startup)\b", candidate_q):
+                return directory.get("dean_innovation")
+            if re.search(r"\b(student welfare|sw)\b", candidate_q):
+                return directory.get("dean_student_welfare")
 
     # --- 2. Keyword-based matching with word boundaries ---
     best_match = None
@@ -552,9 +556,10 @@ def match_contact_override(query: str) -> dict | None:
             if not kw_clean:
                 continue
             pattern = rf"(?<!\w){re.escape(kw_clean)}(?!\w)"
-            if re.search(pattern, q) and len(kw_clean) > longest_kw:
-                best_match = item
-                longest_kw = len(kw_clean)
+            for candidate_q in (raw_q, norm_q):
+                if re.search(pattern, candidate_q) and len(kw_clean) > longest_kw:
+                    best_match = item
+                    longest_kw = len(kw_clean)
 
     return best_match
 

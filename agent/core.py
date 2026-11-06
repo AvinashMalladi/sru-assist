@@ -358,6 +358,8 @@ def _contextual_search_query(question, history):
     combine it with the previous substantive question so the retriever finds the actual
     subject in the right regulation."""
     q = (question or "").strip()
+    if re.search(r"\bp(?:age|\.)\s*\d+\b", q, re.I):
+        return q
     words = q.split()
     if len(words) <= 5 and history:
         for m in reversed(history):
@@ -377,9 +379,26 @@ def _auto_context(question, history=None, profile=None):
     text, cites = retriever.format_hits(search_q, top_k=AUTO_CONTEXT_TOP_K, history=history, profile=profile)
     if not cites:
         return None
+
+    # Live personnel overlay reminder for hostel / curfew / administrative personnel
+    combined_q = f"{question} {history[-1].get('content', '') if history else ''}".lower()
+    overlay_note = ""
+    if re.search(r"\b(hostel|warden|curfew|late|out-?pass|gate\s*pass|night\s*out|bh-?\d?|gh-?\d?)\b", combined_q):
+        overlay_note = (
+            "\n\n[AUTHORITATIVE DIRECTORY OVERRIDE: Active Girls Hostel In-Charge is Ms. S. Shobha Rani (Phone: 9701578799, GH-1 Desk); "
+            "Active Boys Hostel Manager is Mr. A. Surender (Phone: 9989671719, BH-2 Desk); "
+            "Administrative Officer (Hostels) is Mr. Ch. Vinay Kumar (Phone: 9966001761). "
+            "Under no circumstances quote obsolete 2023 names like Ms. Anitha GP or Dr. Rupesh Mishra.]"
+        )
+    elif re.search(r"\b(tc|transfer\s+certificate|bonafide|study\s+certificate|migration|custodian|help\s+desk|id\s+card)\b", combined_q):
+        overlay_note = (
+            "\n\n[AUTHORITATIVE DIRECTORY OVERRIDE: Student Certificates (TC, Bonafide, Migration, Custodian) are issued by "
+            "Ms. Jupaka Ramadevi (Phone: 9963084035, Email: j.ramadevi@sru.edu.in) at Block-I, Room No. 1002 (Student Help Desk) up to 5:00 PM on working days.]"
+        )
+
     return (
         f"Auto-retrieved handbook context for the student's question "
-        f"(pages {', '.join(cites)}):\n\n{text}\n\n"
+        f"(pages {', '.join(cites)}):\n\n{text}{overlay_note}\n\n"
         "Use this context first; you may still call search_handbook for more."
     )
 

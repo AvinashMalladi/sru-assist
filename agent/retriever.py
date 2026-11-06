@@ -259,10 +259,26 @@ QUERY_EXPANSIONS = {
     "director": "director associate director head dean coordinator",
     "controller": "controller examinations coe exam branch evaluation",
     "coe": "coe controller examinations exam branch",
+    "tc": "transfer certificate TC bonafide migration custodian certificates room 1002 jupaka ramadevi",
+    "bonafide": "bonafide study certificate custodian migration tc room 1002 jupaka ramadevi",
+    "migration": "migration certificate tc bonafide custodian room 1002 jupaka ramadevi",
+    "custodian": "custodian certificate tc bonafide migration room 1002 jupaka ramadevi",
 }
 
 REGULATION_TOPIC = re.compile(
     r"\b(promotion|promoted|detained|detention|regulations?)\b",
+    re.I,
+)
+
+ADMIN_SERVICES_RE = re.compile(
+    r"\b(tc|t\.c\.|transfer\s+certificate|bonafide|study\s+certificate|migration|custodian|"
+    r"id\s+card|identity\s+card|bus\s+pass|transport|sraap|counter|help\s+desk|room\s+1002|"
+    r"stationery|stationary|wifi|wi-fi|fee\s+receipt|medium\s+of\s+instruction)\b",
+    re.I,
+)
+
+PAGE_QUERY_RE = re.compile(
+    r"\b(?:what\s+(?:does\s+)?|explain\s+|tell\s+me\s+about\s+)?p(?:age|\.)\s*(\d{1,3})\b",
     re.I,
 )
 
@@ -701,15 +717,29 @@ class MultiDocRetriever:
         - Interleaves results to guarantee both precise term hits & conceptual understanding
         """
         hinted = self._doc_hints(query, history=history, profile=profile)
+
+        # 1. Page-specific direct query resolver (e.g. "what p.30 is saying ?", "page 30 content")
+        page_match = PAGE_QUERY_RE.search(query)
+        if page_match:
+            target_page = int(page_match.group(1))
+            target_docs = list(hinted) if hinted else [self.default_label]
+            page_hits = [c for c in self.chunks if c.doc in target_docs and c.page == target_page]
+            if not page_hits:
+                page_hits = [c for c in self.chunks if c.page == target_page]
+            if page_hits:
+                return page_hits[:top_k]
+
         if not hinted:
             if REGULATION_TOPIC.search(query):
                 labels = list(self.labels)
             else:
                 labels = [self.default_label]
-        elif len(hinted) == 1:
-            labels = hinted
         else:
-            labels = hinted
+            labels = list(hinted)
+
+        # Cross-handbook inclusion for administrative services (TC, Bonafide, Migration, Help Desk, SRAAP)
+        if ADMIN_SERVICES_RE.search(query) and self.default_label not in labels:
+            labels.append(self.default_label)
 
         expanded = expand_query(query)
         pools = {}

@@ -10,6 +10,21 @@ import re
 
 # Direct word replacements (Word boundary enforced)
 STUDENT_TYPO_MAP = {
+    # Administrative Certificates & Support
+    r"\b(tc|t\.c\.|transfer cert|transfer certificate)\b": "transfer certificate TC",
+    r"\b(bonafide|bonafied|study cert|study certificate)\b": "bonafide study certificate",
+    r"\b(migration|migration cert|migration certificate)\b": "migration certificate",
+    r"\b(custodian|custodion|custodian cert)\b": "custodian certificate",
+    r"\b(conatct|contct|contactt|contac)\b": "contact",
+    r"\b(numbr|nomber|phn|mob)\b": "number",
+    r"\b(undaaa+|undha+|unda+|unndha+|unada)\b": "is there available",
+    r"\b(cheppandi|cheppu|ivvandi|ivvu)\b": "please provide",
+    r"\b(kavali|kaavali)\b": "required",
+    r"\b(ekkada|ekada)\b": "where is",
+    r"\b(eppudu)\b": "when",
+    r"\b(enduku)\b": "why",
+    r"\b(ao|a\.o\.)\b": "administrative officer ao",
+
     # Attendance & Condonation
     r"\b(att|attnd|attendence|attandance|attenance|attendace)\b": "attendance",
     r"\b(condo|condonashun|condonation fee)\b": "condonation medical grounds",
