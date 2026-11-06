@@ -16,6 +16,7 @@ load_env()
 
 from . import llm, tools
 from .clarify import check as clarify_check
+from .contacts import format_contact_response, match_contact_override
 from .counts import check as counts_check
 from .prompts import FALLBACK_PROMPT, FAST_SYSTEM_PROMPT, SYSTEM_PROMPT
 from .retriever import get_retriever
@@ -474,6 +475,7 @@ def run_agent(question, history=None, profile=None):
                     f"- **Degree & Branch:** {detected_roll['degree']} · {detected_roll['program']}\n"
                     f"- **School:** {detected_roll['school']}\n"
                     f"- **Batch & Regulation:** {detected_roll['batch']} ({detected_roll['regulation']})\n"
+                    f"- **Academic Standing:** {detected_roll.get('study_status', 'Active Student')}\n"
                     f"- **Prescribed Graduation Credits:** {detected_roll['prescribed_credits']}\n"
                     f"- **Academic Promotion:** {detected_roll['promotion_summary']}"
                     f"{disclaimer_part}\n\n"
@@ -488,6 +490,7 @@ def run_agent(question, history=None, profile=None):
                     f"- **Branch / Stream:** {detected_roll['program']}\n"
                     f"- **School:** {detected_roll['school']}\n"
                     f"- **Batch & Regulation:** {detected_roll['batch']} ({detected_roll['regulation']}, citing {detected_roll['handbook_doc']})\n"
+                    f"- **Academic Standing:** {detected_roll.get('study_status', 'Active Student')}\n"
                     f"- **Prescribed Graduation Credits:** {detected_roll['prescribed_credits']}"
                     f"{disclaimer_part}\n\n"
                     f"Welcome! I have tailored my knowledge to your specific regulations. "
@@ -537,6 +540,36 @@ def run_agent(question, history=None, profile=None):
             "tool_calls": [],
             "mode": "greeting",
         }
+
+    # Live Personnel Directory Override (Named Officials, Wardens, Deans)
+    contact_hit = match_contact_override(question)
+    if not contact_hit and history:
+        user_msgs = [m.get("content", "") for m in history if isinstance(m, dict) and m.get("role") == "user"]
+        if user_msgs:
+            contact_hit = match_contact_override(f"{question} {user_msgs[-1]}")
+
+    CONTACT_INTENT_RE = re.compile(
+        r"\b(who|whom|incharge|in-charge|warden|manager|contact|phone|mobile|number|call|email|mail|reach|where is|office of|desk|counter|person|in charge|ao|head)\b",
+        re.I,
+    )
+    NAMED_OFFICIAL_RE = re.compile(
+        r"\b(vinay|surender|surendar|shobha|sagar|ranjith|tyagi|sathyavani|vijay reddy|ramesh babu|vaibhav|girirajan|madan kumar|sai kumar|pavani|benson|swapna|kishore|purnima|bala krishna|kiran babu|sammi reddy|sridhar|rajeshwar)\b",
+        re.I,
+    )
+    is_seeking_contact = bool(
+        CONTACT_INTENT_RE.search(question)
+        or NAMED_OFFICIAL_RE.search(question)
+        or (history and any(CONTACT_INTENT_RE.search(m.get("content", "")) for m in history[-2:] if isinstance(m, dict) and m.get("role") == "user"))
+    )
+    is_general_policy_query = bool(
+        re.search(r"\b(how much|what is the fee|fee amount|structure|refund|rules|policy|curfew|allowed|timings|attendance|pass mark|credits|detention)\b", question, re.I)
+    )
+
+    if contact_hit and is_seeking_contact and not is_general_policy_query:
+        contact_res = format_contact_response(contact_hit)
+        if isinstance(profile, dict) and "roll_number" in profile:
+            contact_res["profile"] = profile
+        return contact_res
 
     clarify = clarify_check(question, history, profile)
     if clarify:

@@ -83,13 +83,35 @@ class TestRollAndEdgeCases(unittest.TestCase):
         self.assertTrue(res["is_lateral_entry"])
 
     def test_r24_uses_r23_framework(self):
-        """R24 (sharing R23 framework) must map to R23 Handbook with has_dedicated_handbook True."""
+        """R24 must map to R24 Handbook with has_dedicated_handbook True."""
         res = parse_roll_number("2403A51001")
         self.assertIsNotNone(res)
         self.assertTrue(res["is_valid"])
         self.assertTrue(res["has_dedicated_handbook"])
-        self.assertEqual(res["handbook_doc"], "R23 Handbook")
+        self.assertEqual(res["handbook_doc"], "R24 Handbook")
         self.assertIsNone(res["regulation_disclaimer"])
+
+    def test_lateral_entry_joins_previous_regulation(self):
+        """Lateral entry joins 2nd year and is governed by the previous cohort's regulation."""
+        # 2024 Lateral Entry joins 2023 cohort -> R23
+        res_lat_24 = parse_roll_number("2403L51001")
+        self.assertEqual(res_lat_24["regulation"], "R23")
+        self.assertEqual(res_lat_24["handbook_doc"], "R23 Handbook")
+        self.assertEqual(res_lat_24["batch"], "2024–27")
+
+        # 2026 Lateral Entry joins 2025 cohort -> R25
+        res_lat_26 = parse_roll_number("2603L51001")
+        self.assertEqual(res_lat_26["regulation"], "R25")
+        self.assertEqual(res_lat_26["handbook_doc"], "R25 Handbook")
+
+    def test_multi_degree_lateral_entry(self):
+        """Lateral entry must support BCA, BBA, B.Des with adjusted degree duration and credits."""
+        res_bca_lat = parse_roll_number("2503C51501")
+        self.assertTrue(res_bca_lat["is_lateral_entry"])
+        self.assertEqual(res_bca_lat["degree"], "BCA (Lateral Entry)")
+        self.assertEqual(res_bca_lat["duration_years"], 2)
+        self.assertEqual(res_bca_lat["batch"], "2025–27")
+        self.assertIn("80–90 credits", res_bca_lat["prescribed_credits"])
 
     def test_r20_cohort_mapping(self):
         """2020-2022 batches must map to R20 cohort."""
@@ -107,6 +129,40 @@ class TestRollAndEdgeCases(unittest.TestCase):
         self.assertTrue(res["has_dedicated_handbook"])
         self.assertEqual(res["handbook_doc"], "R25 Handbook")
         self.assertIsNone(res["regulation_disclaimer"])
+
+    def test_dynamic_formula_batch_and_standing(self):
+        """Formula must compute 4-yr UG batch (2023–27), academic standing, and lateral 3-yr duration."""
+        # Standard 4-year B.Tech: 2023 admission -> 2023-2027 batch
+        res_ug = parse_roll_number("2303A51001")
+        self.assertEqual(res_ug["batch"], "2023–27")
+        self.assertEqual(res_ug["duration_years"], 4)
+        self.assertEqual(res_ug["graduation_year"], 2027)
+        self.assertEqual(res_ug["study_status"], "4th Year")
+
+        # Lateral Entry: 2024 admission -> 2024-2027 batch (3 yrs)
+        res_lat = parse_roll_number("2403L51001")
+        self.assertEqual(res_lat["batch"], "2024–27")
+        self.assertEqual(res_lat["duration_years"], 3)
+        self.assertEqual(res_lat["graduation_year"], 2027)
+        self.assertEqual(res_lat["study_status"], "4th Year")
+
+        # Graduated cohort: 2020 batch -> Alumnus
+        res_alum = parse_roll_number("2003A51001")
+        self.assertTrue(res_alum["is_alumnus"])
+        self.assertIn("Alumni", res_alum["study_status"])
+
+    def test_future_admission_year_graceful_declination(self):
+        """Future year without published handbook (e.g. 2028 / R28) must be gracefully rejected."""
+        res = parse_roll_number("2803A51001")
+        self.assertIsNotNone(res)
+        self.assertFalse(res["is_valid"])
+        self.assertEqual(res["validation_status"], "FUTURE_YEAR")
+        self.assertIn("2028", res["validation_error"])
+        self.assertIn("R28", res["validation_error"])
+
+        resp = run_agent("2803A51001")
+        self.assertEqual(resp.get("mode"), "invalid_roll_number")
+        self.assertIn("2028", resp.get("answer", ""))
 
 
 if __name__ == "__main__":

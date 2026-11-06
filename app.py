@@ -237,6 +237,24 @@ def sync_documents():
         return jsonify({"error": "unauthorized"}), 401
 
     data = request.get_json(silent=True) or {}
+
+    # Check if this is a live personnel/contact directory update
+    if data.get("type") in ("contact_update", "personnel_update") or data.get("position_id"):
+        from agent.contacts import update_personnel
+        pos_id = str(data.get("position_id") or data.get("position") or "").strip()
+        name = str(data.get("name") or "").strip()
+        if not pos_id or not name:
+            return jsonify({"error": "position_id and name are required for contact updates"}), 400
+        result = update_personnel(
+            position_id=pos_id,
+            name=name,
+            phone=str(data.get("phone") or "").strip(),
+            email=str(data.get("email") or "").strip(),
+            office=str(data.get("office") or "").strip(),
+            notice=str(data.get("notice") or "").strip(),
+        )
+        return jsonify(result)
+
     label = (data.get("label") or "").strip()
     if not label:
         return jsonify({"error": "label is required"}), 400
