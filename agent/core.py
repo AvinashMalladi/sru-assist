@@ -416,7 +416,7 @@ def run_agent(question, history=None, profile=None):
     model's arithmetic.
     """
     # 0. Scope & Jailbreak boundary check
-    out_of_scope = check_out_of_scope(question)
+    out_of_scope = check_out_of_scope(question, profile=profile)
     if out_of_scope:
         return out_of_scope
 

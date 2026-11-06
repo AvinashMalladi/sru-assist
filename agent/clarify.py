@@ -164,7 +164,8 @@ def check(question, history=None, profile=None):
     q = q_raw.lower()
     if not q:
         return None
-    q_clean = re.sub(r"[^a-zA-Z0-9\s%]+", " ", q).strip()
+    q_clean = re.sub(r"[^a-zA-Z0-9\s%]+", " ", q).strip()
+
     q_clean = re.sub(r"\s+", " ", q_clean)
 
     # 1. Questions naming a regulation are disambiguated by doc routing already.
