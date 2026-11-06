@@ -123,6 +123,27 @@
     ".srucw-btn-sec{background:#fff;color:#334155;border:1px solid #cbd5e1;border-radius:6px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer}",
     ".srucw-btn-sec:hover{background:#f1f5f9}",
     ".srucw-toast{position:absolute;bottom:65px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;font-size:11.5px;font-weight:600;padding:6px 14px;border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,.25);z-index:100001;pointer-events:none;transition:opacity .3s}",
+    ".srucw-close{background:rgba(255,255,255,.16);border:none;color:#fff;border-radius:6px;font-size:14px;cursor:pointer;opacity:.9;padding:4px 8px;display:flex;align-items:center;transition:background .15s ease}",
+    ".srucw-close:hover{background:rgba(255,255,255,.28);opacity:1}",
+    "@media(max-width:600px){",
+    "  .srucw-panel{position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:0!important;width:100%!important;max-width:100vw!important;height:100%!important;height:100dvh!important;border-radius:0!important;border:none!important;box-shadow:none!important;z-index:999999!important}",
+    "  .srucw-panel.open ~ .srucw-bubble{display:none!important}",
+    "  .srucw-bubble{right:16px;bottom:16px;width:54px;height:54px;font-size:24px}",
+    "  .srucw-msg{max-width:88%}",
+    "  .srucw-inputbar{padding:10px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom,10px))}",
+    "  .srucw-input{font-size:16px!important}",
+    "  .srucw-cta-bar{gap:6px}",
+    "  .srucw-cta-btn{flex:1 1 auto;text-align:center;justify-content:center}",
+    "  .srucw-modal{max-height:92dvh;border-radius:12px 12px 0 0}",
+    "}",
+    "@media(max-width:360px){",
+    "  .srucw-title{font-size:13.5px}",
+    "  .srucw-sub{font-size:10px}",
+    "  .srucw-msg{max-width:94%;font-size:13px}",
+    "  .srucw-sugg button{font-size:10.5px;padding:4px 8px}",
+    "  .srucw-inputbar{gap:6px;padding:8px 10px}",
+    "  .srucw-send{padding:8px 12px;font-size:12.5px}",
+    "}",
   ].join("");
 
   // ---------- mini markdown ----------
@@ -221,7 +242,8 @@
     '<div class="srucw-head"><div class="srucw-avatar">🎓</div><div>' +
     '<div class="srucw-title"></div><div class="srucw-sub">Student Handbook AI</div></div>' +
     '<div style="margin-left:auto;display:flex;align-items:center;gap:6px">' +
-    '<button class="srucw-clear" title="Clear chat & reset" aria-label="Clear chat">🔄</button></div></div>';
+    '<button class="srucw-clear" title="Clear chat & reset" aria-label="Clear chat">🔄</button>' +
+    '<button class="srucw-close" title="Close chat" aria-label="Close chat">✕</button></div></div>';
   panel.querySelector(".srucw-title").textContent = BOT_NAME;
 
   var msgsBox = el("div", "srucw-msgs");
@@ -338,6 +360,16 @@
       history.push({ role: "assistant", content: WELCOME });
       saveSessionMsgs();
       refreshSuggestions();
+    };
+  }
+
+  var closeHeaderBtn = panel.querySelector(".srucw-close");
+  if (closeHeaderBtn) {
+    closeHeaderBtn.onclick = function (e) {
+      e.stopPropagation();
+      if (panel.classList.contains("open")) {
+        bubble.click();
+      }
     };
   }
 
