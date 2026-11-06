@@ -93,6 +93,36 @@
     ".srucw-history-divider{display:flex;align-items:center;text-align:center;color:#6b7280;font-size:11px;margin:10px 0;gap:8px}",
     ".srucw-history-divider span{background:#e5e7eb;color:#4b5563;padding:2px 8px;border-radius:10px;font-weight:600}",
     ".srucw-history-divider::before,.srucw-history-divider::after{content:'';flex:1;border-bottom:1px dashed #cbd5e1}",
+    ".srucw-cta-container{margin-top:9px;padding:9px 11px;background:#f0f4fc;border:1px solid #c9dafb;border-radius:10px}",
+    ".srucw-cta-header{font-size:10.5px;font-weight:700;color:#23468A;margin-bottom:6px;display:flex;align-items:center;gap:4px;text-transform:uppercase;letter-spacing:0.5px}",
+    ".srucw-cta-bar{display:flex;flex-wrap:wrap;gap:6px}",
+    ".srucw-cta-btn{font-size:11.5px;font-weight:600;text-decoration:none;padding:5px 10px;border-radius:6px;border:1px solid #23468A;background:#fff;color:#23468A;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .15s ease;font-family:inherit}",
+    ".srucw-cta-btn:hover{background:#23468A;color:#fff}",
+    ".srucw-cta-call{border-color:#16a34a;color:#16a34a}",
+    ".srucw-cta-call:hover{background:#16a34a;color:#fff}",
+    ".srucw-cta-mail{border-color:#2563eb;color:#2563eb;background:#eff6ff}",
+    ".srucw-cta-mail:hover{background:#2563eb;color:#fff}",
+    ".srucw-cta-copy{border-color:#64748b;color:#475569}",
+    ".srucw-cta-copy:hover{background:#475569;color:#fff}",
+    ".srucw-modal-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.65);backdrop-filter:blur(2px);z-index:100000;display:flex;align-items:center;justify-content:center;padding:12px}",
+    ".srucw-modal{background:#fff;border-radius:12px;width:100%;max-height:94%;display:flex;flex-direction:column;box-shadow:0 20px 40px rgba(0,0,0,.3);overflow:hidden;border:1px solid #cbd5e1;font-family:inherit}",
+    ".srucw-modal-head{background:linear-gradient(135deg,#23468A,#3E6BC0);color:#fff;padding:10px 14px;display:flex;align-items:center;justify-content:space-between}",
+    ".srucw-modal-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}",
+    ".srucw-modal-close{background:none;border:none;color:#fff;font-size:16px;cursor:pointer;opacity:.8;padding:2px 6px;border-radius:4px}",
+    ".srucw-modal-close:hover{opacity:1;background:rgba(255,255,255,.2)}",
+    ".srucw-modal-body{padding:12px 14px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:8px;font-size:12px}",
+    ".srucw-field{display:flex;flex-direction:column;gap:3px}",
+    ".srucw-field label{font-size:10px;font-weight:700;color:#475569;text-transform:uppercase}",
+    ".srucw-field input,.srucw-field textarea{width:100%;padding:6px 9px;font-size:12px;border:1px solid #cbd5e1;border-radius:6px;outline:none;font-family:inherit;box-sizing:border-box}",
+    ".srucw-field input:focus,.srucw-field textarea:focus{border-color:#23468A;box-shadow:0 0 0 2px rgba(35,70,138,.15)}",
+    ".srucw-field input[readonly]{background:#f8fafc;color:#64748b}",
+    ".srucw-field textarea{resize:vertical;min-height:120px;font-size:11.5px;line-height:1.45}",
+    ".srucw-modal-footer{padding:10px 14px;background:#f8fafc;border-top:1px solid #e2e8f0;display:flex;gap:8px;justify-content:flex-end;align-items:center}",
+    ".srucw-btn-pri{background:#23468A;color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px}",
+    ".srucw-btn-pri:hover{background:#1a3466;color:#fff}",
+    ".srucw-btn-sec{background:#fff;color:#334155;border:1px solid #cbd5e1;border-radius:6px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer}",
+    ".srucw-btn-sec:hover{background:#f1f5f9}",
+    ".srucw-toast{position:absolute;bottom:65px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;font-size:11.5px;font-weight:600;padding:6px 14px;border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,.25);z-index:100001;pointer-events:none;transition:opacity .3s}",
   ].join("");
 
   // ---------- mini markdown ----------
@@ -249,8 +279,8 @@
           msgsBox.appendChild(divRow);
 
           data.messages.forEach(function (m) {
-            addMsg(m.role === "user" ? "user" : "bot", m.content, m.citations);
-            history.push({ role: m.role, content: m.content });
+            addMsg(m.role === "user" ? "user" : "bot", m.content, m.citations, m.cta);
+            history.push({ role: m.role, content: m.content, citations: m.citations, cta: m.cta });
           });
           saveSessionMsgs();
           msgsBox.scrollTop = msgsBox.scrollHeight;
@@ -280,7 +310,7 @@
         history = saved;
         msgsBox.innerHTML = "";
         history.forEach(function (m) {
-          addMsg(m.role === "user" ? "user" : "bot", m.content, m.citations);
+          addMsg(m.role === "user" ? "user" : "bot", m.content, m.citations, m.cta);
         });
         saveSessionMsgs();
         return true;
@@ -413,7 +443,133 @@
 
   updateSubtitle();
 
-  function addMsg(role, text, cites) {
+  function showToast(msg) {
+    var toast = el("div", "srucw-toast", msg);
+    panel.appendChild(toast);
+    setTimeout(function () {
+      toast.style.opacity = "0";
+      setTimeout(function () { toast.remove(); }, 300);
+    }, 2000);
+  }
+
+  function openMailModal(draft) {
+    if (!draft) return;
+    var backdrop = el("div", "srucw-modal-backdrop");
+    var modal = el("div", "srucw-modal");
+
+    modal.innerHTML =
+      '<div class="srucw-modal-head">' +
+        '<div class="srucw-modal-title">✉️ Official Email Draft</div>' +
+        '<button class="srucw-modal-close" title="Close (Esc)">✕</button>' +
+      '</div>' +
+      '<div class="srucw-modal-body">' +
+        '<div class="srucw-field"><label>To:</label><input type="text" class="srucw-field-to" readonly value="' + esc(draft.recipient || "") + '"></div>' +
+        (draft.cc ? '<div class="srucw-field"><label>CC:</label><input type="text" class="srucw-field-cc" readonly value="' + esc(draft.cc || "") + '"></div>' : '') +
+        '<div class="srucw-field"><label>Subject:</label><input type="text" class="srucw-field-subject" value="' + esc(draft.subject || "") + '"></div>' +
+        '<div class="srucw-field"><label>Body (editable):</label><textarea class="srucw-field-body">' + esc(draft.body || "") + '</textarea></div>' +
+      '</div>' +
+      '<div class="srucw-modal-footer">' +
+        '<button class="srucw-btn-sec srucw-modal-copy-btn">📋 Copy Draft</button>' +
+        '<a class="srucw-btn-pri srucw-modal-send-btn" href="' + esc(draft.mailto_url || "#") + '" target="_blank">🚀 Open in Mail</a>' +
+      '</div>';
+
+    backdrop.appendChild(modal);
+    panel.appendChild(backdrop);
+
+    var subjInput = modal.querySelector(".srucw-field-subject");
+    var bodyInput = modal.querySelector(".srucw-field-body");
+    var sendBtn = modal.querySelector(".srucw-modal-send-btn");
+    var copyBtn = modal.querySelector(".srucw-modal-copy-btn");
+    var closeBtn = modal.querySelector(".srucw-modal-close");
+
+    function updateMailto() {
+      var s = encodeURIComponent(subjInput.value);
+      var b = encodeURIComponent(bodyInput.value);
+      var url = "mailto:" + encodeURIComponent(draft.recipient || "");
+      var params = ["subject=" + s, "body=" + b];
+      if (draft.cc) params.push("cc=" + encodeURIComponent(draft.cc));
+      sendBtn.href = url + "?" + params.join("&");
+    }
+
+    subjInput.oninput = updateMailto;
+    bodyInput.oninput = updateMailto;
+
+    function closeModal() {
+      document.removeEventListener("keydown", onEsc);
+      backdrop.remove();
+    }
+
+    function onEsc(e) {
+      if (e.key === "Escape" || e.keyCode === 27) closeModal();
+    }
+
+    closeBtn.onclick = closeModal;
+    backdrop.onclick = function (e) {
+      if (e.target === backdrop) closeModal();
+    };
+    document.addEventListener("keydown", onEsc);
+
+    copyBtn.onclick = function () {
+      var fullText = "Subject: " + subjInput.value + "\n\n" + bodyInput.value;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(fullText).then(function () {
+          showToast("Application letter copied!");
+        });
+      } else {
+        bodyInput.select();
+        document.execCommand("copy");
+        showToast("Application letter copied!");
+      }
+    };
+  }
+
+  function renderCtaBar(container, cta) {
+    if (!cta || typeof cta !== "object") return;
+    var ctaBox = el("div", "srucw-cta-container");
+    var header = el("div", "srucw-cta-header", "⚡ Quick Actions:");
+    ctaBox.appendChild(header);
+
+    var bar = el("div", "srucw-cta-bar");
+
+    if (cta.phone) {
+      var callA = el("a", "srucw-cta-btn srucw-cta-call", "📞 Call (" + cta.phone + ")");
+      callA.href = "tel:" + cta.phone;
+      callA.title = "Call official contact number";
+      bar.appendChild(callA);
+    }
+
+    if (cta.mail_draft) {
+      var mailBtn = el("button", "srucw-cta-btn srucw-cta-mail", "✉️ Draft Email");
+      mailBtn.title = "Review & send pre-filled formal email";
+      mailBtn.onclick = function (e) {
+        e.stopPropagation();
+        openMailModal(cta.mail_draft);
+      };
+      bar.appendChild(mailBtn);
+
+      var copyBtn = el("button", "srucw-cta-btn srucw-cta-copy", "📋 Copy Text");
+      copyBtn.title = "Copy formal letter to clipboard";
+      copyBtn.onclick = function (e) {
+        e.stopPropagation();
+        var textToCopy = "Subject: " + (cta.mail_draft.subject || "") + "\n\n" + (cta.mail_draft.body || "");
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(textToCopy).then(function () {
+            showToast("Formal draft copied to clipboard!");
+          });
+        } else {
+          openMailModal(cta.mail_draft);
+        }
+      };
+      bar.appendChild(copyBtn);
+    }
+
+    if (bar.children.length > 0) {
+      ctaBox.appendChild(bar);
+      container.appendChild(ctaBox);
+    }
+  }
+
+  function addMsg(role, text, cites, cta) {
     var row = el("div", "srucw-row " + role);
     var b = el("div", "srucw-msg " + role);
     if (role === "bot") { b.innerHTML = renderMarkdown(text); }
@@ -422,6 +578,9 @@
     if (cites && cites.length) {
       b.appendChild(el("br"));
       b.appendChild(el("span", "srucw-cite", "📖 " + cites.join(" · ")));
+    }
+    if (role === "bot" && cta) {
+      renderCtaBar(b, cta);
     }
     msgsBox.appendChild(row);
     msgsBox.scrollTop = msgsBox.scrollHeight;
@@ -491,9 +650,9 @@
         currentAbort = null;
         typing(false);
         var ans = data.answer || data.error || "Something went wrong.";
-        addMsg("bot", ans, data.citations);
+        addMsg("bot", ans, data.citations, data.cta);
         history.push({ role: "user", content: text });
-        history.push({ role: "assistant", content: ans });
+        history.push({ role: "assistant", content: ans, citations: data.citations, cta: data.cta });
         saveSessionMsgs();
         if (data.session_id) localStorage.setItem(SESS_ID_KEY, data.session_id);
         if (data.htno && !profile.roll_number) {
