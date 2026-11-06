@@ -73,7 +73,7 @@ Built by the SRU student project team (2026). Each bullet maps to a commit in `g
 | 2 | **Chat-friendly formatting** | LaTeX/math markup banned in prompts; the widget ships a **mini-markdown renderer** (paragraphs, dash bullets, numbered lists, tables, bold, inline code, subscripts) with LaTeX cleanup (`\frac`, `\times`, `\[...\]`…) as a second safety net. Fixes the "raw `\frac` in the chat bubble" failure class seen in testing. |
 | 3 | **Personalization & clarify-then-answer** | No settings UI — the bot gathers the student's *programme / branch / year / semester / hostel* by asking clarifying questions in the chat, and the widget auto-remembers each answer (`localStorage`, no server session). When a rule depends on programme/year and it is unknown, the agent asks **exactly ONE** clarifying question instead of guessing. Topic-bandit suggestion chips (`agent/stats.py` → `data/query_stats.json`) surface recent asks as short labels. |
 | 4 | **Branding & portal prep** | Widget + demo rebranded to the SRAAP/SRU palette (primary **#23468A**, accents #97B9E2 / #dbe7f7), matching the live portal's stylesheet. Real-portal integration notes written up (see below). |
-| 5 | **Production readiness** | `gunicorn` startup, `$PORT`/`FLASK_PORT` support, `render.yaml` Blueprint for one-click Render deploy. Deployed live at **https://sru-assist.onrender.com**. |
+| 5 | **Production readiness** | `gunicorn` startup, `$PORT`/`FLASK_PORT` support, `render.yaml` Blueprint for one-click Render deploy. Deployed live at **https://sru-assist-uyo4.onrender.com**. |
 | 6 | **Documented live deployment** | Deploy URL recorded; README deploy guide verified. |
 | 7 | **Eval harness + contract** | `tests/golden_set.json`, `docs/API.md` (API contract), `ARCHITECTURE.md` (decision record), `PRODUCTIONIZATION.md` (path to university infra). CI-friendly exit code (fails under 80% hit-rate). |
 | 8 | **Multi-document + intent routing** | Second regulation added — **R23 B.Tech Handbook** (238 pages) — with per-document indexes, intent-based routing (name a regulation → search only that doc; comparison → split; else default to current handbook), `(R23 Handbook p. N)` citations. Eval expanded to **27 golden cases @ 93% → 100% hit-rate**. |
@@ -407,7 +407,7 @@ with its own citation"). Citations always name the document: `(R23 Handbook p. 5
 
 ## API contract
 
-Base URL: `http://localhost:5000` (dev) · `https://sru-assist.onrender.com` (live).
+Base URL: `http://localhost:5000` (dev) · `https://sru-assist-uyo4.onrender.com` (live).
 
 **`POST /api/chat`**
 ```json
@@ -457,12 +457,12 @@ page:
 ```html
 <script>
   window.SRU_CHAT = {
-    apiUrl: "https://sru-assist.onrender.com",  // optional; defaults to its own origin
+    apiUrl: "https://sru-assist-uyo4.onrender.com",  // optional; defaults to its own origin
     botName: "SRU Assist",
     welcome: "Hi! I'm SRU Assist 🤖 …",
   };
 </script>
-<script src="https://sru-assist.onrender.com/static/widget.js"></script>
+<script src="https://sru-assist-uyo4.onrender.com/static/widget.js"></script>
 ```
 
 Features: floating 💬 bubble + panel (460px, brand gradient), mini-markdown renderer with
@@ -568,7 +568,7 @@ before hammering the free model in front of an audience.
 
 ## Deployment & live URL
 
-**Live:** https://sru-assist.onrender.com (Render free tier, Blueprint `render.yaml`,
+**Live:** https://sru-assist-uyo4.onrender.com (Render free tier, Blueprint `render.yaml`,
 `gunicorn app:app --workers 2 --threads 4`).
 
 1. Push to GitHub: `git remote add origin https://github.com/<you>/sru-assist.git && git push -u origin master`.
@@ -597,9 +597,9 @@ production, restrict CORS in `app.py` (`add_cors`) to `https://sraap.in`.
 **A · Widget embed** — put the bubble on portal pages:
 ```html
 <script>
-  window.SRU_CHAT = { apiUrl: "https://sru-assist.onrender.com", botName: "SRU Assist" };
+  window.SRU_CHAT = { apiUrl: "https://sru-assist-uyo4.onrender.com", botName: "SRU Assist" };
 </script>
-<script src="https://sru-assist.onrender.com/static/widget.js"></script>
+<script src="https://sru-assist-uyo4.onrender.com/static/widget.js"></script>
 ```
 
 **B · Handbook from the portal, no PDFs in the backend** — two mechanisms:

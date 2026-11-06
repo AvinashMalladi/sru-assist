@@ -106,7 +106,7 @@ Students have 2 PDF handbooks (86 + 238 pages) covering rules, grading, attendan
 ### Step 13 — Deployment
 - Deployed to **Render.com** (free tier)
 - `render.yaml` blueprint: Python 3.13.7, gunicorn, 2 workers, 4 threads
-- Live at: `https://sru-assist.onrender.com`
+- Live at: `https://sru-assist-uyo4.onrender.com`
 
 ---
 
@@ -131,7 +131,7 @@ Students have 2 PDF handbooks (86 + 238 pages) covering rules, grading, attendan
 > "Students struggle to find rules in 300+ page PDF handbooks. We built an AI chatbot that gives instant, cited answers inside the existing portal."
 
 ### 2. Show the Live Demo (3 min)
-- Open `https://sru-assist.onrender.com`
+- Open `https://sru-assist-uyo4.onrender.com`
 - Ask: "What is the minimum pass marks?" → shows cited answer
 - Ask: "Tell me about hostel" → shows clarification chips (boys/girls)
 - Show suggestion chips at bottom
@@ -170,9 +170,9 @@ There are **two ways** the real portal integrates:
 The portal team adds these 3 lines to their portal page:
 ```html
 <script>
-  window.SRU_CHAT = { apiUrl: "https://sru-assist.onrender.com" };
+  window.SRU_CHAT = { apiUrl: "https://sru-assist-uyo4.onrender.com" };
 </script>
-<script src="https://sru-assist.onrender.com/static/widget.js"></script>
+<script src="https://sru-assist-uyo4.onrender.com/static/widget.js"></script>
 ```
 That's it. The floating chat bubble appears automatically.
 
@@ -181,7 +181,7 @@ If the portal has live student data (not just static PDFs), the portal backend p
 
 **Portal sends a JSON manifest:**
 ```bash
-curl -X POST https://sru-assist.onrender.com/api/sync \
+curl -X POST https://sru-assist-uyo4.onrender.com/api/sync \
   -H "Authorization: Bearer YOUR_SYNC_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"sections":[{"page":1,"text":"Current exam schedule..."}]}'
@@ -189,7 +189,7 @@ curl -X POST https://sru-assist.onrender.com/api/sync \
 
 Or the bot **fetches from a URL** the portal provides:
 ```bash
-curl -X POST https://sru-assist.onrender.com/api/sync \
+curl -X POST https://sru-assist-uyo4.onrender.com/api/sync \
   -H "Authorization: Bearer YOUR_SYNC_TOKEN" \
   -d '{"url":"https://sraap.in/handbook.json"}'
 ```
