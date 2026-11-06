@@ -58,6 +58,26 @@ class TestCTAAndMailDrafting(unittest.TestCase):
         self.assertEqual(cta["email"], "a.balakrishna@sru.edu.in")
         self.assertIn("[Enter Roll Number", cta["mail_draft"]["body"])
 
+    def test_typo_sanitization_in_subject_and_body(self):
+        """Student typos like 'fafcinf problem with wifi' must be sanitized into a formal topic."""
+        profile = {
+            "roll_number": "2303A52665",
+            "degree": "B.Tech",
+            "program": "Computer Science & AI / ML",
+        }
+        cta = generate_cta("I'm fafcinf problem with wifi", profile=profile)
+        self.assertIsNotNone(cta)
+        draft = cta["mail_draft"]
+        # Subject must NOT contain raw typos
+        self.assertNotIn("fafcinf", draft["subject"])
+        self.assertNotIn("I'm", draft["subject"])
+        self.assertIn("[IT NETWORK]", draft["subject"])
+        self.assertIn("Wi-Fi Connectivity", draft["subject"])
+        self.assertIn("2303A52665", draft["subject"])
+        # Body must NOT contain raw typos
+        self.assertNotIn("fafcinf", draft["body"])
+        self.assertIn("a.balakrishna@sru.edu.in", draft["recipient"])
+
     def test_end_to_end_agent_response_contains_cta(self):
         """run_agent for actionable queries must attach cta to the response."""
         res = run_agent(

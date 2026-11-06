@@ -24,6 +24,11 @@ STUDENT_TYPO_MAP = {
     r"\b(eppudu)\b": "when",
     r"\b(enduku)\b": "why",
     r"\b(ao|a\.o\.)\b": "administrative officer ao",
+    r"\b(fafcinf|fasing|facin|facng)\b": "facing",
+    r"\b(probelm|prblm|prblem|problm|prob)\b": "problem",
+    r"\b(issu|isue|isssue)\b": "issue",
+    r"\b(wfi|wif|wifii|netwrk)\b": "wifi",
+    r"\b(leakg|leakge|leakege|leking)\b": "leakage",
 
     # Attendance & Condonation
     r"\b(att|attnd|attendence|attandance|attenance|attendace)\b": "attendance",

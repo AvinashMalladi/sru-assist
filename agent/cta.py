@@ -23,6 +23,159 @@ def _extract_primary_email(email_str: str) -> str:
     return m.group(0) if m else ""
 
 
+def resolve_formal_topic(category: str, role: str, query: str) -> tuple[str, str, str]:
+    """Resolves a standardized, formal Subject Tag, Topic Title, and Issue Summary.
+    Prevents student typos, informal slang, and raw chat text from contaminating
+    the formal subject line and official correspondence.
+    
+    Returns: (subject_tag, formal_title, issue_summary)
+    """
+    from .normalize import normalize_student_text
+    q = normalize_student_text(query or "").lower().strip()
+    cat = (category or "").lower().strip()
+    r = (role or "").lower().strip()
+
+    # 1. Wi-Fi & IT Network
+    if any(k in q for k in ("wifi", "wi-fi", "internet", "network", "net problem", "connection")) or any(k in cat for k in ("wifi", "network", "it")) or "network" in r or "wi-fi" in r or "wifi" in r:
+        return (
+            "IT NETWORK",
+            "Wi-Fi Connectivity & Network Access Request",
+            "Facing persistent connection issues / unable to authenticate with student credentials on the university Wi-Fi network."
+        )
+
+    # 2. Hostel - Room Maintenance / Plumbing / Electricity / Mess Food
+    if any(k in q for k in ("leak", "leakage", "water", "plumb", "light", "fan", "electric", "switch", "clean", "washroom", "bathroom", "mess", "food", "carpenter")) and ("hostel" in cat or "hostel" in r or "hostel" in q):
+        return (
+            "HOSTEL",
+            "Hostel Room Maintenance & Repair Request",
+            "Reporting a physical maintenance concern in the hostel (electrical / plumbing / cleanliness / fixtures) requiring inspection and repair."
+        )
+
+    # 3. Hostel - Curfew / Late Arrival / Out-Pass
+    if any(k in q for k in ("curfew", "late", "out-pass", "outpass", "gate pass", "night out", "outing", "12 o clock", "timing")) and ("hostel" in cat or "hostel" in r or "hostel" in q):
+        return (
+            "HOSTEL",
+            "Hostel Late Arrival & Permitted Out-Pass Request",
+            "Requesting official permission and clarification regarding late return / out-pass guidelines."
+        )
+
+    # 4. Hostel - General Accommodation / Room Allocation
+    if "hostel" in cat or "hostel" in r or "hostel" in q:
+        return (
+            "HOSTEL",
+            "Hostel Accommodation & Services Inquiry",
+            "Inquiry regarding hostel room allotment, facilities, or residential code of conduct."
+        )
+
+    # 5. Certificates - Transfer Certificate (TC)
+    if re.search(r"\b(tc|transfer\s+certificate)\b", q) or "tc" in cat:
+        return (
+            "CERTIFICATES DESK",
+            "Application for Transfer Certificate (TC)",
+            "Formally requesting the issuance of original Transfer Certificate (TC) upon completion / withdrawal."
+        )
+
+    # 6. Certificates - Bonafide / Study Certificate
+    if re.search(r"\b(bonafide|study\s+certificate)\b", q) or "bonafide" in cat:
+        return (
+            "CERTIFICATES DESK",
+            "Application for Bonafide / Study Certificate",
+            "Formally applying for the issuance of a Bonafide / Study Certificate for official and educational purposes."
+        )
+
+    # 7. Certificates - Migration / Custodian
+    if re.search(r"\b(migration|custodian)\b", q) or any(k in cat for k in ("migration", "custodian")):
+        cert = "Migration Certificate" if "migration" in q else "Custodian Certificate"
+        return (
+            "CERTIFICATES DESK",
+            f"Application for {cert}",
+            f"Formally requesting the issuance of {cert}."
+        )
+
+    # 8. Student Identity Card Reissue
+    if any(k in q for k in ("id card", "identity card", "lost id", "reissue id")) or "id" in cat or "id card" in r:
+        return (
+            "ID CARD DESK",
+            "Application for Student Identity Card Reissue",
+            "Reporting a lost/damaged student identity card and requesting the issuance of a duplicate card."
+        )
+
+    # 9. Examination & Hall Ticket
+    if any(k in q for k in ("hall ticket", "admit card")) or "hall ticket" in r:
+        return (
+            "EXAM CELL",
+            "Hall Ticket Correction & Examination Admit Card Request",
+            "Requesting correction or verification of examination hall ticket details."
+        )
+    if any(k in q for k in ("reval", "revaluation", "re-evaluation", "paper checking")):
+        return (
+            "EXAM CELL",
+            "Application for Answer Script Revaluation",
+            "Submitting an application for formal revaluation and answer script verification."
+        )
+    if "exam" in cat or "exam" in r or "coe" in r:
+        return (
+            "EXAM CELL",
+            "Examination Records & Grade Inquiry",
+            "Inquiry regarding semester examination evaluation, Continuous Internal Evaluation (CIE), or grade card."
+        )
+
+    # 10. SRAAP Student Portal
+    if any(k in q for k in ("password", "reset", "login", "unlock")) or "login" in cat:
+        return (
+            "SRAAP PORTAL",
+            "SRAAP Portal Account Password Reset Request",
+            "Requesting technical assistance to reset portal password or unlock student account."
+        )
+    if any(k in q for k in ("profile", "parent number", "phone number", "update details")) or "sraap" in cat or "sraap" in r:
+        return (
+            "SRAAP PORTAL",
+            "SRAAP Student Profile Data Correction Request",
+            "Requesting administrative correction of contact or profile details in the SRAAP database."
+        )
+
+    # 11. Transport & Bus Pass
+    if any(k in q for k in ("bus", "transport", "route", "bus pass")) or "transport" in cat or "transport" in r:
+        return (
+            "TRANSPORT",
+            "University Bus Pass Registration & Route Inquiry",
+            "Requesting bus pass registration, route confirmation, or transport fee verification."
+        )
+
+    # 12. Scholarships & State ePASS
+    if any(k in q for k in ("scholarship", "epass", "reimbursement", "fee concession")) or "scholarship" in cat:
+        return (
+            "SCHOLARSHIP",
+            "ePASS Scholarship Verification & Biometric Request",
+            "Requesting institutional verification and biometric authentication for state/merit scholarship."
+        )
+
+    # 13. Dean Student Welfare / Grievances
+    if any(k in q for k in ("dean sw", "welfare", "grievance", "complaint", "harassment")) or "welfare" in cat:
+        return (
+            "STUDENT WELFARE",
+            "Student Grievance & Administrative Appeal",
+            "Submitting a formal student grievance / appeal to the Office of the Dean of Student Welfare."
+        )
+
+    # 14. Academic Leadership & Deans
+    if "dean" in r or "hod" in r or "academic leadership" in cat:
+        clean_role = role.split("(")[0].strip()
+        return (
+            "ACADEMIC INQUIRY",
+            f"Academic Consultation ({clean_role})",
+            f"Requesting formal academic consultation regarding course electives, curriculum, or departmental guidance."
+        )
+
+    # Default fallback
+    clean_role = role.split("(")[0].strip()
+    return (
+        "STUDENT INQUIRY",
+        f"Student Inquiry regarding {clean_role}",
+        f"Submitting a formal inquiry regarding {clean_role} services."
+    )
+
+
 def build_mail_draft(
     category: str,
     recipient_email: str,
@@ -32,6 +185,7 @@ def build_mail_draft(
     cc_email: str = "",
     profile: dict = None,
     issue_hint: str = "",
+    query: str = "",
 ) -> dict:
     """Builds a structured formal email draft with student profile pre-filled."""
     prof = profile or {}
@@ -42,14 +196,12 @@ def build_mail_draft(
     standing = prof.get("study_status") or prof.get("academic_standing") or "Active Student"
     regulation = prof.get("regulation") or "University Regulations"
 
-    cat = (category or "").lower()
-    subject_tag = "GENERAL"
+    subject_tag, formal_title, issue_summary = resolve_formal_topic(category, recipient_role, query or issue_hint)
     cc = cc_email.strip()
     salutation = f"Respected Sir/Madam,"
     body_lines = []
 
-    if "hostel" in cat:
-        subject_tag = "HOSTEL"
+    if subject_tag == "HOSTEL":
         if not cc:
             cc = "c.vinaykumarreddy@sru.edu.in"
         body_lines = [
@@ -59,7 +211,7 @@ def build_mail_draft(
             f"",
             f"{salutation}",
             f"",
-            f"I am a resident student writing to formally request your assistance regarding: {issue_hint or 'a hostel maintenance / accommodation matter'}.",
+            f"I am a resident student writing to formally request your assistance regarding: {formal_title}.",
             f"",
             f"Student Details:",
             f"- Student Roll / HT No: {roll_no}",
@@ -67,8 +219,11 @@ def build_mail_draft(
             f"- Academic Batch: {batch} ({regulation})",
             f"- Hostel / Room No: [Enter Room & Block (e.g. BH-2 Room 304)]",
             f"",
-            f"Issue Description:",
-            f"{issue_hint or '[Briefly describe the specific concern, room number, or request here]'}",
+            f"Issue Summary:",
+            f"{issue_summary}",
+            f"",
+            f"Specific Details:",
+            f"[Please specify any additional details, dates, or assistance needed here]",
             f"",
             f"I kindly request you to inspect the matter and initiate corrective action at your earliest convenience.",
             f"",
@@ -77,11 +232,9 @@ def build_mail_draft(
             f"Yours sincerely,",
             f"{roll_no}",
         ]
-    elif "certificate" in cat or "bonafide" in cat or "tc" in cat:
-        subject_tag = "CERTIFICATES DESK"
+    elif subject_tag == "CERTIFICATES DESK":
         if not cc:
             cc = "dean.sw@sru.edu.in"
-        cert_name = "Transfer Certificate (TC)" if re.search(r"\b(tc|transfer)\b", f"{cat} {issue_hint}".lower()) else "Bonafide / Study Certificate"
         body_lines = [
             f"To:",
             f"The Administrative In-Charge (Certificates Section),",
@@ -89,7 +242,7 @@ def build_mail_draft(
             f"",
             f"{salutation}",
             f"",
-            f"I am writing to formally apply for the issuance of my {cert_name}.",
+            f"I am writing to formally apply for the issuance of my {formal_title.replace('Application for ', '')}.",
             f"",
             f"Student Identification Details:",
             f"- Enrollment / Roll Number: {roll_no}",
@@ -105,8 +258,7 @@ def build_mail_draft(
             f"Yours respectfully,",
             f"{roll_no}",
         ]
-    elif "exam" in cat or "coe" in cat:
-        subject_tag = "EXAM CELL"
+    elif subject_tag == "EXAM CELL":
         body_lines = [
             f"To:",
             f"The Controller of Examinations / Exam Branch,",
@@ -114,7 +266,7 @@ def build_mail_draft(
             f"",
             f"{salutation}",
             f"",
-            f"I am writing to submit an official inquiry regarding: {issue_hint or 'examination / hall ticket / grade card records'}.",
+            f"I am writing to submit an official inquiry regarding: {formal_title}.",
             f"",
             f"Student Details:",
             f"- Roll Number: {roll_no}",
@@ -123,39 +275,43 @@ def build_mail_draft(
             f"- Course Code / Subject: [Enter Course Code & Subject Name]",
             f"- Semester: [Enter Semester (e.g. Semester IV)]",
             f"",
-            f"Request Summary:",
-            f"{issue_hint or '[Detail the exam discrepancy, revaluation verification, or hall ticket correction needed]'}",
+            f"Request Details:",
+            f"{issue_summary}",
             f"",
             f"Thank you for your guidance.",
             f"",
             f"Yours sincerely,",
             f"{roll_no}",
         ]
-    elif "wifi" in cat or "network" in cat:
-        subject_tag = "IT NETWORK"
+    elif subject_tag == "IT NETWORK":
         body_lines = [
             f"To:",
-            f"IT & Campus Network Infrastructure,",
+            f"IT & Campus Network Infrastructure ({recipient_name}),",
             f"Block-I, Room No. 1008, SR University.",
             f"",
             f"{salutation}",
             f"",
-            f"I am writing to report a campus network / Wi-Fi authentication problem.",
+            f"I am writing to formally report an issue regarding: {formal_title}.",
             f"",
             f"Student Details:",
-            f"- Roll Number: {roll_no}",
-            f"- Device MAC Address: [Enter Wi-Fi MAC Address]",
+            f"- Student Roll / HT No: {roll_no}",
+            f"- Degree & Branch: {degree} - {branch}",
+            f"- Academic Batch: {batch} ({regulation})",
+            f"",
+            f"Technical Details for Network Support:",
             f"- Device Type: [Laptop / Android / iOS / Tablet]",
-            f"- Campus Location: [Hostel Block / Academic Classroom / Library]",
+            f"- Device MAC Address: [Enter Wi-Fi MAC Address]",
+            f"- Campus / Hostel Location: [Enter Location (e.g. BH-2 Room 304 / SOCS Block)]",
             f"",
             f"Issue Observed:",
-            f"{issue_hint or 'Unable to authenticate with university credentials or connection drops.'}",
+            f"{issue_summary}",
+            f"",
+            f"Kindly assist me with resolving this connection issue or registering my device on the university network.",
             f"",
             f"Thank you,",
             f"{roll_no}",
         ]
-    elif "sraap" in cat:
-        subject_tag = "SRAAP PORTAL"
+    elif subject_tag == "SRAAP PORTAL":
         body_lines = [
             f"To:",
             f"SRAAP Technical Help Desk,",
@@ -163,20 +319,22 @@ def build_mail_draft(
             f"",
             f"{salutation}",
             f"",
-            f"I am writing to request technical assistance with my SRAAP student portal account.",
+            f"I am writing to request technical assistance regarding: {formal_title}.",
             f"",
             f"Account Details:",
             f"- Student Roll Number: {roll_no}",
             f"- Program & Branch: {degree} - {branch}",
-            f"- Issue Type: [Password Reset / Account Locked / Timetable or Attendance Error]",
+            f"- Academic Batch: {batch}",
             f"",
-            f"Kindly reset my credentials or guide me on resolving this login issue.",
+            f"Request Description:",
+            f"{issue_summary}",
+            f"",
+            f"Kindly reset my credentials or guide me on resolving this issue.",
             f"",
             f"Yours sincerely,",
             f"{roll_no}",
         ]
-    elif "transport" in cat:
-        subject_tag = "TRANSPORT"
+    elif subject_tag == "TRANSPORT":
         body_lines = [
             f"To:",
             f"Transport In-Charge / Bus Services,",
@@ -184,19 +342,22 @@ def build_mail_draft(
             f"",
             f"{salutation}",
             f"",
-            f"I am writing regarding university bus transport services / bus pass issuance.",
+            f"I am writing regarding: {formal_title}.",
             f"",
             f"Student Details:",
             f"- Roll Number: {roll_no}",
+            f"- Degree & Branch: {degree} - {branch}",
             f"- Bus Route Number: [Enter Route No (e.g. Route 4 / Kazipet)]",
             f"- Boarding Point: [Enter Boarding Stop]",
             f"- Fee Receipt Number: [Enter Challan / Transaction ID]",
             f"",
+            f"Request Details:",
+            f"{issue_summary}",
+            f"",
             f"Thank you,",
             f"{roll_no}",
         ]
-    elif "scholarship" in cat:
-        subject_tag = "SCHOLARSHIP"
+    elif subject_tag == "SCHOLARSHIP":
         body_lines = [
             f"To:",
             f"Scholarship Section (State ePASS & Merit Desk),",
@@ -204,19 +365,41 @@ def build_mail_draft(
             f"",
             f"{salutation}",
             f"",
-            f"I am writing to request administrative verification for my scholarship application.",
+            f"I am writing regarding: {formal_title}.",
             f"",
             f"Student Details:",
             f"- Student Roll Number: {roll_no}",
             f"- Degree & Branch: {degree} - {branch}",
             f"- ePASS / NSP Application ID: [Enter Application ID]",
-            f"- Nature of Request: [Biometric Authentication / Document Verification / Renewal]",
+            f"",
+            f"Nature of Request:",
+            f"{issue_summary}",
             f"",
             f"Thank you,",
             f"{roll_no}",
         ]
+    elif subject_tag == "ID CARD DESK":
+        body_lines = [
+            f"To:",
+            f"Student ID Card Counter (Mr. B. Ramesh),",
+            f"Block-I, Room No. 1002, SR University.",
+            f"",
+            f"{salutation}",
+            f"",
+            f"I am writing to formally apply for the reissue of my student identity card.",
+            f"",
+            f"Student Details:",
+            f"- Student Roll Number: {roll_no}",
+            f"- Degree & Branch: {degree} - {branch}",
+            f"- Batch: {batch}",
+            f"- Reason for Reissue: [Lost / Damaged / Details Correction]",
+            f"",
+            f"I have cleared the duplicate ID card fee and will produce the payment receipt at Room 1002.",
+            f"",
+            f"Yours respectfully,",
+            f"{roll_no}",
+        ]
     else:
-        subject_tag = "STUDENT INQUIRY"
         if not cc:
             cc = "dean.sw@sru.edu.in"
         body_lines = [
@@ -226,7 +409,7 @@ def build_mail_draft(
             f"",
             f"{salutation}",
             f"",
-            f"I am writing to formally submit a student inquiry regarding: {issue_hint or 'university administrative support'}.",
+            f"I am writing to formally submit a student inquiry regarding: {formal_title}.",
             f"",
             f"Student Details:",
             f"- Roll Number: {roll_no}",
@@ -234,7 +417,7 @@ def build_mail_draft(
             f"- Academic Batch: {batch}",
             f"",
             f"Details:",
-            f"{issue_hint or '[Enter specific details of your inquiry or request here]'}",
+            f"{issue_summary}",
             f"",
             f"Thank you for your consideration.",
             f"",
@@ -242,7 +425,7 @@ def build_mail_draft(
             f"{roll_no}",
         ]
 
-    subject = f"[{subject_tag}] {issue_hint[:30] or recipient_role} - {roll_no} - {branch}"
+    subject = f"[{subject_tag}] {formal_title} - {roll_no} - {branch}"
     body = "\n".join(body_lines)
 
     # Pre-generate RFC 3986 compliant mailto URL
@@ -341,6 +524,7 @@ def generate_cta(
         office_location=office,
         profile=profile,
         issue_hint=issue_hint,
+        query=question,
     )
 
     action_label = f"Contact {role.split('(')[0].strip()}"
