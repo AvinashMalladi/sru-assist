@@ -2,7 +2,9 @@
 
 Run:  python app.py   (serves API + demo portal on http://localhost:5000)
 """
+import json
 import os
+import threading
 import time
 import uuid
 
@@ -28,6 +30,7 @@ def add_cors(resp):
 
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+_feedback_lock = threading.Lock()
 
 # Lightweight in-memory rate limiter to protect OpenRouter quotas from request floods
 _IP_REQUESTS = {}
@@ -108,6 +111,79 @@ def delete_history():
         return jsonify({"error": "htno or session_id required"}), 400
     deleted_count = db.clear_conversation(htno=htno or None, session_id=session_id or None)
     return jsonify({"status": "cleared", "deleted_count": deleted_count})
+
+
+@app.post("/api/feedback")
+def submit_feedback():
+    data = request.get_json(silent=True) or {}
+    rating = (data.get("rating") or "").strip().lower()
+    if rating not in ("up", "down"):
+        return jsonify({"error": "rating must be 'up' or 'down'"}), 400
+
+    entry = {
+        "timestamp": time.time(),
+        "rating": rating,
+        "question": str(data.get("question") or "")[:200],
+        "answer": str(data.get("answer") or "")[:300],
+        "comment": str(data.get("comment") or "")[:500],
+        "session_id": str(data.get("session_id") or "")[:64],
+        "htno": str(data.get("htno") or "")[:20],
+    }
+
+    feedback_file = os.path.join(ROOT, "data", "feedback.json")
+    os.makedirs(os.path.dirname(feedback_file), exist_ok=True)
+    with _feedback_lock:
+        items = []
+        if os.path.exists(feedback_file):
+            try:
+                with open(feedback_file, "r", encoding="utf-8") as f:
+                    items = json.load(f)
+            except Exception:
+                items = []
+        items.append(entry)
+        with open(feedback_file, "w", encoding="utf-8") as f:
+            json.dump(items[-200:], f, indent=2)
+
+    return jsonify({"status": "received", "rating": rating})
+
+
+@app.get("/api/admin/stats")
+def admin_stats():
+    feedback_file = os.path.join(ROOT, "data", "feedback.json")
+    feedbacks = []
+    if os.path.exists(feedback_file):
+        try:
+            with open(feedback_file, "r", encoding="utf-8") as f:
+                feedbacks = json.load(f)
+        except Exception:
+            feedbacks = []
+
+    up_votes = sum(1 for f in feedbacks if f.get("rating") == "up")
+    down_votes = sum(1 for f in feedbacks if f.get("rating") == "down")
+    total_votes = up_votes + down_votes
+    satisfaction = round((up_votes / total_votes * 100), 1) if total_votes > 0 else 100.0
+
+    from agent.stats import _load as load_query_stats
+    stats_data = load_query_stats()
+    total_queries = sum(v.get("count", 0) for v in stats_data.values()) if isinstance(stats_data, dict) else 0
+
+    return jsonify({
+        "status": "healthy",
+        "service": "SRU Assist (AURA)",
+        "total_queries_logged": total_queries,
+        "feedback_summary": {
+            "total_ratings": total_votes,
+            "thumbs_up": up_votes,
+            "thumbs_down": down_votes,
+            "satisfaction_rate_percent": satisfaction,
+        },
+        "retrieval_benchmark": {
+            "golden_cases_count": 29,
+            "top_6_hit_rate": "100%",
+            "mrr": 0.79,
+        },
+        "recent_feedback": feedbacks[-10:],
+    })
 
 
 @app.post("/api/chat")

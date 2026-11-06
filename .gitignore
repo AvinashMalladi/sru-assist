@@ -8,4 +8,5 @@ venv/
 *.db
 data/*.db
 data/conversations.db
+data/feedback.json
 .vscode/

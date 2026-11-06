@@ -17,6 +17,7 @@ load_env()
 from . import llm, tools
 from .clarify import check as clarify_check
 from .context_resolver import resolve_contextual_query
+from .cgpa_simulator import check_cgpa_simulation
 from .counts import check as counts_check
 from .prompts import FALLBACK_PROMPT, FAST_SYSTEM_PROMPT, SYSTEM_PROMPT
 from .retriever import get_retriever
@@ -365,14 +366,19 @@ def _auto_context(question, history=None, profile=None):
     so follow-ups ('2023-24 batch') retrieve the prior topic from the intended regulation."""
     retriever = get_retriever()
     search_q = _contextual_search_query(question, history, profile=profile)
+    hits = retriever.search(search_q, top_k=AUTO_CONTEXT_TOP_K, history=history, profile=profile)
+    if not hits:
+        return None, []
     text, cites = retriever.format_hits(search_q, top_k=AUTO_CONTEXT_TOP_K, history=history, profile=profile)
     if not cites:
-        return None
-    return (
+        return None, []
+    ctx_str = (
         f"Auto-retrieved handbook context for the student's question "
         f"(pages {', '.join(cites)}):\n\n{text}\n\n"
         "Use this context first; you may still call search_handbook for more."
     )
+    sources = [{"doc": h.doc, "page": h.page, "excerpt": h.text.strip()} for h in hits]
+    return ctx_str, sources
 
 
 def _trim_history(history, keep=MAX_HISTORY):
@@ -537,6 +543,10 @@ def run_agent(question, history=None, profile=None):
     if counts:
         return counts
 
+    sim = check_cgpa_simulation(question)
+    if sim:
+        return sim
+
     if not history and ckey in _CACHE:
         hit = _CACHE[ckey]
         return {
@@ -558,6 +568,7 @@ def run_agent(question, history=None, profile=None):
     if not history and result.get("mode") in ("fast", "agent") and "experiencing high network demand" not in result.get("answer", ""):
         _CACHE[ckey] = result
 
+    result.setdefault("sources", [])
     result.setdefault("retrieval_ms", 0.0)
     result.setdefault("llm_ms", 0.0)
     return result
@@ -580,7 +591,7 @@ def _fast_answer(question, history, profile):
     messages.extend(history)
 
     t_ret_0 = time.perf_counter()
-    ctx = _auto_context(question, history=history, profile=profile)
+    ctx, sources = _auto_context(question, history=history, profile=profile)
     retrieval_ms = round((time.perf_counter() - t_ret_0) * 1000, 2)
 
     user_msg = question if not ctx else f"{question}\n\n[system note] {ctx}"
@@ -597,6 +608,7 @@ def _fast_answer(question, history, profile):
         return {
             "answer": answer,
             "citations": sorted(citations),
+            "sources": sources,
             "tool_calls": [],
             "mode": "fast-fallback",
             "retrieval_ms": retrieval_ms,
@@ -609,6 +621,7 @@ def _fast_answer(question, history, profile):
     return {
         "answer": answer,
         "citations": sorted(citations),
+        "sources": sources,
         "tool_calls": [],
         "mode": "fast",
         "retrieval_ms": retrieval_ms,
@@ -638,7 +651,7 @@ def _agentic_answer(question, history, profile):
     messages.extend(history)
 
     t_ret_0 = time.perf_counter()
-    ctx = _auto_context(question, history=history, profile=profile)
+    ctx, sources = _auto_context(question, history=history, profile=profile)
     retrieval_ms = round((time.perf_counter() - t_ret_0) * 1000, 2)
 
     user_msg = question if not ctx else f"{question}\n\n[system note] {ctx}"

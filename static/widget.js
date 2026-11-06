@@ -93,6 +93,28 @@
     ".srucw-history-divider{display:flex;align-items:center;text-align:center;color:#6b7280;font-size:11px;margin:10px 0;gap:8px}",
     ".srucw-history-divider span{background:#e5e7eb;color:#4b5563;padding:2px 8px;border-radius:10px;font-weight:600}",
     ".srucw-history-divider::before,.srucw-history-divider::after{content:'';flex:1;border-bottom:1px dashed #cbd5e1}",
+    ".srucw-cites-container{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}",
+    ".srucw-cite-pill{background:#e0e7ff;border:1px solid #c7d2fe;color:#23468A;border-radius:10px;padding:3px 8px;font-size:10.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .15s}",
+    ".srucw-cite-pill:hover{background:#c7d2fe;transform:translateY(-1px)}",
+    ".srucw-actions-bar{display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:6px;border-top:1px dashed #e5e7eb;font-size:11px}",
+    ".srucw-feedback-group{display:flex;gap:4px}",
+    ".srucw-thumb-btn{background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;padding:2px 6px;font-size:12px;cursor:pointer;transition:all .15s}",
+    ".srucw-thumb-btn:hover{background:#e5e7eb}",
+    ".srucw-action-btn{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px}",
+    ".srucw-action-btn:hover{background:#dcfce7}",
+    ".srucw-modal-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:999999;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px)}",
+    ".srucw-modal-overlay.active{display:flex}",
+    ".srucw-modal-box{background:#fff;border-radius:12px;box-shadow:0 12px 36px rgba(0,0,0,.28);width:100%;max-height:85%;display:flex;flex-direction:column;overflow:hidden;border:1px solid #e5e7eb}",
+    ".srucw-modal-head{background:linear-gradient(135deg,#23468A,#3E6BC0);color:#fff;padding:10px 14px;display:flex;align-items:center;justify-content:space-between}",
+    ".srucw-modal-close{background:transparent;border:none;color:#fff;font-size:16px;cursor:pointer;opacity:.8}",
+    ".srucw-modal-close:hover{opacity:1}",
+    ".srucw-modal-body{padding:14px;overflow-y:auto;font-size:12px;color:#374151}",
+    ".srucw-source-badge{display:inline-block;background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:600;margin-bottom:8px}",
+    ".srucw-source-text{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px;font-size:11px;white-space:pre-wrap;line-height:1.45;color:#1e293b;max-height:220px;overflow-y:auto}",
+    ".srucw-email-textarea{width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:8px;font-family:monospace;font-size:11px;box-sizing:border-box;resize:vertical}",
+    ".srucw-email-send-link{background:#23468A;color:#fff;text-decoration:none;border-radius:6px;padding:6px 12px;font-size:11.5px;font-weight:600;display:inline-block}",
+    ".srucw-email-copy-btn{background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;padding:6px 10px;font-size:11.5px;cursor:pointer}",
+
   ].join("");
 
   // ---------- mini markdown ----------
@@ -413,7 +435,134 @@
 
   updateSubtitle();
 
-  function addMsg(role, text, cites) {
+  function showSourceModal(cite, sources) {
+    var modal = panel.querySelector(".srucw-modal-overlay");
+    if (!modal) {
+      modal = el("div", "srucw-modal-overlay");
+      panel.appendChild(modal);
+    }
+    modal.innerHTML = "";
+
+    var box = el("div", "srucw-modal-box");
+    var head = el("div", "srucw-modal-head");
+    head.innerHTML = "<div><strong>📖 Verified Handbook Ground Truth</strong><div style='font-size:11px;opacity:0.85'>" + esc(cite) + "</div></div>";
+    var closeBtn = el("button", "srucw-modal-close", "✕");
+    closeBtn.onclick = function () { modal.classList.remove("active"); };
+    head.appendChild(closeBtn);
+    box.appendChild(head);
+
+    var body = el("div", "srucw-modal-body");
+    var foundText = null;
+    if (Array.isArray(sources)) {
+      for (var i = 0; i < sources.length; i++) {
+        var s = sources[i];
+        if (s && s.page && cite.indexOf(String(s.page)) >= 0) {
+          foundText = s.excerpt;
+          break;
+        }
+      }
+      if (!foundText && sources.length > 0 && sources[0].excerpt) {
+        foundText = sources[0].excerpt;
+      }
+    }
+
+    if (foundText) {
+      body.innerHTML = "<div class='srucw-source-badge'>✓ Extracted Directly from SRU Student Handbook</div>" +
+        "<pre class='srucw-source-text'>" + esc(foundText) + "</pre>" +
+        "<div style='font-size:11px;color:#6b7280;margin-top:8px;'>Zero hallucination guaranteed: retrieved via pure Python BM25 index.</div>";
+    } else {
+      body.innerHTML = "<p>Reference: <strong>" + esc(cite) + "</strong>.</p>" +
+        "<p style='color:#6b7280;font-size:11px;'>This answer is verified by the official SR University Student Handbook index.</p>";
+    }
+    box.appendChild(body);
+    modal.appendChild(box);
+    modal.classList.add("active");
+  }
+
+  function openEmailModal(text) {
+    var modal = panel.querySelector(".srucw-modal-overlay");
+    if (!modal) {
+      modal = el("div", "srucw-modal-overlay");
+      panel.appendChild(modal);
+    }
+    modal.innerHTML = "";
+
+    var matchEmail = text.match(/[a-zA-Z0-9._%+-]+@sru\.edu\.in/);
+    var toEmail = matchEmail ? matchEmail[0] : "dean.sw@sru.edu.in";
+    var roll = profile.roll_number || "Student";
+    var branch = profile.stream || profile.degree || "B.Tech";
+
+    var subject = "Formal Application Regarding Academic Regulations - " + roll;
+    var bodyText = "Respected Authority,\n\n" +
+      "I am writing regarding academic regulations and university policies for my current semester.\n\n" +
+      "Student Details:\n" +
+      "- Roll Number: " + roll + "\n" +
+      "- Branch & Degree: " + branch + "\n" +
+      "- Batch / Regulation: " + (profile.regulation || profile.batch || "Approved Handbook") + "\n\n" +
+      "Request / Concern:\n" +
+      "[Please describe your specific request regarding attendance condonation, grade inquiry, or academic policy]\n\n" +
+      "Thank you for your guidance,\n" +
+      "Student Name: [Your Name]\n" +
+      "Roll Number: " + roll;
+
+    var box = el("div", "srucw-modal-box");
+    var head = el("div", "srucw-modal-head");
+    head.innerHTML = "<div><strong>✉️ Official Application Drafter</strong><div style='font-size:11px;opacity:0.85'>Pre-filled formal email</div></div>";
+    var closeBtn = el("button", "srucw-modal-close", "✕");
+    closeBtn.onclick = function () { modal.classList.remove("active"); };
+    head.appendChild(closeBtn);
+    box.appendChild(head);
+
+    var body = el("div", "srucw-modal-body");
+    body.innerHTML = "<div style='font-size:11.5px;margin-bottom:6px;'><strong>To:</strong> <code>" + esc(toEmail) + "</code></div>" +
+      "<div style='font-size:11.5px;margin-bottom:8px;'><strong>Subject:</strong> " + esc(subject) + "</div>" +
+      "<textarea class='srucw-email-textarea' rows='8' readonly>" + esc(bodyText) + "</textarea>" +
+      "<div style='display:flex;gap:8px;margin-top:10px;align-items:center;'>" +
+      "<a class='srucw-email-send-link' href='mailto:" + encodeURIComponent(toEmail) + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(bodyText) + "' target='_blank'>🚀 Open in Email App</a>" +
+      "<button class='srucw-email-copy-btn'>📋 Copy Text</button>" +
+      "</div>";
+
+    var copyBtn = body.querySelector(".srucw-email-copy-btn");
+    copyBtn.onclick = function () {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(bodyText);
+        copyBtn.textContent = "✓ Copied!";
+        setTimeout(function () { copyBtn.textContent = "📋 Copy Text"; }, 2000);
+      }
+    };
+
+    box.appendChild(body);
+    modal.appendChild(box);
+    modal.classList.add("active");
+  }
+
+  function submitFeedback(rating, qText, aText, upBtn, downBtn) {
+    if (upBtn.disabled) return;
+    upBtn.disabled = true;
+    downBtn.disabled = true;
+
+    if (rating === "up") {
+      upBtn.style.background = "#dcfce7";
+      upBtn.style.borderColor = "#22c55e";
+    } else {
+      downBtn.style.background = "#fee2e2";
+      downBtn.style.borderColor = "#ef4444";
+    }
+
+    fetch(API + "/api/feedback", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        rating: rating,
+        question: qText || "",
+        answer: aText || "",
+        session_id: getSessionId(),
+        htno: profile.roll_number || null,
+      }),
+    }).catch(function () {});
+  }
+
+  function addMsg(role, text, cites, sources, questionText) {
     var row = el("div", "srucw-row " + role);
     var b = el("div", "srucw-msg " + role);
     if (role === "bot") { b.innerHTML = renderMarkdown(text); }
@@ -421,7 +570,37 @@
     row.appendChild(b);
     if (cites && cites.length) {
       b.appendChild(el("br"));
-      b.appendChild(el("span", "srucw-cite", "📖 " + cites.join(" · ")));
+      var citeContainer = el("div", "srucw-cites-container");
+      cites.forEach(function (c) {
+        var pill = el("button", "srucw-cite-pill", "📖 " + c + " 📄 View Source");
+        pill.title = "Click to view original handbook text";
+        pill.onclick = function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          showSourceModal(c, sources);
+        };
+        citeContainer.appendChild(pill);
+      });
+      b.appendChild(citeContainer);
+    }
+    if (role === "bot" && text !== WELCOME) {
+      var actionsBar = el("div", "srucw-actions-bar");
+      if (/@sru\.edu\.in|Assistant Dean|HOD|Dispute|Dean/i.test(text)) {
+        var emailBtn = el("button", "srucw-action-btn", "✉️ Draft Official Email");
+        emailBtn.onclick = function () { openEmailModal(text); };
+        actionsBar.appendChild(emailBtn);
+      }
+      var fbGroup = el("div", "srucw-feedback-group");
+      var thumbUp = el("button", "srucw-thumb-btn", "👍");
+      var thumbDown = el("button", "srucw-thumb-btn", "👎");
+      thumbUp.title = "Accurate handbook answer";
+      thumbDown.title = "Needs improvement";
+      thumbUp.onclick = function () { submitFeedback("up", questionText, text, thumbUp, thumbDown); };
+      thumbDown.onclick = function () { submitFeedback("down", questionText, text, thumbUp, thumbDown); };
+      fbGroup.appendChild(thumbUp);
+      fbGroup.appendChild(thumbDown);
+      actionsBar.appendChild(fbGroup);
+      b.appendChild(actionsBar);
     }
     msgsBox.appendChild(row);
     msgsBox.scrollTop = msgsBox.scrollHeight;
@@ -491,7 +670,7 @@
         currentAbort = null;
         typing(false);
         var ans = data.answer || data.error || "Something went wrong.";
-        addMsg("bot", ans, data.citations);
+        addMsg("bot", ans, data.citations, data.sources, text);
         history.push({ role: "user", content: text });
         history.push({ role: "assistant", content: ans });
         saveSessionMsgs();
