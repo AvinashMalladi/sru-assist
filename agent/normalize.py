@@ -10,6 +10,9 @@ import re
 
 # Direct word replacements (Word boundary enforced)
 STUDENT_TYPO_MAP = {
+    # Greetings & Salutations
+    r"\b(hlo|helo|hlw)\b": "hello",
+
     # Administrative Certificates & Support
     r"\b(tc|t\.c\.|transfer cert|transfer certificate)\b": "transfer certificate TC",
     r"\b(bonafide|bonafied|study cert|study certificate)\b": "bonafide study certificate",

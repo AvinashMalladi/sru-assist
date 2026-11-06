@@ -452,7 +452,28 @@ def generate_cta(
     answer_text: str = "",
 ) -> dict | None:
     """Evaluates question, contact hit, and student profile to produce an actionable CTA payload."""
-    if not contact_record and not question:
+    if not question:
+        return None
+
+    ckey = re.sub(r"[^a-z0-9]+", " ", (question or "").lower()).strip()
+    # Greetings & acknowledgements must never produce CTA
+    if ckey in {
+        "hello", "hi", "hey", "hlo", "helo", "hlw", "hii", "hiii", "helloo",
+        "good morning", "good afternoon", "good evening", "ok", "okay", "k", "kk",
+        "cool", "got it", "understood", "sure", "fine", "thanks", "thank you",
+        "thx", "ty", "tq", "thank u", "bye", "goodbye"
+    }:
+        return None
+
+    ACTION_INTENT_RE = re.compile(
+        r"\b(problem|issue|facing|not working|down|error|fault|leak|water|light|fan|clean|complaint|"
+        r"apply|application|request|get|process|procedure|form|"
+        r"who|whom|contact|number|phone|email|call|reach|incharge|in-charge|warden|manager|desk|counter|ao|help desk|"
+        r"tc|bonafide|migration|custodian|study cert|bus pass|transport|wifi|internet|network|hostel|outpass|gate pass|curfew|late|"
+        r"reval|revaluation|hall ticket|duplicate|id card|scholarship|draft|mail|letter)\b",
+        re.I,
+    )
+    if not contact_record and not ACTION_INTENT_RE.search(question):
         return None
 
     q = (question or "").lower()

@@ -90,6 +90,31 @@ class TestCTAAndMailDrafting(unittest.TestCase):
         self.assertEqual(cta["phone"], "9966001761")
         self.assertIn("2303A52665", cta["mail_draft"]["subject"])
 
+    def test_greeting_and_acknowledgement_suppress_cta_and_citations(self):
+        """Conversational greetings ('hlo') and acknowledgements ('ok', 'thanks')
+        must NEVER inherit lingering contacts, generate CTAs, or attach prior citations."""
+        history = [
+            {"role": "user", "content": "I'm fafcinf problem with wifi"},
+            {"role": "assistant", "content": "Contact IT support at 8886522500..."},
+        ]
+        # Follow-up with informal greeting 'hlo'
+        res_hlo = run_agent("hlo", history=history, profile={"roll_number": "2303A52665"})
+        self.assertEqual(res_hlo.get("mode"), "greeting")
+        self.assertNotIn("cta", res_hlo)
+        self.assertEqual(res_hlo.get("citations"), [])
+
+        # Follow-up with conversational acknowledgement 'ok'
+        res_ok = run_agent("ok", history=history, profile={"roll_number": "2303A52665"})
+        self.assertEqual(res_ok.get("mode"), "acknowledgement")
+        self.assertNotIn("cta", res_ok)
+        self.assertEqual(res_ok.get("citations"), [])
+
+    def test_policy_query_does_not_generate_cta(self):
+        """General academic queries like pass marks must NOT generate an irrelevant CTA."""
+        res = run_agent("What is the minimum pass marks?", profile={"roll_number": "2303A52665"})
+        self.assertNotIn("cta", res)
+        self.assertTrue(len(res.get("citations", [])) > 0)
+
 
 if __name__ == "__main__":
     unittest.main()

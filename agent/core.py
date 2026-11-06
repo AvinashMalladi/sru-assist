@@ -41,9 +41,17 @@ def _cache_key(text):
 
 
 _GREETINGS = {
-    "hello", "hi", "hey", "hii", "hiii", "helloo", "hey there", "good morning",
-    "good afternoon", "good evening", "who are you", "what is your name",
-    "what can you do", "help", "start", "namaste", "namaskaram", "sup",
+    "hello", "hi", "hey", "hlo", "helo", "hlw", "hii", "hiii", "helloo",
+    "hey there", "good morning", "good afternoon", "good evening",
+    "who are you", "what is your name", "what can you do", "help",
+    "start", "namaste", "namaskaram", "sup", "yo", "hola",
+}
+
+_ACKNOWLEDGEMENTS = {
+    "ok", "okay", "k", "kk", "cool", "got it", "understood", "sure", "fine",
+    "alright", "all right", "thanks", "thank you", "thx", "ty", "tq",
+    "thank u", "bye", "goodbye", "cya", "see you", "done", "perfect",
+    "great", "nice",
 }
 
 
@@ -359,6 +367,9 @@ def _contextual_search_query(question, history):
     combine it with the previous substantive question so the retriever finds the actual
     subject in the right regulation."""
     q = (question or "").strip()
+    ckey = _cache_key(q)
+    if ckey in _GREETINGS or ckey in _ACKNOWLEDGEMENTS:
+        return q
     if re.search(r"\bp(?:age|\.)\s*\d+\b", q, re.I):
         return q
     words = q.split()
@@ -366,6 +377,9 @@ def _contextual_search_query(question, history):
         for m in reversed(history):
             if isinstance(m, dict) and m.get("role") == "user":
                 prev = (m.get("content") or "").strip()
+                prev_ckey = _cache_key(prev)
+                if prev_ckey in _GREETINGS or prev_ckey in _ACKNOWLEDGEMENTS:
+                    continue
                 if prev and prev.lower() != q.lower():
                     return f"{prev} {q}"
     return q
@@ -561,12 +575,19 @@ def run_agent(question, history=None, profile=None):
             "mode": "greeting",
         }
 
+    if ckey in _ACKNOWLEDGEMENTS:
+        return {
+            "answer": (
+                "You're welcome! Feel free to ask anytime if you need help with university regulations, "
+                "attendance, grading, hostel policies, or official department contacts."
+            ),
+            "citations": [],
+            "tool_calls": [],
+            "mode": "acknowledgement",
+        }
+
     # Live Personnel Directory Override (Named Officials, Wardens, Deans)
     contact_hit = match_contact_override(question)
-    if not contact_hit and history:
-        user_msgs = [m.get("content", "") for m in history if isinstance(m, dict) and m.get("role") == "user"]
-        if user_msgs:
-            contact_hit = match_contact_override(f"{question} {user_msgs[-1]}")
 
     CONTACT_INTENT_RE = re.compile(
         r"\b(who|whom|incharge|in-charge|warden|manager|contact|phone|mobile|number|call|email|mail|reach|where is|office of|desk|counter|person|in charge|ao|head)\b",
@@ -581,6 +602,12 @@ def run_agent(question, history=None, profile=None):
         or NAMED_OFFICIAL_RE.search(question)
         or (history and any(CONTACT_INTENT_RE.search(m.get("content", "")) for m in history[-2:] if isinstance(m, dict) and m.get("role") == "user"))
     )
+
+    if not contact_hit and history and is_seeking_contact:
+        user_msgs = [m.get("content", "") for m in history if isinstance(m, dict) and m.get("role") == "user"]
+        if user_msgs:
+            contact_hit = match_contact_override(f"{question} {user_msgs[-1]}")
+
     is_general_policy_query = bool(
         re.search(r"\b(how much|what is the fee|fee amount|structure|refund|rules|policy|curfew|allowed|timings|attendance|pass mark|credits|detention)\b", question, re.I)
     )
@@ -613,8 +640,9 @@ def run_agent(question, history=None, profile=None):
     else:
         result = _agentic_answer(question, history, profile)
 
-    # Attach contextual CTA if query indicates actionable grievance / contact
-    cta_payload = generate_cta(question, contact_record=contact_hit, profile=profile)
+    # Attach contextual CTA only if query indicates actionable grievance / contact
+    active_contact = contact_hit if is_seeking_contact else None
+    cta_payload = generate_cta(question, contact_record=active_contact, profile=profile, answer_text=result.get("answer", ""))
     if cta_payload:
         result["cta"] = cta_payload
 
