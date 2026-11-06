@@ -18,6 +18,7 @@ from . import llm, tools
 from .clarify import check as clarify_check
 from .contacts import format_contact_response, match_contact_override
 from .counts import check as counts_check
+from .cta import generate_cta
 from .prompts import FALLBACK_PROMPT, FAST_SYSTEM_PROMPT, SYSTEM_PROMPT
 from .retriever import get_retriever
 from .roll_decoder import parse_roll_number, format_student_badge
@@ -586,6 +587,7 @@ def run_agent(question, history=None, profile=None):
 
     if contact_hit and is_seeking_contact and not is_general_policy_query:
         contact_res = format_contact_response(contact_hit)
+        contact_res["cta"] = generate_cta(question, contact_record=contact_hit, profile=profile)
         if isinstance(profile, dict) and "roll_number" in profile:
             contact_res["profile"] = profile
         return contact_res
@@ -610,6 +612,11 @@ def run_agent(question, history=None, profile=None):
         result = _fast_answer(question, history, profile)
     else:
         result = _agentic_answer(question, history, profile)
+
+    # Attach contextual CTA if query indicates actionable grievance / contact
+    cta_payload = generate_cta(question, contact_record=contact_hit, profile=profile)
+    if cta_payload:
+        result["cta"] = cta_payload
 
     # Attach profile if updated
     if isinstance(profile, dict) and "roll_number" in profile:
