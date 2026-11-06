@@ -620,7 +620,10 @@
       b.appendChild(citeContainer);
     }
 
-    if (role === "bot" && text !== WELCOME) {
+    var isGreeting = meta && meta.mode === "greeting";
+    var isRefusal = meta && meta.mode === "security_refusal";
+
+    if (role === "bot" && text !== WELCOME && !isGreeting && !isRefusal) {
       var actionsBar = el("div", "srucw-actions-bar");
       var actionsLeft = el("div", "srucw-actions-left");
 
@@ -636,39 +639,20 @@
         actionsLeft.appendChild(fbBtn);
       }
 
-      // 1. Detect Phone numbers -> Add "📞 Call Now" button
+      // 1. Explicit Call Action Buttons (Conditional)
       var calls = (meta && meta.actions && meta.actions.calls) ? meta.actions.calls : [];
-      if (!calls.length && text) {
-        var mPhones = text.match(/(?:\+91[\s-]?)?[6-9]\d{4}[\s-]?\d{5}|\b0870[\s-]?\d{6,7}\b/g);
-        if (mPhones) {
-          var seenP = {};
-          mPhones.forEach(function (p) {
-            var clean = p.replace(/[^\d+]/g, "");
-            if (!clean.startsWith("+") && clean.length === 10) clean = "+91" + clean;
-            if (!seenP[clean]) {
-              seenP[clean] = true;
-              calls.push({ number: p, tel: "tel:" + clean });
-            }
-          });
-        }
-      }
       calls.forEach(function (cItem) {
         var callBtn = el("a", "srucw-action-btn srucw-call-now-btn");
         callBtn.href = cItem.tel;
-        callBtn.innerHTML = "📞 Call Now: " + esc(cItem.number);
+        var label = cItem.label || (cItem.number ? "Call Now: " + cItem.number : "Call Now");
+        callBtn.innerHTML = "📞 " + esc(label);
         callBtn.title = "Click to call directly from your device";
         actionsLeft.appendChild(callBtn);
       });
 
-      // 2. Detect Email addresses (standalone) -> Add "📋 Copy Email" button
+      // 2. Explicit Email Action Buttons (Conditional)
       if (!meta || !meta.email_draft) {
         var emails = (meta && meta.actions && meta.actions.emails) ? meta.actions.emails : [];
-        if (!emails.length && text) {
-          var mEmails = text.match(/[a-zA-Z0-9._%+-]+@sru\.edu\.in/g);
-          if (mEmails) {
-            mEmails.forEach(function (em) { if (emails.indexOf(em) === -1) emails.push(em); });
-          }
-        }
         emails.forEach(function (em) {
           var copyEmBtn = el("button", "srucw-action-btn srucw-copy-em-btn");
           copyEmBtn.innerHTML = "📋 Copy Email: " + esc(em);
@@ -683,7 +667,9 @@
         });
       }
 
-      actionsBar.appendChild(actionsLeft);
+      if (actionsLeft.children.length > 0) {
+        actionsBar.appendChild(actionsLeft);
+      }
 
       // Feedback Thumbs Group
       var fbGroup = el("div", "srucw-feedback-group");
@@ -779,7 +765,9 @@
           for (var k in data.profile) { profile[k] = data.profile[k]; }
           saveProfile();
         }
-        if (data.mode === "clarify" || (data.options && data.options.length)) {
+        if (data.mode === "greeting") {
+          chipsBox.innerHTML = "";
+        } else if (data.mode === "clarify" || (data.options && data.options.length)) {
           var opts = (data.options && data.options.length) ? data.options : data.suggestions;
           setChips(opts, 8);
         } else if (data.suggestions && data.suggestions.length) {

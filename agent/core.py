@@ -43,8 +43,25 @@ def _cache_key(text):
 _GREETINGS = {
     "hello", "hi", "hey", "hii", "hiii", "helloo", "hey there", "good morning",
     "good afternoon", "good evening", "who are you", "what is your name",
-    "what can you do", "help", "start", "namaste", "namaskaram", "sup",
+    "what can you do", "help", "start", "namaste", "namaskaram", "sup", "yo",
+    "hlo", "hloo", "hlw", "how are you", "how are you?", "how r u", "how r u?",
+    "how do you do", "hey aura", "hello aura",
 }
+
+GREETING_RE = re.compile(
+    r"^(?:hi+|hello+|hlo+|hey+|good\s+(?:morning|afternoon|evening)|how\s+are\s+you\??|how\s+r\s+u\??|sup|yo|namaste|namaskaram)[\s!.]*$",
+    re.I,
+)
+
+RE_MODIFY_RECORDS = re.compile(
+    r"\b(?:change|modify|alter|edit|update|increase|raise|fix|hack)\s+(?:my\s+)?(?:cgpa|sgpa|gpa|marks|grades?|attendance|score|result)\b",
+    re.I,
+)
+
+ATTENDANCE_CORRECTION_RE = re.compile(
+    r"\b(?:(?:wrongly|incorrectly|by\s+mistake)\s+marked\s+absent|marked\s+absent\s+(?:wrongly|incorrectly|by\s+mistake)|i\s+was\s+present\s+but\s+marked\s+absent|attendance\s+(?:correction|rectification|wrongly\s+marked))\b",
+    re.I,
+)
 
 
 _VERIFIED_FAQ = {
@@ -272,25 +289,87 @@ _VERIFIED_FAQ = {
     },
     "what is the examination department contact number": {
         "answer": (
-            "The handbook lists the following official contact information for the **Examination Branch / Exam Cell**:\n\n"
-            "- **Department**: Examination Branch / Exam Cell\n"
-            "- **Official Email**: `examcell@sru.edu.in`\n"
-            "- **Location**: Block-I, Ground Floor\n"
-            "- **In-charge**: Controller of Examinations (COE)\n\n"
-            "For general portal & fee issues, students may also contact SRAAP Support (`sraap@sru.edu.in`). Would you like me to draft a formal email to the Examination Cell?"
+            "Here are the available Examination Department contact details (Handbook 2026-27 p. 6):\n\n"
+            "- **In-charge**: Mr. K. Kiran Babu (Examination Cell)\n"
+            "- **Phone**: `+91 99083 36336`\n"
+            "- **Email**: `examcell@sru.edu.in`\n"
+            "- **Location**: Block-I, Ground Floor\n\n"
+            "You can contact the Examination Cell during working hours regarding end-semester schedules, hall tickets, or grade cards."
         ),
         "citations": ["Handbook 2026-27 p.6"],
+        "actions": {
+            "calls": [
+                {
+                    "number": "+91 99083 36336",
+                    "tel": "tel:+919908336336",
+                    "label": "Call Now",
+                }
+            ],
+            "emails": ["examcell@sru.edu.in"],
+        },
+    },
+    "give me the examination department number": {
+        "answer": (
+            "Here are the available Examination Department contact details (Handbook 2026-27 p. 6):\n\n"
+            "- **In-charge**: Mr. K. Kiran Babu (Examination Cell)\n"
+            "- **Phone**: `+91 99083 36336`\n"
+            "- **Email**: `examcell@sru.edu.in`\n"
+            "- **Location**: Block-I, Ground Floor\n\n"
+            "You can contact the Examination Cell during working hours regarding end-semester schedules, hall tickets, or grade cards."
+        ),
+        "citations": ["Handbook 2026-27 p.6"],
+        "actions": {
+            "calls": [
+                {
+                    "number": "+91 99083 36336",
+                    "tel": "tel:+919908336336",
+                    "label": "Call Now",
+                }
+            ],
+            "emails": ["examcell@sru.edu.in"],
+        },
     },
     "what is the examination department contact": {
         "answer": (
-            "The handbook lists the following official contact information for the **Examination Branch / Exam Cell**:\n\n"
-            "- **Department**: Examination Branch / Exam Cell\n"
-            "- **Official Email**: `examcell@sru.edu.in`\n"
-            "- **Location**: Block-I, Ground Floor\n"
-            "- **In-charge**: Controller of Examinations (COE)\n\n"
-            "For general portal & fee issues, students may also contact SRAAP Support (`sraap@sru.edu.in`). Would you like me to draft a formal email to the Examination Cell?"
+            "Here are the available Examination Department contact details (Handbook 2026-27 p. 6):\n\n"
+            "- **In-charge**: Mr. K. Kiran Babu (Examination Cell)\n"
+            "- **Phone**: `+91 99083 36336`\n"
+            "- **Email**: `examcell@sru.edu.in`\n"
+            "- **Location**: Block-I, Ground Floor\n\n"
+            "You can contact the Examination Cell during working hours regarding end-semester schedules, hall tickets, or grade cards."
         ),
         "citations": ["Handbook 2026-27 p.6"],
+        "actions": {
+            "calls": [
+                {
+                    "number": "+91 99083 36336",
+                    "tel": "tel:+919908336336",
+                    "label": "Call Now",
+                }
+            ],
+            "emails": ["examcell@sru.edu.in"],
+        },
+    },
+    "who is the ao of the hostel": {
+        "answer": (
+            "Here are the official contact details for the **Hostel Administrative Officer (AO)** (Handbook 2026-27 p. 7, 24):\n\n"
+            "- **Name**: Mr. Ch. Vinay Kumar\n"
+            "- **Designation**: Administrative Officer (AO, Hostels)\n"
+            "- **Phone**: `+91 99660 01761`\n"
+            "- **Email**: `c.vinaykumarreddy@sru.edu.in`\n\n"
+            "You can contact the Hostel AO for administrative approvals or escalation of unresolved issues."
+        ),
+        "citations": ["Handbook 2026-27 p.7", "Handbook 2026-27 p.24"],
+        "actions": {
+            "calls": [
+                {
+                    "number": "+91 99660 01761",
+                    "tel": "tel:+919966001761",
+                    "label": "Call AO",
+                }
+            ],
+            "emails": ["c.vinaykumarreddy@sru.edu.in"],
+        },
     },
     "give me the hod contact details": {
         "answer": (
@@ -507,6 +586,21 @@ def run_agent(question, history=None, profile=None):
     if out_of_scope:
         return out_of_scope
 
+    if RE_MODIFY_RECORDS.search(question):
+        return {
+            "answer": (
+                "🔒 **Security & Academic Integrity Notice:**\n\n"
+                "I cannot modify or alter academic records, grades, CGPA, or attendance. "
+                "All student academic records are securely maintained in the official SR University "
+                "Student Academic and Administration Portal (SRAAP) and can only be updated through "
+                "authorized institutional processes by faculty and examination officials."
+            ),
+            "citations": ["Handbook 2026-27 p.6", "Handbook 2026-27 p.34"],
+            "tool_calls": [],
+            "mode": "security_refusal",
+            "actions": {},
+        }
+
     # Normalize student slang & shortcuts
     question = normalize_student_text(_normalize_question(question))
     ckey = _cache_key(question)
@@ -595,26 +689,58 @@ def run_agent(question, history=None, profile=None):
         if not profile.get("degree"):
             profile["degree"] = "B.Tech (Lateral Entry)"
 
-    if ckey in _GREETINGS:
-        has_roll = isinstance(profile, dict) and profile.get("roll_number")
-        roll_prompt = (
-            f"You are currently identified as **{format_student_badge(profile)}**."
-            if has_roll else
-            "💡 **Tip:** Share your **10-digit Roll Number** (e.g., `2303A51001`) anytime so I can automatically apply the exact rules for your branch and batch!"
-        )
+    if ckey in _GREETINGS or GREETING_RE.match(question.strip()):
         return {
             "answer": (
-                "Hello! 👋 I'm **AURA** (Autonomous University RAG Agent), your official student handbook assistant.\n\n"
-                f"{roll_prompt}\n\n"
-                "I can help you with:\n"
-                "- **Academics**: Promotion rules, grading scale, SGPA/CGPA calculation, and pass marks\n"
-                "- **Examinations**: Mid/End-sem rules, revaluation, condonation, and malpractice policies\n"
-                "- **Campus Life**: Hostels, Wi-Fi, dress code, scholarships, clubs, and department contacts\n\n"
-                "What would you like to know today?"
+                "Hello! Welcome to SRU Assist. I'm AURA, your SR University student assistant.\n\n"
+                "How can I help you today?\n\n"
+                "You can ask me about academics, attendance, examinations, hostel facilities, placements or university services."
             ),
             "citations": [],
             "tool_calls": [],
             "mode": "greeting",
+            "actions": {},
+        }
+
+    # Contextual email draft suggestion follow-up:
+    last_bot_content = ""
+    if history:
+        for m in reversed(history):
+            if isinstance(m, dict) and m.get("role") == "assistant":
+                last_bot_content = str(m.get("content", "")).lower()
+                break
+
+    if "would you like me to prepare a professional email draft" in last_bot_content:
+        q_clean = question.strip().lower()
+        if re.search(r"\b(?:yes|yeah|sure|please|draft\s+(?:an?\s+)?email|yes,?\s*draft\s+email)\b", q_clean):
+            from .email_drafter import generate_smart_email_draft
+            return generate_smart_email_draft(
+                "Draft an email to the HOD regarding attendance wrongly marked absent correction",
+                history,
+                profile,
+            )
+        elif re.search(r"\b(?:no|nope|thanks|no\s+thanks|not\s+now)\b", q_clean):
+            return {
+                "answer": "No problem! Let me know if you need help with anything else regarding academics, exams, or university services.",
+                "citations": [],
+                "tool_calls": [],
+                "mode": "normal",
+            }
+
+    # Attendance correction inquiry
+    if ATTENDANCE_CORRECTION_RE.search(question):
+        return {
+            "answer": (
+                "I understand your concern. You can follow the official attendance correction procedure through the concerned department:\n\n"
+                "1. **Notify your Subject Faculty**: Inform the course instructor who conducted the class on that date with proof of your attendance.\n"
+                "2. **Department Verification**: If verified, the faculty forwards the attendance rectification to the Head of the Department (HOD).\n"
+                "3. **SRAAP Record Update**: The administrative desk / SRAAP coordinator rectifies the attendance status in the academic portal.\n\n"
+                "Would you like me to prepare a professional email draft to the HOD regarding this issue?"
+            ),
+            "citations": ["Handbook 2026-27 p.6", "Handbook 2026-27 p.34"],
+            "tool_calls": [],
+            "mode": "attendance_correction",
+            "options": ["Yes, Draft Email", "No, Thanks"],
         }
 
     from .hostel_assistant import handle_hostel_query, classify_hostel_intent
@@ -622,15 +748,11 @@ def run_agent(question, history=None, profile=None):
     if h_intent in (
         "HOSTEL_ELECTRICAL_ISSUE", "HOSTEL_WATER_ISSUE", "HOSTEL_CLEANING_ISSUE",
         "HOSTEL_WIFI_ISSUE", "HOSTEL_MAINTENANCE_COMPLAINT", "HOSTEL_MEAL_BOOKING",
-        "HOSTEL_OUTPASS", "UNKNOWN_HOSTEL_QUERY", "HOSTEL_CONTACT_INFORMATION"
+        "HOSTEL_OUTPASS", "UNKNOWN_HOSTEL_QUERY", "HOSTEL_CONTACT_INFORMATION", "HOSTEL_AO_CONTACT",
+        "HOSTEL_FACILITIES"
     ):
         hostel_res = handle_hostel_query(question, history, profile)
         if hostel_res:
-            if "answer" in hostel_res and "actions" not in hostel_res:
-                from .email_drafter import extract_contact_actions
-                contact_acts = extract_contact_actions(hostel_res["answer"])
-                if contact_acts.get("calls") or contact_acts.get("emails"):
-                    hostel_res["actions"] = contact_acts
             return hostel_res
 
     clarify = clarify_check(question, history, profile)
@@ -649,21 +771,24 @@ def run_agent(question, history=None, profile=None):
     if sim:
         return sim
 
-    from .email_drafter import is_email_draft_request, generate_smart_email_draft, extract_contact_actions
+    from .email_drafter import is_email_draft_request, generate_smart_email_draft, extract_contact_actions, is_contact_request
     if is_email_draft_request(question):
         return generate_smart_email_draft(question, history, profile)
 
     if not history and ckey in _CACHE:
         hit = _CACHE[ckey]
-        contact_acts = extract_contact_actions(hit["answer"])
         res = {
             "answer": hit["answer"],
             "citations": hit["citations"],
             "tool_calls": [],
             "mode": "cached",
         }
-        if contact_acts.get("calls") or contact_acts.get("emails"):
-            res["actions"] = contact_acts
+        if "actions" in hit:
+            res["actions"] = hit["actions"]
+        elif is_contact_request(question):
+            contact_acts = extract_contact_actions(hit["answer"])
+            if contact_acts.get("calls") or contact_acts.get("emails"):
+                res["actions"] = contact_acts
         return res
 
     if _fast_mode():
@@ -678,12 +803,12 @@ def run_agent(question, history=None, profile=None):
     if not history and result.get("mode") in ("fast", "agent") and "experiencing high network demand" not in result.get("answer", ""):
         _CACHE[ckey] = result
 
-    # Attach actionable CTA metadata (calls, emails) if present
-    if "answer" in result:
-        contact_acts = extract_contact_actions(result["answer"])
-        if contact_acts.get("calls") or contact_acts.get("emails"):
-            result.setdefault("actions", {})
-            if contact_acts.get("calls"):
+    # Attach actionable CTA metadata (calls, emails) ONLY if explicitly requested or present
+    if "answer" in result and "actions" not in result:
+        if is_contact_request(question):
+            contact_acts = extract_contact_actions(result["answer"])
+            if contact_acts.get("calls") or contact_acts.get("emails"):
+                result["actions"] = contact_acts
                 result["actions"]["calls"] = contact_acts["calls"]
             if contact_acts.get("emails"):
                 result["actions"]["emails"] = contact_acts["emails"]

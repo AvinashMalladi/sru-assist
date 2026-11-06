@@ -16,8 +16,8 @@ OFFICIAL_CONTACTS = {
     "examination": {
         "dept": "Examination Department / Exam Cell",
         "email": "examcell@sru.edu.in",
-        "phone": None,
-        "officer": "Controller of Examinations (COE) / Exam Branch",
+        "phone": "+91 9908336336",
+        "officer": "Mr. K. Kiran Babu (Examination Cell)",
         "location": "Block-I, Ground Floor",
         "cite": "Handbook 2026-27 p.6",
     },
@@ -472,3 +472,23 @@ def extract_contact_actions(text: str) -> Dict[str, Any]:
             emails.append(em)
 
     return {"calls": calls, "emails": emails}
+
+
+RE_CONTACT_QUERY = re.compile(
+    r"\b(?:contact\s+(?:number|no|details?|info|person)?|"
+    r"how\s+(?:can|do)\s+i\s+contact|"
+    r"phone\s*(?:number|no)?|mobile\s*(?:number|no)?|"
+    r"email\s*(?:id|address|details?)?|"
+    r"call\s+(?:number|now|ao|him|her|them)|helpline|how\s+to\s+call|reach\s+out\s+by\s+phone|"
+    r"who\s+is\s+the\s+ao|who\s+do\s+i\s+contact|whom\s+should\s+i\s+contact|"
+    r"give\s+me\s+(?:the\s+)?(?:phone|contact|mobile|email|number))\b",
+    re.I,
+)
+
+
+def is_contact_request(question: str) -> bool:
+    """Returns True if the student's question explicitly asks for contact/phone/email details."""
+    if not question:
+        return False
+    return bool(RE_CONTACT_QUERY.search(question))
+

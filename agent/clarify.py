@@ -203,7 +203,7 @@ def check(question, history=None, profile=None):
         if h_intent in (
             "HOSTEL_ELECTRICAL_ISSUE", "HOSTEL_WATER_ISSUE", "HOSTEL_CLEANING_ISSUE",
             "HOSTEL_WIFI_ISSUE", "HOSTEL_MAINTENANCE_COMPLAINT", "HOSTEL_MEAL_BOOKING",
-            "HOSTEL_OUTPASS", "UNKNOWN_HOSTEL_QUERY"
+            "HOSTEL_OUTPASS", "UNKNOWN_HOSTEL_QUERY", "HOSTEL_AO_CONTACT", "HOSTEL_FACILITIES"
         ):
             pass  # Route to hostel_assistant for FretBox complaints/services
         elif _handbook_has_gendered_hostels():

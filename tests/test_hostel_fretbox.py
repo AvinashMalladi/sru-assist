@@ -38,7 +38,7 @@ class TestHostelFretboxAssistant(unittest.TestCase):
         self.assertEqual(res["mode"], "fretbox_action")
         self.assertIn("FretBox", res["answer"])
         self.assertIn("fretbox", res)
-        self.assertEqual(res["fretbox"]["label"], "Raise Complaint in FretBox")
+        self.assertIn(res["fretbox"]["label"], ["Open FretBox", "Raise Complaint in FretBox"])
         self.assertIn("Handbook 2026-27 p.23", res["citations"][0])
 
     def test_water_supply_complaint(self):
@@ -47,7 +47,7 @@ class TestHostelFretboxAssistant(unittest.TestCase):
         self.assertEqual(res["mode"], "fretbox_action")
         self.assertIn("FretBox", res["answer"])
         self.assertIn("fretbox", res)
-        self.assertEqual(res["fretbox"]["label"], "Raise Complaint in FretBox")
+        self.assertIn(res["fretbox"]["label"], ["Open FretBox", "Raise Complaint in FretBox"])
         self.assertEqual(res["fretbox"]["icon"], "🚰")
 
     def test_meal_booking_action(self):

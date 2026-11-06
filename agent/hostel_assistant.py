@@ -107,7 +107,9 @@ RE_MEAL = re.compile(
 )
 
 RE_OUTPASS = re.compile(
-    r"\b(?:apply\s+(?:for\s+)?(?:an?\s+)?outpass|"
+    r"\b(?:outpass|gate\s*pass|"
+    r"apply\s+(?:for\s+)?(?:an?\s+)?outpass|"
+    r"i\s+(?:want|need)\s+(?:an?\s+)?outpass|"
     r"how\s+(?:can|do)\s+i\s+(?:get|apply\s+for|generate)\s+(?:an?\s+)?outpass|"
     r"outpass\s+(?:permission|request|approval|qr\s*code|system|rules?)|"
     r"go\s+outside\s+(?:the\s+)?hostel|"
@@ -138,6 +140,13 @@ RE_HOSTEL_CONTACT = re.compile(
     r"hostel\s+(?:warden|manager|authority|office|helpline)\s+(?:contact|number|details|phone)|"
     r"who\s+is\s+the\s+hostel\s+(?:warden|manager)|"
     r"contact\s+hostel\s+(?:management|warden|manager))\b",
+    re.I,
+)
+
+RE_HOSTEL_AO = re.compile(
+    r"\b(?:who\s+is\s+(?:the\s+)?(?:ao|administrative\s+officer)\s+(?:of|for\s+the)?\s*hostel|"
+    r"hostel\s+ao\b|ao\s+of\s+(?:the\s+)?hostel|administrative\s+officer\s+(?:of\s+)?hostels?|"
+    r"contact\s+(?:the\s+)?hostel\s+ao)\b",
     re.I,
 )
 
@@ -190,6 +199,8 @@ def classify_hostel_intent(question: str) -> Optional[str]:
         return "UNKNOWN_HOSTEL_QUERY"
 
     # 4. Contacts & Management
+    if RE_HOSTEL_AO.search(q):
+        return "HOSTEL_AO_CONTACT"
     if RE_HOSTEL_CONTACT.search(q):
         return "HOSTEL_CONTACT_INFORMATION"
 
@@ -267,29 +278,35 @@ def handle_hostel_query(
     if intent == "HOSTEL_ELECTRICAL_ISSUE":
         return {
             "answer": (
-                "Sorry to hear about the electrical issue! At SR University, all hostel room maintenance "
-                "requests are logged and tracked directly through the **FretBox application**.\n\n"
-                "### How to Raise an Electrical Complaint in FretBox:\n"
-                "1. Open the **FretBox** application on your phone or web browser.\n"
-                "2. Navigate to the **Helpdesk / Maintenance** section.\n"
-                "3. Select **Electrical / Appliance** (e.g., Fan, Tube Light, Socket, AC).\n"
+                "Sorry to hear that! You can quickly resolve this by lodging a complaint through the **FretBox application** "
+                "used by SR University hostel management.\n\n"
+                "### Steps to register your complaint:\n"
+                "1. Open the **FretBox** app.\n"
+                "2. Go to the **Maintenance / Complaint** section.\n"
+                "3. Select **Electrical Issues** ➔ Fan / Tube Light / Socket.\n"
                 "4. Enter your **Hostel Block** and **Room Number**.\n"
-                "5. Briefly describe the issue and click **Submit Ticket**.\n\n"
-                "💡 **Urgent Assistance:** For emergency electrical issues or power hazards, you may also reach "
-                f"**{manager_title} {manager_name}** at `{manager_phone}`."
+                "5. Submit your complaint.\n\n"
+                "If the issue is urgent or requires administrative attention, you can also contact the **Hostel Administrative Officer**:\n"
+                "- **Name**: Mr. Ch. Vinay Kumar (AO, Hostels)\n"
+                "- **Phone**: `+91 99660 01761`"
             ),
             "citations": ["Handbook 2026-27 p.23", "Handbook 2026-27 p.24"],
             "tool_calls": [],
             "mode": "fretbox_action",
             "fretbox": {
                 "url": FRETBOX_URL,
-                "label": "Raise Complaint in FretBox",
+                "label": "Open FretBox",
                 "intent": "electrical",
                 "icon": "⚡",
             },
             "actions": {
-                "calls": [{"number": manager_phone, "tel": f"tel:{manager_phone.replace(' ', '')}"}],
-                "emails": [manager_contact["email"]],
+                "calls": [
+                    {
+                        "number": "+91 99660 01761",
+                        "tel": "tel:+919966001761",
+                        "label": "Call Hostel AO",
+                    }
+                ],
             },
         }
 
@@ -307,8 +324,9 @@ def handle_hostel_query(
                 "3. Choose category: **Plumbing & Water Supply** (e.g., No Water, Tap Leakage, Geyser, Flush).\n"
                 "4. Specify your **Hostel Block** and **Room Number**.\n"
                 "5. Submit the ticket to alert the hostel maintenance supervisor.\n\n"
-                f"💡 **Emergency:** If water is completely unavailable in your block, please notify "
-                f"**{manager_title} {manager_name}** at `{manager_phone}`."
+                "If water is completely unavailable or needs urgent escalation, you may also reach the **Hostel Administrative Officer**:\n"
+                "- **Name**: Mr. Ch. Vinay Kumar (AO, Hostels)\n"
+                "- **Phone**: `+91 99660 01761`"
             ),
             "citations": ["Handbook 2026-27 p.23", "Handbook 2026-27 p.24"],
             "tool_calls": [],
@@ -320,8 +338,13 @@ def handle_hostel_query(
                 "icon": "🚰",
             },
             "actions": {
-                "calls": [{"number": manager_phone, "tel": f"tel:{manager_phone.replace(' ', '')}"}],
-                "emails": [manager_contact["email"]],
+                "calls": [
+                    {
+                        "number": "+91 99660 01761",
+                        "tel": "tel:+919966001761",
+                        "label": "Call Hostel AO",
+                    }
+                ],
             },
         }
 
@@ -390,7 +413,9 @@ def handle_hostel_query(
                 "3. Select the relevant issue (e.g., Door Lock, Cupboard, Bed/Cot, Window, Civil Repair).\n"
                 "4. Enter your **Hostel Block** and **Room Details**.\n"
                 "5. Submit your complaint for the hostel carpenter/supervisor to attend.\n\n"
-                "💡 **Notice:** Students must take reasonable care of hostel property. Deliberate damage may incur fines (Handbook p. 23)."
+                "If the issue is urgent or requires administrative attention, you can also contact the **Hostel Administrative Officer**:\n"
+                "- **Name**: Mr. Ch. Vinay Kumar (AO, Hostels)\n"
+                "- **Phone**: `+91 99660 01761`"
             ),
             "citations": ["Handbook 2026-27 p.23", "Handbook 2026-27 p.24"],
             "tool_calls": [],
@@ -400,6 +425,15 @@ def handle_hostel_query(
                 "label": "Open FretBox",
                 "intent": "maintenance",
                 "icon": "🛠️",
+            },
+            "actions": {
+                "calls": [
+                    {
+                        "number": "+91 99660 01761",
+                        "tel": "tel:+919966001761",
+                        "label": "Call Hostel AO",
+                    }
+                ],
             },
         }
 
@@ -458,7 +492,35 @@ def handle_hostel_query(
         }
 
     # -------------------------------------------------------------
-    # 9. HOSTEL CONTACT INFORMATION
+    # 9. HOSTEL AO CONTACT (Handbook Grounded - Call AO)
+    # -------------------------------------------------------------
+    if intent == "HOSTEL_AO_CONTACT":
+        return {
+            "answer": (
+                "Here are the official contact details for the **Hostel Administrative Officer (AO)** (Handbook 2026-27 p. 7, 24):\n\n"
+                "- **Name**: Mr. Ch. Vinay Kumar\n"
+                "- **Designation**: Administrative Officer (AO, Hostels)\n"
+                "- **Phone**: `+91 99660 01761`\n"
+                "- **Email**: `c.vinaykumarreddy@sru.edu.in`\n\n"
+                "You can contact the Hostel AO for administrative escalation, hostel discipline issues, or special permissions."
+            ),
+            "citations": ["Handbook 2026-27 p.7", "Handbook 2026-27 p.24"],
+            "tool_calls": [],
+            "mode": "hostel_contacts",
+            "actions": {
+                "calls": [
+                    {
+                        "number": "+91 99660 01761",
+                        "tel": "tel:+919966001761",
+                        "label": "Call AO",
+                    }
+                ],
+                "emails": ["c.vinaykumarreddy@sru.edu.in"],
+            },
+        }
+
+    # -------------------------------------------------------------
+    # 10. HOSTEL CONTACT INFORMATION
     # -------------------------------------------------------------
     if intent == "HOSTEL_CONTACT_INFORMATION":
         return {
