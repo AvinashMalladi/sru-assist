@@ -829,6 +829,26 @@
         }
       });
     },
+    askQuestion: function (q) {
+      if (!panel.classList.contains("open")) {
+        panel.classList.add("open");
+        bubble.textContent = "×";
+      }
+      ask(q);
+    },
+    open: function () {
+      if (!panel.classList.contains("open")) {
+        panel.classList.add("open");
+        bubble.textContent = "×";
+        input.focus();
+      }
+    },
+    close: function () {
+      if (panel.classList.contains("open")) {
+        panel.classList.remove("open");
+        bubble.textContent = "💬";
+      }
+    },
     resetProfile: function () {
       profile = {};
       try { localStorage.removeItem(PF_KEY); } catch (e) {}
