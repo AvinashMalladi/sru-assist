@@ -270,6 +270,87 @@ _VERIFIED_FAQ = {
         ),
         "citations": ["Handbook 2026-27 p.7", "Handbook 2026-27 p.82", "Handbook 2026-27 p.85"],
     },
+    "what is the examination department contact number": {
+        "answer": (
+            "The handbook lists the following official contact information for the **Examination Branch / Exam Cell**:\n\n"
+            "- **Department**: Examination Branch / Exam Cell\n"
+            "- **Official Email**: `examcell@sru.edu.in`\n"
+            "- **Location**: Block-I, Ground Floor\n"
+            "- **In-charge**: Controller of Examinations (COE)\n\n"
+            "For general portal & fee issues, students may also contact SRAAP Support (`sraap@sru.edu.in`). Would you like me to draft a formal email to the Examination Cell?"
+        ),
+        "citations": ["Handbook 2026-27 p.6"],
+    },
+    "what is the examination department contact": {
+        "answer": (
+            "The handbook lists the following official contact information for the **Examination Branch / Exam Cell**:\n\n"
+            "- **Department**: Examination Branch / Exam Cell\n"
+            "- **Official Email**: `examcell@sru.edu.in`\n"
+            "- **Location**: Block-I, Ground Floor\n"
+            "- **In-charge**: Controller of Examinations (COE)\n\n"
+            "For general portal & fee issues, students may also contact SRAAP Support (`sraap@sru.edu.in`). Would you like me to draft a formal email to the Examination Cell?"
+        ),
+        "citations": ["Handbook 2026-27 p.6"],
+    },
+    "give me the hod contact details": {
+        "answer": (
+            "The handbook lists the following official leadership and Assistant Dean (Head) contacts for SR University departments:\n\n"
+            "- **Computer Science & AI (CS & AI, SOCS)**: Mr. G. Ranjith Kumar (Phone: 90144 32147, Email: `g.ranjith@sru.edu.in`)\n"
+            "- **Civil Engineering (CE, SOE)**: Dr. Gaurav Tyagi (Phone: 9717696258, Email: `gaurav.tyagi@sru.edu.in`)\n"
+            "- **Mechanical Engineering (ME, SOE)**: Dr. M. Vijay Reddy (Phone: 7735983617, Email: `vijay.reddy@sru.edu.in`)\n"
+            "- **Electrical & Electronics (EEE, SOE)**: Dr. B. Sathyavani (Phone: 99087 60926, Email: `b.sathyavani@sru.edu.in`)\n"
+            "- **Electronics & Communication (ECE, SOE)**: Mr. K. Sagar (Phone: 99590 26505, Email: `rajkumar.k@sru.edu.in`)\n"
+            "- **School of Business (SOB)**: Dr. D. Ramesh Babu (Phone: 94946 13402, Email: `rameshbabu.d@sru.edu.in`)\n"
+            "- **School of Agriculture (SOA)**: Dr. Pandit Vaibhav Bhagwan (Phone: 9359179778, Email: `pandit.vaibhavbhagwan@sru.edu.in`)\n\n"
+            "Would you like me to draft an official email to your department head?"
+        ),
+        "citations": ["Handbook 2026-27 p.54"],
+    },
+    "how can i contact the placement department": {
+        "answer": (
+            "The handbook lists the following official contacts for the **Placement & Career Development Cell**:\n\n"
+            "- **School of Engineering (SOE)**: `pc.soe@sru.edu.in`\n"
+            "- **School of Computer Science & AI (SOCS)**: `pc.csai@sru.edu.in`\n"
+            "- **School of Business (SOB)**: `pc.sob@sru.edu.in`\n"
+            "- **School of Agriculture (SOA)**: `pc.soa@sru.edu.in`\n"
+            "- **Research Programs**: `pc.research@sru.edu.in`\n\n"
+            "You can click the email button below to copy the address, or let me know if you would like me to draft a placement inquiry email!"
+        ),
+        "citations": ["Handbook 2026-27 p.7"],
+    },
+    "give me the placement officer's email": {
+        "answer": (
+            "The official placement cell email addresses listed in the handbook are:\n\n"
+            "- **Engineering (SOE)**: `pc.soe@sru.edu.in`\n"
+            "- **Computer Science & AI (SOCS)**: `pc.csai@sru.edu.in`\n"
+            "- **Business Management (SOB)**: `pc.sob@sru.edu.in`\n"
+            "- **Agriculture (SOA)**: `pc.soa@sru.edu.in`\n\n"
+            "Use the button below to copy the email address or open Gmail directly."
+        ),
+        "citations": ["Handbook 2026-27 p.7"],
+    },
+    "give me the placement officer s email": {
+        "answer": (
+            "The official placement cell email addresses listed in the handbook are:\n\n"
+            "- **Engineering (SOE)**: `pc.soe@sru.edu.in`\n"
+            "- **Computer Science & AI (SOCS)**: `pc.csai@sru.edu.in`\n"
+            "- **Business Management (SOB)**: `pc.sob@sru.edu.in`\n"
+            "- **Agriculture (SOA)**: `pc.soa@sru.edu.in`\n\n"
+            "Use the button below to copy the email address or open Gmail directly."
+        ),
+        "citations": ["Handbook 2026-27 p.7"],
+    },
+    "give me the placement officer email": {
+        "answer": (
+            "The official placement cell email addresses listed in the handbook are:\n\n"
+            "- **Engineering (SOE)**: `pc.soe@sru.edu.in`\n"
+            "- **Computer Science & AI (SOCS)**: `pc.csai@sru.edu.in`\n"
+            "- **Business Management (SOB)**: `pc.sob@sru.edu.in`\n"
+            "- **Agriculture (SOA)**: `pc.soa@sru.edu.in`\n\n"
+            "Use the button below to copy the email address or open Gmail directly."
+        ),
+        "citations": ["Handbook 2026-27 p.7"],
+    },
 }
 
 _CACHE = dict(_VERIFIED_FAQ)
@@ -547,14 +628,22 @@ def run_agent(question, history=None, profile=None):
     if sim:
         return sim
 
+    from .email_drafter import is_email_draft_request, generate_smart_email_draft, extract_contact_actions
+    if is_email_draft_request(question):
+        return generate_smart_email_draft(question, history, profile)
+
     if not history and ckey in _CACHE:
         hit = _CACHE[ckey]
-        return {
+        contact_acts = extract_contact_actions(hit["answer"])
+        res = {
             "answer": hit["answer"],
             "citations": hit["citations"],
             "tool_calls": [],
             "mode": "cached",
         }
+        if contact_acts.get("calls") or contact_acts.get("emails"):
+            res["actions"] = contact_acts
+        return res
 
     if _fast_mode():
         result = _fast_answer(question, history, profile)
@@ -567,6 +656,16 @@ def run_agent(question, history=None, profile=None):
 
     if not history and result.get("mode") in ("fast", "agent") and "experiencing high network demand" not in result.get("answer", ""):
         _CACHE[ckey] = result
+
+    # Attach actionable CTA metadata (calls, emails) if present
+    if "answer" in result:
+        contact_acts = extract_contact_actions(result["answer"])
+        if contact_acts.get("calls") or contact_acts.get("emails"):
+            result.setdefault("actions", {})
+            if contact_acts.get("calls"):
+                result["actions"]["calls"] = contact_acts["calls"]
+            if contact_acts.get("emails"):
+                result["actions"]["emails"] = contact_acts["emails"]
 
     result.setdefault("sources", [])
     result.setdefault("retrieval_ms", 0.0)

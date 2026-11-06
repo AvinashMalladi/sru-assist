@@ -96,12 +96,32 @@
     ".srucw-cites-container{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}",
     ".srucw-cite-pill{background:#e0e7ff;border:1px solid #c7d2fe;color:#23468A;border-radius:10px;padding:3px 8px;font-size:10.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .15s}",
     ".srucw-cite-pill:hover{background:#c7d2fe;transform:translateY(-1px)}",
-    ".srucw-actions-bar{display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:6px;border-top:1px dashed #e5e7eb;font-size:11px}",
-    ".srucw-feedback-group{display:flex;gap:4px}",
+    ".srucw-actions-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;margin-top:8px;padding-top:6px;border-top:1px dashed #e5e7eb;font-size:11px}",
+    ".srucw-actions-left{display:flex;flex-wrap:wrap;gap:6px;align-items:center}",
+    ".srucw-feedback-group{display:flex;gap:4px;margin-left:auto}",
     ".srucw-thumb-btn{background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;padding:2px 6px;font-size:12px;cursor:pointer;transition:all .15s}",
     ".srucw-thumb-btn:hover{background:#e5e7eb}",
-    ".srucw-action-btn{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px}",
+    ".srucw-action-btn{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:6px;padding:4px 9px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px;text-decoration:none;transition:all .15s}",
     ".srucw-action-btn:hover{background:#dcfce7}",
+    ".srucw-call-now-btn{background:#ecfdf5;border-color:#a7f3d0;color:#065f46!important;text-decoration:none}",
+    ".srucw-call-now-btn:hover{background:#d1fae5;transform:translateY(-1px)}",
+    ".srucw-copy-em-btn{background:#f0f9ff;border-color:#bae6fd;color:#0369a1}",
+    ".srucw-copy-em-btn:hover{background:#e0f2fe;transform:translateY(-1px)}",
+    ".srucw-email-card{background:#f8fafc;border:1px solid #cbd5e1;border-radius:10px;padding:10px;margin-top:10px;box-shadow:0 2px 6px rgba(0,0,0,.04)}",
+    ".srucw-email-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #e2e8f0}",
+    ".srucw-email-title{font-size:12px;color:#1e293b}",
+    ".srucw-email-badge{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:600}",
+    ".srucw-email-fields{display:flex;flex-direction:column;gap:6px}",
+    ".srucw-email-field-row{display:flex;flex-direction:column;gap:2px}",
+    ".srucw-email-lbl{font-size:10.5px;font-weight:600;color:#475569}",
+    ".srucw-email-input{width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:5px 8px;font-size:11.5px;color:#1e293b;box-sizing:border-box}",
+    ".srucw-email-textarea{width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:6px 8px;font-family:monospace;font-size:11px;color:#1e293b;box-sizing:border-box;resize:vertical;line-height:1.4}",
+    ".srucw-email-textarea.srucw-editing{border-color:#23468A;background:#f0f7ff;outline:none;box-shadow:0 0 0 2px rgba(35,70,138,.15)}",
+    ".srucw-email-btn-bar{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}",
+    ".srucw-email-btn{background:#fff;border:1px solid #cbd5e1;border-radius:6px;padding:4px 9px;font-size:11px;font-weight:600;color:#334155;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;transition:all .15s}",
+    ".srucw-email-btn:hover{background:#f1f5f9;border-color:#94a3b8}",
+    ".srucw-open-gmail-btn{background:#23468A;color:#fff!important;border-color:#23468A}",
+    ".srucw-open-gmail-btn:hover{background:#1a3568}",
     ".srucw-modal-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:999999;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px)}",
     ".srucw-modal-overlay.active{display:flex}",
     ".srucw-modal-box{background:#fff;border-radius:12px;box-shadow:0 12px 36px rgba(0,0,0,.28);width:100%;max-height:85%;display:flex;flex-direction:column;overflow:hidden;border:1px solid #e5e7eb}",
@@ -501,12 +521,87 @@
     }).catch(function () {});
   }
 
-  function addMsg(role, text, cites, sources, questionText) {
+  function addMsg(role, text, cites, sources, questionText, meta) {
     var row = el("div", "srucw-row " + role);
     var b = el("div", "srucw-msg " + role);
     if (role === "bot") { b.innerHTML = renderMarkdown(text); }
     else { b.textContent = text; }
     row.appendChild(b);
+
+    // If an email draft is present in the response, render an interactive email draft card
+    if (meta && meta.email_draft) {
+      var draft = meta.email_draft;
+      var draftCard = el("div", "srucw-email-card");
+      draftCard.innerHTML =
+        '<div class="srucw-email-card-head">' +
+          '<span class="srucw-email-title">✉️ <strong>' + esc(draft.dept || "Official Email Draft") + '</strong></span>' +
+          '<span class="srucw-email-badge">Ready to Send</span>' +
+        '</div>' +
+        '<div class="srucw-email-fields">' +
+          '<div class="srucw-email-field-row">' +
+            '<label class="srucw-email-lbl">To:</label>' +
+            '<input type="text" class="srucw-email-input srucw-draft-to" value="' + esc(draft.to || "") + '" placeholder="Recipient Email Address">' +
+          '</div>' +
+          '<div class="srucw-email-field-row">' +
+            '<label class="srucw-email-lbl">Subject:</label>' +
+            '<input type="text" class="srucw-email-input srucw-draft-sub" value="' + esc(draft.subject || "") + '" placeholder="Subject">' +
+          '</div>' +
+          '<div class="srucw-email-field-row">' +
+            '<label class="srucw-email-lbl">Body:</label>' +
+            '<textarea class="srucw-email-textarea srucw-draft-body" rows="8">' + esc(draft.body || "") + '</textarea>' +
+          '</div>' +
+        '</div>' +
+        '<div class="srucw-email-btn-bar">' +
+          '<button class="srucw-email-btn srucw-copy-all-btn" title="Copy full email with recipient, subject, and body">📋 Copy Email</button>' +
+          '<button class="srucw-email-btn srucw-copy-sub-btn" title="Copy only the subject line">📌 Copy Subject</button>' +
+          '<a class="srucw-email-btn srucw-open-gmail-btn" target="_blank" rel="noopener" title="Open Gmail with recipient, subject, and body prefilled">✉️ Open Gmail</a>' +
+          '<button class="srucw-email-btn srucw-edit-btn" title="Edit draft fields before sending">✏️ Edit Draft</button>' +
+        '</div>';
+
+      var toInput = draftCard.querySelector(".srucw-draft-to");
+      var subInput = draftCard.querySelector(".srucw-draft-sub");
+      var bodyInput = draftCard.querySelector(".srucw-draft-body");
+      var copyAllBtn = draftCard.querySelector(".srucw-copy-all-btn");
+      var copySubBtn = draftCard.querySelector(".srucw-copy-sub-btn");
+      var openGmailBtn = draftCard.querySelector(".srucw-open-gmail-btn");
+      var editBtn = draftCard.querySelector(".srucw-edit-btn");
+
+      copyAllBtn.onclick = function () {
+        var full = "To: " + toInput.value + "\nSubject: " + subInput.value + "\n\n" + bodyInput.value;
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(full);
+          copyAllBtn.textContent = "✓ Copied Email!";
+          setTimeout(function () { copyAllBtn.textContent = "📋 Copy Email"; }, 2000);
+        }
+      };
+
+      copySubBtn.onclick = function () {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(subInput.value);
+          copySubBtn.textContent = "✓ Copied Subject!";
+          setTimeout(function () { copySubBtn.textContent = "📌 Copy Subject"; }, 2000);
+        }
+      };
+
+      openGmailBtn.onclick = function (e) {
+        e.preventDefault();
+        var gUrl = "https://mail.google.com/mail/?view=cm&fs=1" +
+          "&to=" + encodeURIComponent(toInput.value) +
+          "&su=" + encodeURIComponent(subInput.value) +
+          "&body=" + encodeURIComponent(bodyInput.value);
+        window.open(gUrl, "_blank");
+      };
+
+      editBtn.onclick = function () {
+        bodyInput.focus();
+        bodyInput.classList.add("srucw-editing");
+        editBtn.textContent = "✏️ Editing...";
+        setTimeout(function () { editBtn.textContent = "✏️ Edit Draft"; }, 2000);
+      };
+
+      b.appendChild(draftCard);
+    }
+
     if (cites && cites.length) {
       b.appendChild(el("br"));
       var citeContainer = el("div", "srucw-cites-container");
@@ -522,8 +617,61 @@
       });
       b.appendChild(citeContainer);
     }
+
     if (role === "bot" && text !== WELCOME) {
       var actionsBar = el("div", "srucw-actions-bar");
+      var actionsLeft = el("div", "srucw-actions-left");
+
+      // 1. Detect Phone numbers -> Add "📞 Call Now" button
+      var calls = (meta && meta.actions && meta.actions.calls) ? meta.actions.calls : [];
+      if (!calls.length && text) {
+        var mPhones = text.match(/(?:\+91[\s-]?)?[6-9]\d{4}[\s-]?\d{5}|\b0870[\s-]?\d{6,7}\b/g);
+        if (mPhones) {
+          var seenP = {};
+          mPhones.forEach(function (p) {
+            var clean = p.replace(/[^\d+]/g, "");
+            if (!clean.startsWith("+") && clean.length === 10) clean = "+91" + clean;
+            if (!seenP[clean]) {
+              seenP[clean] = true;
+              calls.push({ number: p, tel: "tel:" + clean });
+            }
+          });
+        }
+      }
+      calls.forEach(function (cItem) {
+        var callBtn = el("a", "srucw-action-btn srucw-call-now-btn");
+        callBtn.href = cItem.tel;
+        callBtn.innerHTML = "📞 Call Now: " + esc(cItem.number);
+        callBtn.title = "Click to call directly from your device";
+        actionsLeft.appendChild(callBtn);
+      });
+
+      // 2. Detect Email addresses (standalone) -> Add "📋 Copy Email" button
+      if (!meta || !meta.email_draft) {
+        var emails = (meta && meta.actions && meta.actions.emails) ? meta.actions.emails : [];
+        if (!emails.length && text) {
+          var mEmails = text.match(/[a-zA-Z0-9._%+-]+@sru\.edu\.in/g);
+          if (mEmails) {
+            mEmails.forEach(function (em) { if (emails.indexOf(em) === -1) emails.push(em); });
+          }
+        }
+        emails.forEach(function (em) {
+          var copyEmBtn = el("button", "srucw-action-btn srucw-copy-em-btn");
+          copyEmBtn.innerHTML = "📋 Copy Email: " + esc(em);
+          copyEmBtn.onclick = function () {
+            if (navigator.clipboard) {
+              navigator.clipboard.writeText(em);
+              copyEmBtn.innerHTML = "✓ Copied!";
+              setTimeout(function () { copyEmBtn.innerHTML = "📋 Copy Email: " + esc(em); }, 2000);
+            }
+          };
+          actionsLeft.appendChild(copyEmBtn);
+        });
+      }
+
+      actionsBar.appendChild(actionsLeft);
+
+      // Feedback Thumbs Group
       var fbGroup = el("div", "srucw-feedback-group");
       var thumbUp = el("button", "srucw-thumb-btn", "👍");
       var thumbDown = el("button", "srucw-thumb-btn", "👎");
@@ -534,6 +682,7 @@
       fbGroup.appendChild(thumbUp);
       fbGroup.appendChild(thumbDown);
       actionsBar.appendChild(fbGroup);
+
       b.appendChild(actionsBar);
     }
     msgsBox.appendChild(row);
@@ -604,7 +753,7 @@
         currentAbort = null;
         typing(false);
         var ans = data.answer || data.error || "Something went wrong.";
-        addMsg("bot", ans, data.citations, data.sources, text);
+        addMsg("bot", ans, data.citations, data.sources, text, data);
         history.push({ role: "user", content: text });
         history.push({ role: "assistant", content: ans });
         saveSessionMsgs();

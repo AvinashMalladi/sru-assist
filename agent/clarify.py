@@ -104,6 +104,27 @@ _SUBJECTS_VAGUE = re.compile(
     re.I
 )
 
+# 6. Unclear Contact & Helpdesk Umbrella
+_CONTACT_VAGUE = re.compile(
+    r"^(?:(?:i\s+(?:want|need)\s+to\s+)?contact\s+(?:someone|anybody|help|support|university|college|department)(?:\s+(?:regarding|about|for)\s+my\s+issue)?|"
+    r"i\s+want\s+to\s+contact\s+someone\s+regarding\s+my\s+issue|"
+    r"how\s+(?:can|do)\s+i\s+contact(?:\s+someone|\s+the\s+university|\s+helpdesk)?|"
+    r"i\s+have\s+an?\s+issue\s+who\s+to\s+contact|"
+    r"who\s+should\s+i\s+contact|"
+    r"contact\s+someone|"
+    r"contact\s+details|"
+    r"helpline(?:\s+numbers?)?)$",
+    re.I
+)
+
+# 7. Department Contact Preference
+_DEPT_CONTACT_VAGUE = re.compile(
+    r"^(?:i\s+want\s+to\s+contact\s+this\s+department|"
+    r"how\s+(?:can|do)\s+i\s+contact\s+(?:this\s+department|the\s+department)|"
+    r"can\s+i\s+contact\s+this\s+department)$",
+    re.I
+)
+
 
 @lru_cache(maxsize=1)
 def _handbook_has_gendered_hostels():
@@ -311,6 +332,40 @@ def check(question, history=None, profile=None):
                 "MOOCs / NPTEL Credit Transfer",
                 "Minors & Honors Degree",
                 "Branch Course Structure",
+            ],
+        )
+
+    # (F) Contact & Support Umbrella
+    if _CONTACT_VAGUE.match(q_clean):
+        return _reply(
+            "contact_issue",
+            "Sure! I can help you with that. Are you trying to contact someone regarding:\n\n"
+            "- Attendance\n"
+            "- Examinations\n"
+            "- Placements\n"
+            "- Fee-related issues\n"
+            "- Academic issues\n\n"
+            "Which one would you like to contact?",
+            [
+                "Attendance",
+                "Examinations",
+                "Placements",
+                "Fee-related issues",
+                "Academic issues",
+            ],
+        )
+
+    # (G) Department Contact Preference Umbrella
+    if _DEPT_CONTACT_VAGUE.match(q_clean):
+        return _reply(
+            "dept_contact_method",
+            "I can provide both call and email options for university departments! Would you prefer to call the department directly or have me draft a formal email for you?\n\n"
+            "Which department are you looking to contact?",
+            [
+                "Examination Cell",
+                "Dean Student Welfare",
+                "Department HOD",
+                "Placement Cell",
             ],
         )
 

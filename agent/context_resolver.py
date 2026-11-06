@@ -57,6 +57,12 @@ SEMANTIC_EXPANSIONS = {
     "nptel": "MOOCs NPTEL online courses credit transfer equivalence committee",
     "honors": "B.Tech Honors degree additional 18 to 20 credits eligibility CGPA",
     "minors": "B.Tech Minor degree additional credits interdisciplinary eligibility",
+
+    # Contact & Support sub-topics
+    "examinations": "examination department exam cell controller of examinations contact email examcell@sru.edu.in",
+    "placements": "placement department career development cell contact officer email pc.soe@sru.edu.in",
+    "fee-related issues": "sraap portal tuition fees payment receipts support contact sraap@sru.edu.in",
+    "academic issues": "academic issues department leadership assistant dean hod head contact email phone",
 }
 
 
