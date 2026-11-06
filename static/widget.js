@@ -111,10 +111,6 @@
     ".srucw-modal-body{padding:14px;overflow-y:auto;font-size:12px;color:#374151}",
     ".srucw-source-badge{display:inline-block;background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:600;margin-bottom:8px}",
     ".srucw-source-text{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px;font-size:11px;white-space:pre-wrap;line-height:1.45;color:#1e293b;max-height:220px;overflow-y:auto}",
-    ".srucw-email-textarea{width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:8px;font-family:monospace;font-size:11px;box-sizing:border-box;resize:vertical}",
-    ".srucw-email-send-link{background:#23468A;color:#fff;text-decoration:none;border-radius:6px;padding:6px 12px;font-size:11.5px;font-weight:600;display:inline-block}",
-    ".srucw-email-copy-btn{background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;padding:6px 10px;font-size:11.5px;cursor:pointer}",
-
   ].join("");
 
   // ---------- mini markdown ----------
@@ -479,63 +475,6 @@
     modal.classList.add("active");
   }
 
-  function openEmailModal(text) {
-    var modal = panel.querySelector(".srucw-modal-overlay");
-    if (!modal) {
-      modal = el("div", "srucw-modal-overlay");
-      panel.appendChild(modal);
-    }
-    modal.innerHTML = "";
-
-    var matchEmail = text.match(/[a-zA-Z0-9._%+-]+@sru\.edu\.in/);
-    var toEmail = matchEmail ? matchEmail[0] : "dean.sw@sru.edu.in";
-    var roll = profile.roll_number || "Student";
-    var branch = profile.stream || profile.degree || "B.Tech";
-
-    var subject = "Formal Application Regarding Academic Regulations - " + roll;
-    var bodyText = "Respected Authority,\n\n" +
-      "I am writing regarding academic regulations and university policies for my current semester.\n\n" +
-      "Student Details:\n" +
-      "- Roll Number: " + roll + "\n" +
-      "- Branch & Degree: " + branch + "\n" +
-      "- Batch / Regulation: " + (profile.regulation || profile.batch || "Approved Handbook") + "\n\n" +
-      "Request / Concern:\n" +
-      "[Please describe your specific request regarding attendance condonation, grade inquiry, or academic policy]\n\n" +
-      "Thank you for your guidance,\n" +
-      "Student Name: [Your Name]\n" +
-      "Roll Number: " + roll;
-
-    var box = el("div", "srucw-modal-box");
-    var head = el("div", "srucw-modal-head");
-    head.innerHTML = "<div><strong>✉️ Official Application Drafter</strong><div style='font-size:11px;opacity:0.85'>Pre-filled formal email</div></div>";
-    var closeBtn = el("button", "srucw-modal-close", "✕");
-    closeBtn.onclick = function () { modal.classList.remove("active"); };
-    head.appendChild(closeBtn);
-    box.appendChild(head);
-
-    var body = el("div", "srucw-modal-body");
-    body.innerHTML = "<div style='font-size:11.5px;margin-bottom:6px;'><strong>To:</strong> <code>" + esc(toEmail) + "</code></div>" +
-      "<div style='font-size:11.5px;margin-bottom:8px;'><strong>Subject:</strong> " + esc(subject) + "</div>" +
-      "<textarea class='srucw-email-textarea' rows='8' readonly>" + esc(bodyText) + "</textarea>" +
-      "<div style='display:flex;gap:8px;margin-top:10px;align-items:center;'>" +
-      "<a class='srucw-email-send-link' href='mailto:" + encodeURIComponent(toEmail) + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(bodyText) + "' target='_blank'>🚀 Open in Email App</a>" +
-      "<button class='srucw-email-copy-btn'>📋 Copy Text</button>" +
-      "</div>";
-
-    var copyBtn = body.querySelector(".srucw-email-copy-btn");
-    copyBtn.onclick = function () {
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(bodyText);
-        copyBtn.textContent = "✓ Copied!";
-        setTimeout(function () { copyBtn.textContent = "📋 Copy Text"; }, 2000);
-      }
-    };
-
-    box.appendChild(body);
-    modal.appendChild(box);
-    modal.classList.add("active");
-  }
-
   function submitFeedback(rating, qText, aText, upBtn, downBtn) {
     if (upBtn.disabled) return;
     upBtn.disabled = true;
@@ -585,11 +524,6 @@
     }
     if (role === "bot" && text !== WELCOME) {
       var actionsBar = el("div", "srucw-actions-bar");
-      if (/@sru\.edu\.in|Assistant Dean|HOD|Dispute|Dean/i.test(text)) {
-        var emailBtn = el("button", "srucw-action-btn", "✉️ Draft Official Email");
-        emailBtn.onclick = function () { openEmailModal(text); };
-        actionsBar.appendChild(emailBtn);
-      }
       var fbGroup = el("div", "srucw-feedback-group");
       var thumbUp = el("button", "srucw-thumb-btn", "👍");
       var thumbDown = el("button", "srucw-thumb-btn", "👎");
