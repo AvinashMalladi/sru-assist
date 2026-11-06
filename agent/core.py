@@ -617,9 +617,30 @@ def run_agent(question, history=None, profile=None):
             "mode": "greeting",
         }
 
+    from .hostel_assistant import handle_hostel_query, classify_hostel_intent
+    h_intent = classify_hostel_intent(question)
+    if h_intent in (
+        "HOSTEL_ELECTRICAL_ISSUE", "HOSTEL_WATER_ISSUE", "HOSTEL_CLEANING_ISSUE",
+        "HOSTEL_WIFI_ISSUE", "HOSTEL_MAINTENANCE_COMPLAINT", "HOSTEL_MEAL_BOOKING",
+        "HOSTEL_OUTPASS", "UNKNOWN_HOSTEL_QUERY", "HOSTEL_CONTACT_INFORMATION"
+    ):
+        hostel_res = handle_hostel_query(question, history, profile)
+        if hostel_res:
+            if "answer" in hostel_res and "actions" not in hostel_res:
+                from .email_drafter import extract_contact_actions
+                contact_acts = extract_contact_actions(hostel_res["answer"])
+                if contact_acts.get("calls") or contact_acts.get("emails"):
+                    hostel_res["actions"] = contact_acts
+            return hostel_res
+
     clarify = clarify_check(question, history, profile)
     if clarify:
         return clarify
+
+    if h_intent in ("HOSTEL_RULES", "HOSTEL_FACILITIES", "HOSTEL_INFORMATION"):
+        hostel_res = handle_hostel_query(question, history, profile)
+        if hostel_res:
+            return hostel_res
     counts = counts_check(question, history, profile)
     if counts:
         return counts

@@ -105,6 +105,8 @@
     ".srucw-action-btn:hover{background:#dcfce7}",
     ".srucw-call-now-btn{background:#ecfdf5;border-color:#a7f3d0;color:#065f46!important;text-decoration:none}",
     ".srucw-call-now-btn:hover{background:#d1fae5;transform:translateY(-1px)}",
+    ".srucw-fretbox-btn{background:#fff7ed;border:1px solid #fed7aa;color:#c2410c!important;font-weight:700;text-decoration:none;transition:all .15s}",
+    ".srucw-fretbox-btn:hover{background:#ffedd5;transform:translateY(-1px);box-shadow:0 2px 6px rgba(194,65,12,.15)}",
     ".srucw-copy-em-btn{background:#f0f9ff;border-color:#bae6fd;color:#0369a1}",
     ".srucw-copy-em-btn:hover{background:#e0f2fe;transform:translateY(-1px)}",
     ".srucw-email-card{background:#f8fafc;border:1px solid #cbd5e1;border-radius:10px;padding:10px;margin-top:10px;box-shadow:0 2px 6px rgba(0,0,0,.04)}",
@@ -621,6 +623,18 @@
     if (role === "bot" && text !== WELCOME) {
       var actionsBar = el("div", "srucw-actions-bar");
       var actionsLeft = el("div", "srucw-actions-left");
+
+      // 0. FretBox Dynamic Action Button
+      if (meta && meta.fretbox) {
+        var fb = meta.fretbox;
+        var fbBtn = el("a", "srucw-action-btn srucw-fretbox-btn");
+        fbBtn.href = fb.url || "https://app.fretbox.biz";
+        fbBtn.target = "_blank";
+        fbBtn.rel = "noopener noreferrer";
+        fbBtn.innerHTML = (fb.icon || "🏠") + " " + esc(fb.label || "Open FretBox");
+        fbBtn.title = "Open FretBox portal to complete this action";
+        actionsLeft.appendChild(fbBtn);
+      }
 
       // 1. Detect Phone numbers -> Add "📞 Call Now" button
       var calls = (meta && meta.actions && meta.actions.calls) ? meta.actions.calls : [];

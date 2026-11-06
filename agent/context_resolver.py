@@ -63,6 +63,14 @@ SEMANTIC_EXPANSIONS = {
     "placements": "placement department career development cell contact officer email pc.soe@sru.edu.in",
     "fee-related issues": "sraap portal tuition fees payment receipts support contact sraap@sru.edu.in",
     "academic issues": "academic issues department leadership assistant dean hod head contact email phone",
+
+    # Hostel sub-topics
+    "fan or tube light problem": "hostel room fan tube light electrical issue complaint fretbox",
+    "water supply problem": "hostel room water supply shortage tap leakage plumbing issue complaint fretbox",
+    "bathroom or cleaning problem": "hostel washroom bathroom cleaning housekeeping complaint fretbox",
+    "wi-fi or internet problem": "hostel room wifi internet network slow not working fretbox",
+    "furniture or room maintenance": "hostel room furniture door lock cupboard bed repair fretbox",
+    "other issue": "hostel management contact manager warden fretbox",
 }
 
 

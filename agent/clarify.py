@@ -196,9 +196,17 @@ def check(question, history=None, profile=None):
     ctx = _context_str(question, history, profile)
     last_bot = _last_assistant_message(history)
 
-    # 2. Hostel facet takes precedence for any hostel question lacking gender declaration.
+    # 2. Hostel facet takes precedence for general hostel questions lacking gender declaration.
     if HOSTEL_TOPIC.search(q) and not _GENDER.search(ctx):
-        if _handbook_has_gendered_hostels():
+        from .hostel_assistant import classify_hostel_intent
+        h_intent = classify_hostel_intent(question)
+        if h_intent in (
+            "HOSTEL_ELECTRICAL_ISSUE", "HOSTEL_WATER_ISSUE", "HOSTEL_CLEANING_ISSUE",
+            "HOSTEL_WIFI_ISSUE", "HOSTEL_MAINTENANCE_COMPLAINT", "HOSTEL_MEAL_BOOKING",
+            "HOSTEL_OUTPASS", "UNKNOWN_HOSTEL_QUERY"
+        ):
+            pass  # Route to hostel_assistant for FretBox complaints/services
+        elif _handbook_has_gendered_hostels():
             return _reply(
                 "hostel_gender",
                 "Do you mean the Boys Hostel or the Girls Hostel? Hostel rules, "
