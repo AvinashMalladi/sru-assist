@@ -84,5 +84,30 @@ class TestContactsOverride(unittest.TestCase):
         self.assertIn("stu.boyshostel@sru.edu.in", turn2.get("answer", ""))
 
 
+    def test_ao_of_the_hostel_exact_query(self):
+        """Query 'who is the AO of the hostel?' must return Mr. Ch. Vinay Kumar (AO Hostels)."""
+        resp = run_agent("who is the AO of the hostel?")
+        self.assertEqual(resp.get("mode"), "live_directory_match")
+        answer = resp.get("answer", "")
+        self.assertIn("Administrative Officer (Hostels)", answer)
+        self.assertIn("Vinay Kumar", answer)
+        self.assertIn("9966001761", answer)
+
+    def test_who_should_i_call_hostel_problem_flow(self):
+        """Asking who to call for hostel problem followed by 'Boys' must resolve to Boys Hostel in-charge."""
+        turn1 = run_agent("Who should I call if i have a problem in hostel?")
+        self.assertEqual(turn1.get("mode"), "clarify")
+
+        history = [
+            {"role": "user", "content": "Who should I call if i have a problem in hostel?"},
+            {"role": "assistant", "content": turn1.get("answer")},
+        ]
+        turn2 = run_agent("Boys", history=history)
+        self.assertEqual(turn2.get("mode"), "live_directory_match")
+        answer = turn2.get("answer", "")
+        self.assertIn("Hostel Manager / In-Charge (Boys)", answer)
+        self.assertIn("9989671719", answer)
+
+
 if __name__ == "__main__":
     unittest.main()

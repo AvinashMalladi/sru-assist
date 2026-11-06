@@ -499,14 +499,49 @@ def save_contacts(directory: dict) -> None:
 def match_contact_override(query: str) -> dict | None:
     """Checks whether the query asks for a tracked personnel role, service desk, or department unit.
 
-    Uses word-boundary regex to prevent false substring collisions (e.g., 'tc' matching inside 'batch').
+    Uses high-priority semantic patterns and word-boundary regex to prevent false substring collisions.
     Returns the best matching contact record, or None if no match.
     """
     if not query:
         return None
     q = query.lower().strip()
-
     directory = load_contacts()
+
+    # --- 1. Semantic High-Priority Patterns ---
+    # a) Administrative Officer (AO) of Hostels
+    if re.search(r"\b(ao|administrative officer)\b", q) and re.search(r"\b(hostel|hostels|accommodation)\b", q):
+        return directory.get("hostel_admin_officer")
+
+    # b) Boys Hostel in-charge / warden / manager / complaints / who to call
+    if re.search(r"\b(boys?|bh-?\d?)\b", q) and re.search(r"\b(hostel|hostels)\b", q) and re.search(r"\b(warden|incharge|in-charge|manager|call|contact|who|problem|complaint|emergency)\b", q):
+        return directory.get("hostel_boys_manager")
+
+    # c) Girls Hostel in-charge / warden / manager / complaints / who to call
+    if re.search(r"\b(girls?|gh-?\d?)\b", q) and re.search(r"\b(hostel|hostels)\b", q) and re.search(r"\b(warden|incharge|in-charge|manager|call|contact|who|problem|complaint|emergency)\b", q):
+        return directory.get("hostel_girls_manager")
+
+    # d) Department Leadership & Deans (Civil, Mech, EEE, ECE, CSE, Business, Agri, Innovation)
+    if re.search(r"\b(dean|hod|head)\b", q):
+        if re.search(r"\b(civil|ce)\b", q):
+            return directory.get("dean_civil")
+        if re.search(r"\b(mechanical|mech|me)\b", q):
+            return directory.get("dean_mechanical")
+        if re.search(r"\b(eee|electrical)\b", q):
+            return directory.get("dean_eee")
+        if re.search(r"\b(ece|electronics)\b", q):
+            return directory.get("dean_ece")
+        if re.search(r"\b(computer|cse|csai|socs|cs & ai)\b", q):
+            return directory.get("dean_computer_science")
+        if re.search(r"\b(business|sob|bba|mba)\b", q):
+            return directory.get("dean_business")
+        if re.search(r"\b(agriculture|soa|agri)\b", q):
+            return directory.get("dean_agriculture")
+        if re.search(r"\b(innovation|nest|startup)\b", q):
+            return directory.get("dean_innovation")
+        if re.search(r"\b(student welfare|sw)\b", q):
+            return directory.get("dean_student_welfare")
+
+    # --- 2. Keyword-based matching with word boundaries ---
     best_match = None
     longest_kw = 0
 
@@ -516,7 +551,6 @@ def match_contact_override(query: str) -> dict | None:
             kw_clean = kw.strip().lower()
             if not kw_clean:
                 continue
-            # Regex word boundary check: prevents short acronyms like 'tc', 'sw', 'me' from matching inside words
             pattern = rf"(?<!\w){re.escape(kw_clean)}(?!\w)"
             if re.search(pattern, q) and len(kw_clean) > longest_kw:
                 best_match = item
