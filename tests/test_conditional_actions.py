@@ -140,6 +140,41 @@ class TestConditionalActionHandling(unittest.TestCase):
         self.assertIn("9966001761", call_item["tel"])
         self.assertEqual(call_item.get("label"), "Call AO")
 
+    def test_13_phone_cta_filtering_and_ordinary_numbers(self):
+        """TEST 13: Phone CTA extracts valid phone numbers and strictly ignores ordinary numbers (room, dates, marks, roll)."""
+        from agent.email_drafter import extract_contact_actions
+
+        # Case A: Real phone alongside room number and handbook page
+        text_with_phone = (
+            "visit the Student Help Desk in Block-I, Room No. 1002 (Phone: 9963084035) "
+            "for assistance (Handbook 2026-27 p. 54-55)."
+        )
+        acts = extract_contact_actions(text_with_phone)
+        self.assertEqual(len(acts["calls"]), 1)
+        self.assertEqual(acts["calls"][0]["tel"], "tel:+919963084035")
+        # Ensure 1002, 2026, 27, 54, 55 are NOT treated as phone numbers
+        all_tels = [c["tel"] for c in acts["calls"]]
+        self.assertFalse(any("1002" in t for t in all_tels))
+
+        # Case B: Ordinary numbers only (no phone number)
+        ordinary_text = (
+            "The minimum attendance is 75% across 160 credits for B.Tech in regulation R23. "
+            "Room No. 1002 and 1018 in Block-I on 22/03/2024. CGPA 8.5 required."
+        )
+        acts_empty = extract_contact_actions(ordinary_text)
+        self.assertEqual(len(acts_empty["calls"]), 0)
+
+        # Case C: Multiple valid phone numbers
+        multi_phone_text = (
+            "- Ms. B. Sunitha (Room 1018, Phone: 9912654505)\n"
+            "- Mr. J. Sunil (Room 1018, Phone: 9866001312)"
+        )
+        acts_multi = extract_contact_actions(multi_phone_text)
+        self.assertEqual(len(acts_multi["calls"]), 2)
+        extracted_tels = [c["tel"] for c in acts_multi["calls"]]
+        self.assertIn("tel:+919912654505", extracted_tels)
+        self.assertIn("tel:+919866001312", extracted_tels)
+
 
 if __name__ == "__main__":
     unittest.main()

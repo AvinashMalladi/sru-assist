@@ -105,6 +105,9 @@
     ".srucw-action-btn:hover{background:#dcfce7}",
     ".srucw-call-now-btn{background:#ecfdf5;border-color:#a7f3d0;color:#065f46!important;text-decoration:none}",
     ".srucw-call-now-btn:hover{background:#d1fae5;transform:translateY(-1px)}",
+    ".srucw-phone-cta-row{margin:6px 0 4px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}",
+    ".srucw-phone-cta-row .srucw-call-now-btn{background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46!important;border-radius:6px;padding:3.5px 10px;font-size:11px;font-weight:600;text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:4px;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:all .15s ease}",
+    ".srucw-phone-cta-row .srucw-call-now-btn:hover{background:#d1fae5;transform:translateY(-1px);box-shadow:0 2px 4px rgba(6,95,70,.12)}",
     ".srucw-fretbox-btn{background:#fff7ed;border:1px solid #fed7aa;color:#c2410c!important;font-weight:700;text-decoration:none;transition:all .15s}",
     ".srucw-fretbox-btn:hover{background:#ffedd5;transform:translateY(-1px);box-shadow:0 2px 6px rgba(194,65,12,.15)}",
     ".srucw-copy-em-btn{background:#f0f9ff;border-color:#bae6fd;color:#0369a1}",
@@ -209,6 +212,99 @@
       out.push("<p>" + inline(L.trim()) + "</p>"); i++;
     }
     return out.join("");
+  }
+
+  // ---------- phone number cta detection & rendering ----------
+  function extractValidPhoneNumbers(text) {
+    if (!text || typeof text !== "string") return [];
+    var results = [], seen = {};
+
+    // 1. Match Indian mobile numbers:
+    // Exactly 10 digits starting with 6, 7, 8, or 9
+    // Optional +91 prefix, optional leading 0, optional space/hyphen between digits
+    // Strict non-word boundaries so 4-digit room numbers (Room 1002) or roll numbers (2303A51042) never match
+    var mobRegex = /(?:^|[^\w+])(?:\+91[\s-]?)?(?:0)?([6-9](?:[\s-]?\d){9})(?=[^\w]|$)/g;
+    var m;
+    while ((m = mobRegex.exec(text)) !== null) {
+      var raw = m[1];
+      var clean = raw.replace(/[^\d]/g, "");
+      if (clean.length === 10 && clean[0] >= "6" && clean[0] <= "9") {
+        var tel = "+91" + clean;
+        if (!seen[clean]) {
+          seen[clean] = true;
+          results.push({
+            raw: raw,
+            clean: clean,
+            display: "+91 " + clean.slice(0, 5) + " " + clean.slice(5),
+            tel: "tel:" + tel
+          });
+        }
+      }
+    }
+
+    // 2. Match official SR University landlines (0870 followed by 6-7 digits)
+    var landRegex = /(?:^|[^\w+])(0870[\s-]?\d{6,7})(?=[^\w]|$)/g;
+    while ((m = landRegex.exec(text)) !== null) {
+      var rawLand = m[1];
+      var cleanLand = rawLand.replace(/[^\d]/g, "");
+      if (cleanLand.length >= 10 && cleanLand.length <= 11) {
+        if (!seen[cleanLand]) {
+          seen[cleanLand] = true;
+          results.push({
+            raw: rawLand,
+            clean: cleanLand,
+            display: rawLand,
+            tel: "tel:" + cleanLand
+          });
+        }
+      }
+    }
+
+    return results;
+  }
+
+  function attachPhoneCTAs(container) {
+    if (!container) return {};
+
+    var blocks = container.querySelectorAll("p, li, td, dd");
+    if (!blocks || !blocks.length) {
+      blocks = [container];
+    }
+
+    var processed = {};
+
+    blocks.forEach(function (block) {
+      // Do not process parent containers if they contain child paragraphs or list items
+      if (block.querySelector("p, li, td, dd")) return;
+
+      var text = block.textContent || "";
+      var phones = extractValidPhoneNumbers(text);
+      if (!phones || !phones.length) return;
+
+      var newPhones = phones.filter(function (p) {
+        if (!processed[p.clean]) {
+          processed[p.clean] = true;
+          return true;
+        }
+        return false;
+      });
+
+      if (!newPhones.length) return;
+
+      var ctaRow = el("div", "srucw-phone-cta-row");
+      newPhones.forEach(function (p) {
+        var callBtn = el("a", "srucw-action-btn srucw-call-now-btn");
+        callBtn.href = p.tel;
+        callBtn.title = "Click to call " + p.display;
+        var label = newPhones.length > 1 ? "Call Now: " + p.display : "Call Now";
+        callBtn.innerHTML = "📞 " + esc(label);
+        ctaRow.appendChild(callBtn);
+      });
+
+      block.appendChild(ctaRow);
+    });
+
+    return processed;
   }
 
   // ---------- dom ----------
@@ -526,8 +622,18 @@
   function addMsg(role, text, cites, sources, questionText, meta) {
     var row = el("div", "srucw-row " + role);
     var b = el("div", "srucw-msg " + role);
-    if (role === "bot") { b.innerHTML = renderMarkdown(text); }
-    else { b.textContent = text; }
+    var isGreeting = meta && meta.mode === "greeting";
+    var isRefusal = meta && meta.mode === "security_refusal";
+
+    var inlinePhones = {};
+    if (role === "bot") {
+      b.innerHTML = renderMarkdown(text);
+      if (!isGreeting && !isRefusal) {
+        inlinePhones = attachPhoneCTAs(b);
+      }
+    } else {
+      b.textContent = text;
+    }
     row.appendChild(b);
 
     // If an email draft is present in the response, render an interactive email draft card
@@ -642,6 +748,12 @@
       // 1. Explicit Call Action Buttons (Conditional)
       var calls = (meta && meta.actions && meta.actions.calls) ? meta.actions.calls : [];
       calls.forEach(function (cItem) {
+        var cleanTel = (cItem.tel || "").replace(/[^\d]/g, "");
+        if (cleanTel.length === 10) cleanTel = "91" + cleanTel;
+        // Avoid duplicate generic "Call Now" buttons in the bottom bar if already placed directly below the number in the message
+        if (inlinePhones && inlinePhones[cleanTel.slice(-10)] && (!cItem.label || cItem.label === "Call Now")) {
+          return;
+        }
         var callBtn = el("a", "srucw-action-btn srucw-call-now-btn");
         callBtn.href = cItem.tel;
         var label = cItem.label || (cItem.number ? "Call Now: " + cItem.number : "Call Now");

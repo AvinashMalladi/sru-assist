@@ -785,10 +785,14 @@ def run_agent(question, history=None, profile=None):
         }
         if "actions" in hit:
             res["actions"] = hit["actions"]
-        elif is_contact_request(question):
+        else:
             contact_acts = extract_contact_actions(hit["answer"])
-            if contact_acts.get("calls") or contact_acts.get("emails"):
-                res["actions"] = contact_acts
+            if contact_acts.get("calls"):
+                res.setdefault("actions", {})
+                res["actions"]["calls"] = contact_acts["calls"]
+            if is_contact_request(question) and contact_acts.get("emails"):
+                res.setdefault("actions", {})
+                res["actions"]["emails"] = contact_acts["emails"]
         return res
 
     if _fast_mode():
@@ -803,15 +807,15 @@ def run_agent(question, history=None, profile=None):
     if not history and result.get("mode") in ("fast", "agent") and "experiencing high network demand" not in result.get("answer", ""):
         _CACHE[ckey] = result
 
-    # Attach actionable CTA metadata (calls, emails) ONLY if explicitly requested or present
+    # Attach actionable CTA metadata (calls, emails) if genuine contact details are present
     if "answer" in result and "actions" not in result:
-        if is_contact_request(question):
-            contact_acts = extract_contact_actions(result["answer"])
-            if contact_acts.get("calls") or contact_acts.get("emails"):
-                result["actions"] = contact_acts
-                result["actions"]["calls"] = contact_acts["calls"]
-            if contact_acts.get("emails"):
-                result["actions"]["emails"] = contact_acts["emails"]
+        contact_acts = extract_contact_actions(result["answer"])
+        if contact_acts.get("calls"):
+            result.setdefault("actions", {})
+            result["actions"]["calls"] = contact_acts["calls"]
+        if is_contact_request(question) and contact_acts.get("emails"):
+            result.setdefault("actions", {})
+            result["actions"]["emails"] = contact_acts["emails"]
 
     result.setdefault("sources", [])
     result.setdefault("retrieval_ms", 0.0)
