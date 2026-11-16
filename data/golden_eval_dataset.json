@@ -1,0 +1,524 @@
+[
+  {
+    "id": "ACAD_01",
+    "category": "Academics",
+    "question": "What is the minimum pass marks for B.Tech courses?",
+    "profile": {
+      "roll_number": "2303A52665",
+      "regulation": "R23",
+      "degree": "B.Tech"
+    },
+    "expected_citations": [
+      "p.72",
+      "p.77",
+      "p.67",
+      "p.34",
+      "p.57",
+      "p.61"
+    ],
+    "required_facts": [
+      "40",
+      "50",
+      "5.0"
+    ],
+    "prohibited_terms": [
+      "fabricated",
+      "100% pass"
+    ]
+  },
+  {
+    "id": "ACAD_02",
+    "category": "Academics",
+    "question": "How many total credits are required to graduate in regular B.Tech?",
+    "profile": {
+      "roll_number": "2303A52665",
+      "regulation": "R23",
+      "degree": "B.Tech"
+    },
+    "expected_citations": [
+      "p.19",
+      "p.59"
+    ],
+    "required_facts": [
+      "160"
+    ],
+    "prohibited_terms": [
+      "120 credits for regular",
+      "180 credits"
+    ]
+  },
+  {
+    "id": "ACAD_03",
+    "category": "Academics",
+    "question": "How many credits are required for lateral entry B.Tech students?",
+    "profile": {
+      "roll_number": "2403L51001",
+      "is_lateral_entry": true,
+      "degree": "B.Tech (Lateral Entry)"
+    },
+    "expected_citations": [
+      "p.19",
+      "p.59",
+      "p.91",
+      "p.8"
+    ],
+    "required_facts": [
+      "120",
+      "lateral"
+    ],
+    "prohibited_terms": [
+      "160 credits required for lateral"
+    ]
+  },
+  {
+    "id": "ACAD_04",
+    "category": "Academics",
+    "question": "What happens if a student secures a grade point below 5.0?",
+    "profile": {
+      "roll_number": "2303A52665",
+      "regulation": "R23"
+    },
+    "expected_citations": [
+      "p.77",
+      "p.72"
+    ],
+    "required_facts": [
+      "F",
+      "fail",
+      "reappear"
+    ],
+    "prohibited_terms": [
+      "promoted automatically"
+    ]
+  },
+  {
+    "id": "ACAD_05",
+    "category": "Academics",
+    "question": "What is the minimum pass marks for postgraduate programs?",
+    "profile": {},
+    "expected_citations": [
+      "p.34",
+      "p.57",
+      "p.61"
+    ],
+    "required_facts": [
+      "60",
+      "postgraduate"
+    ],
+    "prohibited_terms": [
+      "40% for postgrad"
+    ]
+  },
+  {
+    "id": "ATT_01",
+    "category": "Attendance",
+    "question": "What is the minimum attendance percentage required to appear for semester end exams?",
+    "profile": {
+      "roll_number": "2303A51042"
+    },
+    "expected_citations": [
+      "p.67",
+      "p.68",
+      "p.69",
+      "p.29",
+      "p.31",
+      "p.34",
+      "p.56"
+    ],
+    "required_facts": [
+      "75"
+    ],
+    "prohibited_terms": [
+      "50% attendance allowed"
+    ]
+  },
+  {
+    "id": "ATT_02",
+    "category": "Attendance",
+    "question": "Can a student get condonation if attendance is 68%?",
+    "profile": {
+      "roll_number": "2303A51042"
+    },
+    "expected_citations": [
+      "p.67",
+      "p.68",
+      "p.69",
+      "p.29",
+      "p.55",
+      "p.57",
+      "p.81"
+    ],
+    "required_facts": [
+      "condonation",
+      "65",
+      "medical",
+      "fee"
+    ],
+    "prohibited_terms": [
+      "no condonation possible at 68"
+    ]
+  },
+  {
+    "id": "ATT_03",
+    "category": "Attendance",
+    "question": "What happens if my attendance is below 65%?",
+    "profile": {
+      "roll_number": "2303A51042"
+    },
+    "expected_citations": [
+      "p.68",
+      "p.69",
+      "p.29",
+      "p.56",
+      "p.81"
+    ],
+    "required_facts": [
+      "detained",
+      "repeat"
+    ],
+    "prohibited_terms": [
+      "eligible for condonation"
+    ]
+  },
+  {
+    "id": "EXAM_01",
+    "category": "Examinations",
+    "question": "What happens if a student is caught with slips or chits during exam?",
+    "profile": {},
+    "expected_citations": [
+      "p.34",
+      "p.35",
+      "p.36"
+    ],
+    "required_facts": [
+      "invigilator",
+      "seize",
+      "statement",
+      "CPAM"
+    ],
+    "prohibited_terms": [
+      "ignored",
+      "no penalty"
+    ]
+  },
+  {
+    "id": "EXAM_02",
+    "category": "Examinations",
+    "question": "What is the procedure for answer script revaluation?",
+    "profile": {
+      "roll_number": "2303A52665"
+    },
+    "expected_citations": [
+      "p.77",
+      "p.78",
+      "p.32",
+      "p.33",
+      "p.34",
+      "p.56"
+    ],
+    "required_facts": [
+      "revaluation",
+      "fee",
+      "verification"
+    ],
+    "prohibited_terms": [
+      "free of cost revaluation"
+    ]
+  },
+  {
+    "id": "EXAM_03",
+    "category": "Examinations",
+    "question": "What is the minimum pass marks required in end-term theory exam?",
+    "profile": {
+      "roll_number": "2303A52665",
+      "regulation": "R23"
+    },
+    "expected_citations": [
+      "p.77",
+      "p.72"
+    ],
+    "required_facts": [
+      "50"
+    ],
+    "prohibited_terms": [
+      "20% end term"
+    ]
+  },
+  {
+    "id": "HOSTEL_01",
+    "category": "Hostels",
+    "question": "What are the entry timings and curfew for Girls Hostel?",
+    "profile": {
+      "hostel": "Girls"
+    },
+    "expected_citations": [
+      "p.229",
+      "p.23",
+      "p.48",
+      "p.84",
+      "p.86"
+    ],
+    "required_facts": [
+      "9:00",
+      "9:30"
+    ],
+    "prohibited_terms": [
+      "12:00 AM allowed",
+      "open 24 hours"
+    ]
+  },
+  {
+    "id": "HOSTEL_02",
+    "category": "Hostels",
+    "question": "What is the fine for arriving late to hostel or missing biometric roll call?",
+    "profile": {
+      "hostel": "Girls"
+    },
+    "expected_citations": [
+      "p.229",
+      "p.49",
+      "p.50",
+      "p.86"
+    ],
+    "required_facts": [
+      "100",
+      "500"
+    ],
+    "prohibited_terms": [
+      "Rs. 5000 fine"
+    ]
+  },
+  {
+    "id": "HOSTEL_03",
+    "category": "Hostels",
+    "question": "Who is the active in-charge of Girls Hostel?",
+    "profile": {
+      "hostel": "Girls"
+    },
+    "expected_citations": [
+      "p.25",
+      "p.51",
+      "Live Directory"
+    ],
+    "required_facts": [
+      "Shobha Rani",
+      "9701578799"
+    ],
+    "prohibited_terms": [
+      "Anitha GP",
+      "Dr. Rupesh Mishra"
+    ]
+  },
+  {
+    "id": "HOSTEL_04",
+    "category": "Hostels",
+    "question": "Who is the active manager for Boys Hostel?",
+    "profile": {
+      "hostel": "Boys"
+    },
+    "expected_citations": [
+      "p.24",
+      "p.51",
+      "Live Directory"
+    ],
+    "required_facts": [
+      "Surender",
+      "9989671719"
+    ],
+    "prohibited_terms": [
+      "Rupesh Mishra"
+    ]
+  },
+  {
+    "id": "HOSTEL_05",
+    "category": "Hostels",
+    "question": "Who is the AO of the hostel?",
+    "profile": {},
+    "expected_citations": [
+      "p.24",
+      "Live Directory"
+    ],
+    "required_facts": [
+      "Vinay Kumar",
+      "9966001761"
+    ],
+    "prohibited_terms": [
+      "Dr. Rupesh Mishra"
+    ]
+  },
+  {
+    "id": "HOSTEL_06",
+    "category": "Hostels",
+    "question": "How do hostel residents apply for an out pass?",
+    "profile": {
+      "hostel": "Girls"
+    },
+    "expected_citations": [
+      "p.229",
+      "p.48",
+      "p.50",
+      "p.84",
+      "p.86"
+    ],
+    "required_facts": [
+      "portal",
+      "SMS",
+      "parent"
+    ],
+    "prohibited_terms": [
+      "verbal permission only"
+    ]
+  },
+  {
+    "id": "ADMIN_01",
+    "category": "Admin Services",
+    "question": "Where can I apply for my Transfer Certificate TC and Bonafide certificate?",
+    "profile": {
+      "roll_number": "2303A52665"
+    },
+    "expected_citations": [
+      "p.6",
+      "Handbook 2026-27"
+    ],
+    "required_facts": [
+      "Ramadevi",
+      "1002",
+      "9963084035"
+    ],
+    "prohibited_terms": [
+      "finance branch",
+      "library counter"
+    ]
+  },
+  {
+    "id": "ADMIN_02",
+    "category": "Admin Services",
+    "question": "Who should I contact for campus Wi-Fi network connection issues?",
+    "profile": {},
+    "expected_citations": [
+      "p.6",
+      "p.23"
+    ],
+    "required_facts": [
+      "Bala Krishna",
+      "8886522500",
+      "1008"
+    ],
+    "prohibited_terms": [
+      "canteen supervisor"
+    ]
+  },
+  {
+    "id": "ADMIN_03",
+    "category": "Admin Services",
+    "question": "Who manages university bus passes and transport routes?",
+    "profile": {},
+    "expected_citations": [
+      "p.6",
+      "p.26"
+    ],
+    "required_facts": [
+      "Keerthi Reddy",
+      "9640606408",
+      "1002"
+    ],
+    "prohibited_terms": [
+      "hostel security guard"
+    ]
+  },
+  {
+    "id": "ADMIN_04",
+    "category": "Admin Services",
+    "question": "What is the contact number for Administrative Officer AO inquiries?",
+    "profile": {},
+    "expected_citations": [
+      "p.51",
+      "p.54",
+      "p.6",
+      "Live Directory"
+    ],
+    "required_facts": [
+      "Surender",
+      "9177302052"
+    ],
+    "prohibited_terms": [
+      "0000000000"
+    ]
+  },
+  {
+    "id": "PORTAL_01",
+    "category": "Portal Guidance",
+    "question": "What can students do on the SRAAP portal?",
+    "profile": {},
+    "expected_citations": [
+      "p.30",
+      "p.11",
+      "p.12",
+      "p.6",
+      "p.9"
+    ],
+    "required_facts": [
+      "attendance",
+      "marks",
+      "enroll",
+      "calendar"
+    ],
+    "prohibited_terms": [
+      "play video games"
+    ]
+  },
+  {
+    "id": "PORTAL_02",
+    "category": "Portal Guidance",
+    "question": "What is the helpline phone number for SRAAP portal technical support?",
+    "profile": {},
+    "expected_citations": [
+      "p.30",
+      "p.11",
+      "p.6",
+      "p.9"
+    ],
+    "required_facts": [
+      "8074253480"
+    ],
+    "prohibited_terms": [
+      "1234567890"
+    ]
+  },
+  {
+    "id": "CAMPUS_01",
+    "category": "Campus Life",
+    "question": "What are the official university working timings?",
+    "profile": {},
+    "expected_citations": [
+      "p.22",
+      "p.21",
+      "p.12",
+      "p.8"
+    ],
+    "required_facts": [
+      "9:00",
+      "5:00"
+    ],
+    "prohibited_terms": [
+      "open until midnight"
+    ]
+  },
+  {
+    "id": "CAMPUS_02",
+    "category": "Campus Life",
+    "question": "Who oversees student welfare and grievance appeals at SR University?",
+    "profile": {},
+    "expected_citations": [
+      "p.52",
+      "p.54"
+    ],
+    "required_facts": [
+      "Student Welfare",
+      "dean.sw@sru.edu.in"
+    ],
+    "prohibited_terms": [
+      "sports coach only"
+    ]
+  }
+]

@@ -11,11 +11,9 @@ _client = None
 _client_provider = None
 
 FALLBACK_MODELS = [
-    "gemini-3.1-flash-lite",
-    "gemini-flash-latest",
-    "nvidia/nemotron-3-ultra-550b-a55b:free",
     "nvidia/nemotron-3.5-lightning:free",
-    "google/gemma-4-31b-it:free",
+    "inclusionai/ling-3.2-flash:free",
+    "gemini-3.1-flash-lite",
 ]
 
 
@@ -32,7 +30,7 @@ def get_client(provider=None):
     if _client is not None and _client_provider == target_provider:
         return _client
 
-    timeout = int(os.environ.get("LLM_TIMEOUT", "15"))
+    timeout = int(os.environ.get("LLM_TIMEOUT", "8"))
 
     if target_provider == "gemini":
         if not gemini_key:
@@ -41,6 +39,7 @@ def get_client(provider=None):
             base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
             api_key=gemini_key,
             timeout=timeout,
+            max_retries=1,
         )
         _client_provider = "gemini"
     else:
@@ -50,6 +49,7 @@ def get_client(provider=None):
             base_url=os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"),
             api_key=openrouter_key,
             timeout=timeout,
+            max_retries=1,
         )
         _client_provider = "openrouter"
 
