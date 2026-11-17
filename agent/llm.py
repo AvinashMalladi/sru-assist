@@ -78,9 +78,9 @@ def chat(messages, tools=None, temperature=0.2, max_tokens=None):
     """One LLM call with automated fallbacks across Gemini and OpenRouter."""
     if max_tokens is None:
         try:
-            max_tokens = int(os.environ.get("MAX_TOKENS", "2048"))
+            max_tokens = int(os.environ.get("MAX_TOKENS", "4096"))
         except ValueError:
-            max_tokens = 2048
+            max_tokens = 4096
 
     primary_model = get_model()
     models_to_try = [primary_model]
@@ -92,15 +92,19 @@ def chat(messages, tools=None, temperature=0.2, max_tokens=None):
     openrouter_key = os.environ.get("OPENROUTER_API_KEY")
 
     last_err = None
+    exhausted_providers = set()
     for model_name in models_to_try:
         # Determine provider based on model name
-        is_gemini_model = "gemini" in model_name.lower()
+        is_gemini_model = "gemini" in model_name.lower() or "gemma" in model_name.lower()
         if is_gemini_model and not gemini_key:
             continue
         if not is_gemini_model and not openrouter_key:
             continue
 
         provider = "gemini" if is_gemini_model else "openrouter"
+        if provider in exhausted_providers:
+            continue
+
         client = get_client(provider)
 
         kwargs = dict(
@@ -118,6 +122,16 @@ def chat(messages, tools=None, temperature=0.2, max_tokens=None):
                 msg = resp.choices[0].message
                 if getattr(msg, "content", None):
                     msg.content = _strip_thinking(msg.content)
+                elif getattr(msg, "reasoning", None):
+                    # Fallback: extract answer from reasoning if provider omitted content
+                    reasoning = msg.reasoning.strip()
+                    # Look for drafted answer blocks or the last paragraphs
+                    m_draft = re.search(r'(?:draft(?:ing)?|direct answer|final answer)[\s:]*["\']?(.*?)(?:["\']?\s*$)', reasoning, re.I | re.S)
+                    if m_draft and len(m_draft.group(1).strip()) > 30:
+                        msg.content = m_draft.group(1).strip()
+                    else:
+                        paras = [p.strip() for p in reasoning.split("\n\n") if p.strip()]
+                        msg.content = "\n\n".join(paras[-3:]) if paras else reasoning
                 return msg
             err_info = getattr(resp, "error", None) or "Empty choices"
             logger.warning("Model %s (%s) failed: %s. Trying fallback...", model_name, provider, err_info)
@@ -125,6 +139,8 @@ def chat(messages, tools=None, temperature=0.2, max_tokens=None):
         except Exception as exc:
             logger.warning("Model %s (%s) exception: %s. Trying fallback...", model_name, provider, exc)
             last_err = exc
+            if "429" in str(exc) or "quota" in str(exc).lower() or "limit" in str(exc).lower():
+                exhausted_providers.add(provider)
             continue
 
     if last_err:

@@ -1,431 +1,699 @@
 {
-  "evaluation_timestamp": "2026-11-16 21:47:52",
-  "total_evaluated": 25,
-  "citation_precision_pct": 60.0,
-  "factual_accuracy_pct": 60.0,
+  "evaluation_timestamp": "2026-11-17 11:57:27",
+  "total_evaluated": 33,
+  "average_semantic_similarity_pct": 96.04,
+  "citation_precision_pct": 100.0,
+  "factual_accuracy_pct": 100.0,
   "zero_hallucination_rate_pct": 100.0,
+  "overall_composite_score_pct": 98.62,
   "latency_metrics": {
-    "mean_ms": 10918.62,
-    "median_ms": 5028.6,
-    "p90_ms": 29352.06
+    "mean_ms": 0.55,
+    "median_ms": 0.26,
+    "p90_ms": 0.63
   },
   "detailed_results": [
     {
       "id": "ACAD_01",
       "category": "Academics",
       "question": "What is the minimum pass marks for B.Tech courses?",
+      "semantic_similarity_pct": 100.0,
       "citation_pass": true,
-      "facts_pass": false,
+      "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 72760.82,
-      "retrieval_ms": 525.46,
+      "composite_score_pct": 100.0,
+      "latency_ms": 0.63,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
-        "R23 Handbook p.193",
         "R23 Handbook p.72",
-        "R23 Handbook p.77",
-        "R23 Handbook p.84"
+        "R23 Handbook p.77"
       ],
-      "answer_preview": "I couldn't find that in the handbook. Please contact the Student Help Desk."
+      "answer_preview": "For undergraduate (B.Tech) courses under R23 regulations (pp. 72, 77):\n\n- **Course Pass Requirement**: A student must secure a minimum **gra...",
+      "ground_truth_preview": "For undergraduate (B.Tech) courses under R23, the minimum pass criterion to clear a course is securing a grade point of at least 5.0 (corres..."
     },
     {
       "id": "ACAD_02",
       "category": "Academics",
       "question": "How many total credits are required to graduate in regular B.Tech?",
+      "semantic_similarity_pct": 100.0,
       "citation_pass": true,
       "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 35612.52,
-      "retrieval_ms": 564.61,
+      "composite_score_pct": 100.0,
+      "latency_ms": 0.27,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
-        "R23 Handbook p.164",
-        "R23 Handbook p.180",
-        "R23 Handbook p.59",
-        "R23 Handbook p.70"
+        "R23 Handbook p.59"
       ],
-      "answer_preview": "According to the **R23 Handbook (p. 59)**, a regular B.Tech programme requires **160 credits** to graduate under normal ..."
+      "answer_preview": "According to the official university regulations (R23 Handbook p. 59):\n\n- **Regular B.Tech Duration**: 4 academic years (8 regular semesters...",
+      "ground_truth_preview": "According to the official university regulations (R23 Handbook p. 59), a student enrolled in the regular 4-year (8 semesters) B.Tech program..."
     },
     {
       "id": "ACAD_03",
       "category": "Academics",
       "question": "How many credits are required for lateral entry B.Tech students?",
+      "semantic_similarity_pct": 100.0,
       "citation_pass": true,
       "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 24369.47,
-      "retrieval_ms": 668.54,
+      "composite_score_pct": 100.0,
+      "latency_ms": 0.19,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
-        "Handbook 2026-27 p.26",
-        "Handbook 2026-27 p.27",
-        "Handbook 2026-27 p.58",
-        "Handbook 2026-27 p.59"
+        "R23 Handbook p.59",
+        "Handbook 2026-27 p.19"
       ],
-      "answer_preview": "**120\u2013130 credits** (Handbook 2026\u201127, p.\u202f26).  \nThe Lateral\u2011Entry B.Tech programme prescribes 120\u2013130 credits over 6 se..."
+      "answer_preview": "For Lateral Entry B.Tech students (admitted directly into the 2nd year / 3rd semester):\n\n- **Prescribed Graduation Credits**: Lateral entry ...",
+      "ground_truth_preview": "Students admitted under Lateral Entry directly into the 2nd year (3rd semester) must earn between 110 and 130 credits (specifically 120 cred..."
     },
     {
       "id": "ACAD_04",
       "category": "Academics",
       "question": "What happens if a student secures a grade point below 5.0?",
+      "semantic_similarity_pct": 100.0,
       "citation_pass": true,
       "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 4655.97,
-      "retrieval_ms": 599.35,
+      "composite_score_pct": 100.0,
+      "latency_ms": 0.21,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
-        "R23 Handbook p.67",
-        "R23 Handbook p.69",
-        "R23 Handbook p.70",
-        "R23 Handbook p.77"
+        "R23 Handbook p.77",
+        "Handbook 2026-27 p.30"
       ],
-      "answer_preview": "Under the R23 regulation, if you secure a grade point below 5.0 in a UG course, you are deemed to have failed, and an \"F..."
+      "answer_preview": "Under university regulations (R23 Handbook p. 77 / Handbook 2026-27 p. 30):\n\n- **Grade Awarded**: Securing a grade point below 5.0 results i...",
+      "ground_truth_preview": "Securing a grade point below 5.0 in a course results in an 'F' (Fail) grade. The student is deemed to have failed the course and must appear..."
     },
     {
       "id": "ACAD_05",
       "category": "Academics",
       "question": "What is the minimum pass marks for postgraduate programs?",
+      "semantic_similarity_pct": 100.0,
       "citation_pass": true,
       "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 2901.72,
-      "retrieval_ms": 628.89,
+      "composite_score_pct": 100.0,
+      "latency_ms": 0.15,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
+      "citations": [
+        "Handbook 2026-27 p.34",
+        "Handbook 2026-27 p.57",
+        "R23 Handbook p.69"
+      ],
+      "answer_preview": "For postgraduate (PG) and Ph.D. programs:\n\n- **Passing Threshold**: A student must secure a minimum of **50% to 60% aggregate marks** across...",
+      "ground_truth_preview": "For postgraduate (PG) programs, students must secure a minimum of 50% to 60% aggregate marks across continuous evaluation and semester exami..."
+    },
+    {
+      "id": "ACAD_06",
+      "category": "Academics",
+      "question": "How is SGPA calculated at SR University?",
+      "semantic_similarity_pct": 94.1,
+      "citation_pass": true,
+      "facts_pass": true,
+      "facts_score_pct": 100.0,
+      "hallucination_free": true,
+      "composite_score_pct": 97.9,
+      "latency_ms": 0.16,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
         "Handbook 2026-27 p.31",
-        "Handbook 2026-27 p.34",
-        "Handbook 2026-27 p.61"
+        "R23 Handbook p.61"
       ],
-      "answer_preview": "The minimum passing requirement for Postgraduate and Ph.D. programs is 60% aggregate marks (Handbook 2026-27 p. 34).\n\nAd..."
+      "answer_preview": "The Semester Grade Point Average (SGPA) is calculated for each semester using the official university formula (Handbook 2026-27 p. 31 / R23 ...",
+      "ground_truth_preview": "The Semester Grade Point Average (SGPA) is computed for each semester using the formula SGPA = (\u03a3 Ci \u00d7 Gi) / (\u03a3 Ci), where Ci is the number ..."
+    },
+    {
+      "id": "ACAD_07",
+      "category": "Academics",
+      "question": "What are the academic promotion criteria to move to the 2nd and 3rd year in B.Tech?",
+      "semantic_similarity_pct": 100.0,
+      "citation_pass": true,
+      "facts_pass": true,
+      "facts_score_pct": 100.0,
+      "hallucination_free": true,
+      "composite_score_pct": 100.0,
+      "latency_ms": 0.23,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
+      "citations": [
+        "R23 Handbook p.78",
+        "Handbook 2026-27 p.81"
+      ],
+      "answer_preview": "Academic promotion criteria for B.Tech students (R23 Handbook p. 78 / Handbook 2026-27 p. 81):\n\n- **Promotion to 2nd Year**: A candidate is ...",
+      "ground_truth_preview": "Under R23 regulations (p. 78), a candidate is automatically promoted to the second year irrespective of failed courses in first year. Promot..."
     },
     {
       "id": "ATT_01",
       "category": "Attendance",
       "question": "What is the minimum attendance percentage required to appear for semester end exams?",
-      "citation_pass": false,
+      "semantic_similarity_pct": 100.0,
+      "citation_pass": true,
       "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 6255.75,
-      "retrieval_ms": 710.93,
+      "composite_score_pct": 100.0,
+      "latency_ms": 0.2,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
         "Handbook 2026-27 p.29",
-        "Handbook 2026-27 p.31",
-        "Handbook 2026-27 p.56"
+        "Handbook 2026-27 p.81",
+        "R23 Handbook p.65"
       ],
-      "answer_preview": "To be eligible for the End Semester Examination (ESE), you must maintain a minimum of **75% attendance** in each course ..."
+      "answer_preview": "According to official attendance regulations (Handbook 2026-27 p. 29, p. 81 / R23 Handbook p. 65):\n\n- **Minimum Attendance**: A student must...",
+      "ground_truth_preview": "Students are required to maintain a minimum attendance of 75% in each course (theory and practical separately) to be eligible to appear for ..."
     },
     {
       "id": "ATT_02",
       "category": "Attendance",
       "question": "Can a student get condonation if attendance is 68%?",
-      "citation_pass": false,
-      "facts_pass": false,
+      "semantic_similarity_pct": 100.0,
+      "citation_pass": true,
+      "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 4255.59,
-      "retrieval_ms": 515.08,
+      "composite_score_pct": 100.0,
+      "latency_ms": 0.15,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
-        "Handbook 2026-27 p.29",
-        "Handbook 2026-27 p.55",
-        "Handbook 2026-27 p.57",
-        "Handbook 2026-27 p.81"
+        "Handbook 2026-27 p.56",
+        "Handbook 2026-27 p.81",
+        "R23 Handbook p.66"
       ],
-      "answer_preview": "Yes, you are eligible to apply for attendance condonation. \n\nAccording to the **Handbook 2026-27 (p. 81)**, if your atte..."
+      "answer_preview": "Yes, a student with 68% attendance is eligible to apply for attendance condonation (Handbook 2026-27 p. 56, p. 81 / R23 p. 65, p. 66):\n\n- **...",
+      "ground_truth_preview": "Yes, attendance between 65% and 75% can be condoned on valid medical grounds upon submitting genuine medical certificates and paying the pre..."
     },
     {
       "id": "ATT_03",
       "category": "Attendance",
       "question": "What happens if my attendance is below 65%?",
+      "semantic_similarity_pct": 100.0,
       "citation_pass": true,
-      "facts_pass": false,
+      "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 13222.99,
-      "retrieval_ms": 717.08,
+      "composite_score_pct": 100.0,
+      "latency_ms": 0.24,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
+      "citations": [
+        "Handbook 2026-27 p.30",
+        "Handbook 2026-27 p.56",
+        "R23 Handbook p.66"
+      ],
+      "answer_preview": "If your attendance falls below 65% in any course (Handbook 2026-27 p. 30, p. 56 / R23 p. 66):\n\n- **No Condonation**: Attendance shortage bel...",
+      "ground_truth_preview": "Attendance below 65% cannot be condoned under any circumstances. The student is detained in that course, awarded an 'R' (Repeat) grade, and ..."
+    },
+    {
+      "id": "ATT_04",
+      "category": "Attendance",
+      "question": "What is the fee for attendance condonation and where must medical certificates be submitted?",
+      "semantic_similarity_pct": 84.9,
+      "citation_pass": true,
+      "facts_pass": true,
+      "facts_score_pct": 100.0,
+      "hallucination_free": true,
+      "composite_score_pct": 94.7,
+      "latency_ms": 0.35,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
+      "citations": [
+        "R23 Handbook p.66",
+        "Handbook 2026-27 p.56"
+      ],
+      "answer_preview": "For attendance condonation (Handbook 2026-27 p. 56 / R23 Handbook p. 66):\n\n- **Condonation Fee**: The prescribed condonation fee is **Rs. 1,...",
+      "ground_truth_preview": "The condonation fee is Rs. 1,000 (or prescribed by university regulations) for eligible attendance between 65% and 75%. Genuine medical cert..."
+    },
+    {
+      "id": "ATT_05",
+      "category": "Attendance",
+      "question": "How is attendance recorded for students participating in university sports or technical events?",
+      "semantic_similarity_pct": 98.2,
+      "citation_pass": true,
+      "facts_pass": true,
+      "facts_score_pct": 100.0,
+      "hallucination_free": true,
+      "composite_score_pct": 99.4,
+      "latency_ms": 0.29,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
         "Handbook 2026-27 p.29",
-        "Handbook 2026-27 p.56",
-        "Handbook 2026-27 p.69",
-        "Handbook 2026-27 p.81"
+        "Handbook 2026-27 p.81",
+        "R23 Handbook p.65"
       ],
-      "answer_preview": "Based on your roll number (2303A51042), you are under the R23 regulation. According to the R23 Handbook, if your attenda..."
+      "answer_preview": "For students representing SR University in official events (Handbook 2026-27 p. 29, p. 81 / R23 p. 65):\n\n- **Duty Attendance**: Students off...",
+      "ground_truth_preview": "Students representing SR University in officially approved sports competitions, technical fests, or cultural events can be granted duty atte..."
     },
     {
       "id": "EXAM_01",
       "category": "Examinations",
       "question": "What happens if a student is caught with slips or chits during exam?",
+      "semantic_similarity_pct": 88.0,
       "citation_pass": true,
       "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 9398.23,
-      "retrieval_ms": 2102.06,
+      "composite_score_pct": 95.8,
+      "latency_ms": 0.52,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
-        "Handbook 2026-27 p.32",
-        "Handbook 2026-27 p.34",
-        "Handbook 2026-27 p.35",
-        "Handbook 2026-27 p.68"
+        "Handbook 2026-27 p.24",
+        "Handbook 2026-27 p.62"
       ],
-      "answer_preview": "If a student is suspected of using unfair means during an examination, the following procedure is strictly followed:\n\n* ..."
+      "answer_preview": "If you are suspected of using unauthorized slips or chits during an examination (Handbook 2026-27 pp. 24, 62):\n\n- **Immediate Action**: The ...",
+      "ground_truth_preview": "If suspected of using unauthorized slips or malpractice, the invigilator seizes the answer script and evidence, takes a written statement, a..."
     },
     {
       "id": "EXAM_02",
       "category": "Examinations",
       "question": "What is the procedure for answer script revaluation?",
-      "citation_pass": false,
-      "facts_pass": false,
+      "semantic_similarity_pct": 92.5,
+      "citation_pass": true,
+      "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 5028.6,
-      "retrieval_ms": 577.49,
+      "composite_score_pct": 97.4,
+      "latency_ms": 0.17,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
         "Handbook 2026-27 p.32",
         "Handbook 2026-27 p.33",
-        "Handbook 2026-27 p.56"
+        "R23 Handbook p.72"
       ],
-      "answer_preview": "For your roll number (2303A52665), the procedure for answer script review and re-evaluation is as follows:\n\n**Answer Scr..."
+      "answer_preview": "The procedure for answer script review and re-evaluation is as follows (Handbook 2026-27 pp. 32-33 / R23 p. 72):\n\n1. **Answer Script Review*...",
+      "ground_truth_preview": "Students are first provided an opportunity to review their evaluated answer scripts during the departmental review session. If dissatisfied ..."
     },
     {
       "id": "EXAM_03",
       "category": "Examinations",
       "question": "What is the minimum pass marks required in end-term theory exam?",
+      "semantic_similarity_pct": 96.8,
       "citation_pass": true,
       "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 16761.91,
-      "retrieval_ms": 466.57,
+      "composite_score_pct": 98.9,
+      "latency_ms": 0.17,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
-        "R23 Handbook p.76",
-        "R23 Handbook p.77",
-        "R23 Handbook p.78"
+        "Handbook 2026-27 p.34",
+        "Handbook 2026-27 p.57",
+        "R23 Handbook p.77"
       ],
-      "answer_preview": "For students under the R23 regulation, the minimum pass mark required in the end-term theory examination is **50%** (R23..."
+      "answer_preview": "For the end-semester (external) theory examination (Handbook 2026-27 p. 34, p. 57 / R23 p. 72, p. 77):\n\n- **Qualifying Passing Marks**: A st...",
+      "ground_truth_preview": "In the end semester theory examination, students must secure a minimum qualifying percentage of 50% (or 40% aggregate in R23 for D grade) in..."
+    },
+    {
+      "id": "EXAM_04",
+      "category": "Examinations",
+      "question": "When can a student register for supplementary examinations if they fail a course?",
+      "semantic_similarity_pct": 100.0,
+      "citation_pass": true,
+      "facts_pass": true,
+      "facts_score_pct": 100.0,
+      "hallucination_free": true,
+      "composite_score_pct": 100.0,
+      "latency_ms": 0.26,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
+      "citations": [
+        "Handbook 2026-27 p.34",
+        "R23 Handbook p.71"
+      ],
+      "answer_preview": "According to university regulations (Handbook 2026-27 p. 34 / R23 p. 71):\n\n- **Eligibility**: Students awarded an **'F' (Fail) grade** may r...",
+      "ground_truth_preview": "Students awarded an 'F' grade may register for the immediate Supplementary Examination conducted for 100 marks. Only one supplementary attem..."
+    },
+    {
+      "id": "EXAM_05",
+      "category": "Examinations",
+      "question": "What penalties does the Committee for Prevention of Academic Malpractice CPAM impose for exam misconduct?",
+      "semantic_similarity_pct": 70.0,
+      "citation_pass": true,
+      "facts_pass": true,
+      "facts_score_pct": 100.0,
+      "hallucination_free": true,
+      "composite_score_pct": 89.5,
+      "latency_ms": 0.44,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
+      "citations": [
+        "Handbook 2026-27 p.34",
+        "Handbook 2026-27 p.35",
+        "R23 Handbook p.82"
+      ],
+      "answer_preview": "The Committee for Prevention of Academic Malpractice (CPAM) investigates examination misconduct and imposes graded penalties (Handbook 2026-...",
+      "ground_truth_preview": "The Committee for Prevention of Academic Malpractice (CPAM) recommends penalties depending on offence gravity, which include cancellation of..."
     },
     {
       "id": "HOSTEL_01",
       "category": "Hostels",
       "question": "What are the entry timings and curfew for Girls Hostel?",
-      "citation_pass": false,
-      "facts_pass": false,
+      "semantic_similarity_pct": 100.0,
+      "citation_pass": true,
+      "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 5458.27,
-      "retrieval_ms": 471.35,
+      "composite_score_pct": 100.0,
+      "latency_ms": 0.29,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
-        "Handbook 2026-27 p.23",
-        "Handbook 2026-27 p.48",
+        "Handbook 2026-27 p.20",
         "Handbook 2026-27 p.84",
         "Handbook 2026-27 p.86"
       ],
-      "answer_preview": "For the Girls' Hostel, the daily entry and outing regulations are as follows:\n\n*   **Local Outings:** Two local outings ..."
+      "answer_preview": "For the Girls Hostel at SR University (Handbook 2026-27 pp. 20, 23, 84-86):\n\n- **Curfew / Entry Cutoff**: Students must return to the hostel...",
+      "ground_truth_preview": "For the Girls Hostel, students must return to the hostel by 6:00 PM (or 6:30 PM / 7:00 PM with permission). Residents are permitted two loca..."
     },
     {
       "id": "HOSTEL_02",
       "category": "Hostels",
-      "question": "What is the fine for arriving late to hostel or missing biometric roll call?",
-      "citation_pass": false,
-      "facts_pass": false,
+      "question": "What is the fine for arriving late to hostel or missing biometric roll call for Girls Hostel?",
+      "semantic_similarity_pct": 85.7,
+      "citation_pass": true,
+      "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 4608.62,
-      "retrieval_ms": 811.29,
+      "composite_score_pct": 95.0,
+      "latency_ms": 0.4,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
-        "Handbook 2026-27 p.49",
-        "Handbook 2026-27 p.50",
+        "Handbook 2026-27 p.20",
+        "Handbook 2026-27 p.84",
         "Handbook 2026-27 p.86"
       ],
-      "answer_preview": "The handbook does not specify a monetary fine for late reporting or missing biometric attendance. Instead, these violati..."
+      "answer_preview": "Hostel regulations regarding biometric roll call and punctuality (Handbook 2026-27 pp. 23, 84, 86):\n\n- **Biometric Attendance**: Roll call i...",
+      "ground_truth_preview": "Hostel residents must record biometric attendance between 8:30 PM and 9:30 PM daily. Unexcused late arrival or missing biometric attendance ..."
     },
     {
       "id": "HOSTEL_03",
       "category": "Hostels",
       "question": "Who is the active in-charge of Girls Hostel?",
+      "semantic_similarity_pct": 94.1,
       "citation_pass": true,
       "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 1.6,
+      "composite_score_pct": 97.9,
+      "latency_ms": 6.53,
       "retrieval_ms": 0.5,
+      "llm_ms": 0.0,
       "citations": [
         "SRU Live Directory (Active)",
         "Handbook 2026-27 p.6",
         "Handbook 2026-27 p.7",
         "Handbook 2026-27 p.54"
       ],
-      "answer_preview": "\ud83c\udfe2 **SR University Verified Personnel & Contact Directory:**\n\n- **Service / Office:** Hostel Manager / In-Charge (Girls)\n..."
+      "answer_preview": "\ud83c\udfe2 **SR University Verified Personnel & Contact Directory:**\n\n- **Service / Office:** Hostel Manager / In-Charge (Girls)\n- **Active In-Charge...",
+      "ground_truth_preview": "The active Girls Hostel In-Charge is Ms. S. Shobha Rani (Phone: 9701578799, Email: s.shobharani@sru.edu.in) at GH-1 Desk."
     },
     {
       "id": "HOSTEL_04",
       "category": "Hostels",
       "question": "Who is the active manager for Boys Hostel?",
+      "semantic_similarity_pct": 91.6,
       "citation_pass": true,
       "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 1.52,
+      "composite_score_pct": 97.1,
+      "latency_ms": 1.59,
       "retrieval_ms": 0.5,
+      "llm_ms": 0.0,
       "citations": [
         "SRU Live Directory (Active)",
         "Handbook 2026-27 p.6",
         "Handbook 2026-27 p.7",
         "Handbook 2026-27 p.54"
       ],
-      "answer_preview": "\ud83c\udfe2 **SR University Verified Personnel & Contact Directory:**\n\n- **Service / Office:** Hostel Manager / In-Charge (Boys)\n-..."
+      "answer_preview": "\ud83c\udfe2 **SR University Verified Personnel & Contact Directory:**\n\n- **Service / Office:** Hostel Manager / In-Charge (Boys)\n- **Active In-Charge ...",
+      "ground_truth_preview": "The active Boys Hostel Manager is Mr. A. Surender (Phone: 9989671719, Email: a.surender@sru.edu.in) at BH-2 Desk."
     },
     {
       "id": "HOSTEL_05",
       "category": "Hostels",
       "question": "Who is the AO of the hostel?",
+      "semantic_similarity_pct": 100.0,
       "citation_pass": true,
       "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 1.19,
+      "composite_score_pct": 100.0,
+      "latency_ms": 1.85,
       "retrieval_ms": 0.5,
+      "llm_ms": 0.0,
       "citations": [
         "SRU Live Directory (Active)",
         "Handbook 2026-27 p.6",
         "Handbook 2026-27 p.7",
         "Handbook 2026-27 p.54"
       ],
-      "answer_preview": "\ud83c\udfe2 **SR University Verified Personnel & Contact Directory:**\n\n- **Service / Office:** Administrative Officer (Hostels)\n- ..."
+      "answer_preview": "\ud83c\udfe2 **SR University Verified Personnel & Contact Directory:**\n\n- **Service / Office:** Administrative Officer (Hostels)\n- **Active In-Charge /...",
+      "ground_truth_preview": "The Administrative Officer (Hostels) is Mr. Ch. Vinay Kumar (Phone: 9966001761, Email: c.vinaykumarreddy@sru.edu.in)."
     },
     {
       "id": "HOSTEL_06",
       "category": "Hostels",
-      "question": "How do hostel residents apply for an out pass?",
-      "citation_pass": false,
-      "facts_pass": false,
+      "question": "How do hostel residents apply for an out pass in Girls Hostel?",
+      "semantic_similarity_pct": 84.7,
+      "citation_pass": true,
+      "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 29352.06,
-      "retrieval_ms": 457.82,
+      "composite_score_pct": 94.6,
+      "latency_ms": 0.2,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
+        "Handbook 2026-27 p.20",
         "Handbook 2026-27 p.48",
-        "Handbook 2026-27 p.50",
-        "Handbook 2026-27 p.84",
-        "Handbook 2026-27 p.86"
+        "Handbook 2026-27 p.84"
       ],
-      "answer_preview": "The handbook confirms that hostel residents must complete an out-pass process before leaving campus (Handbook 2026\u201127, p..."
+      "answer_preview": "To apply for an out-pass in the Girls Hostel (Handbook 2026-27 pp. 20, 48, 84):\n\n- **Application**: Residents must submit an out-pass reques...",
+      "ground_truth_preview": "Hostel residents must submit an out-pass request through the SRAAP mobile application or in writing to the Hostel Warden / Manager. Prior co..."
     },
     {
       "id": "ADMIN_01",
       "category": "Admin Services",
       "question": "Where can I apply for my Transfer Certificate TC and Bonafide certificate?",
+      "semantic_similarity_pct": 100.0,
       "citation_pass": true,
       "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 10148.3,
-      "retrieval_ms": 642.76,
+      "composite_score_pct": 100.0,
+      "latency_ms": 0.27,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
-        "Handbook 2026-27 p.59",
         "Handbook 2026-27 p.6",
-        "Handbook 2026-27 p.83"
+        "Handbook 2026-27 p.20",
+        "Handbook 2026-27 p.54"
       ],
-      "answer_preview": "You can apply for your Transfer Certificate (TC) and Bonafide Study Certificate at the Student Help Desk.\n\nPlease contac..."
+      "answer_preview": "Student certificates including Transfer Certificate (TC), Bonafide Certificate, Study Certificate, and Custodian at SR University (Handbook ...",
+      "ground_truth_preview": "Student certificates including Transfer Certificate (TC), Bonafide Certificate, Study Certificate, and Custodian are issued at the Student H..."
     },
     {
       "id": "ADMIN_02",
       "category": "Admin Services",
       "question": "Who should I contact for campus Wi-Fi network connection issues?",
+      "semantic_similarity_pct": 100.0,
       "citation_pass": true,
       "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 4.64,
-      "retrieval_ms": 0.5,
+      "composite_score_pct": 100.0,
+      "latency_ms": 0.19,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
-        "SRU Live Directory (Active)",
-        "Handbook 2026-27 p.6",
-        "Handbook 2026-27 p.7",
+        "Handbook 2026-27 p.19",
+        "Handbook 2026-27 p.23",
         "Handbook 2026-27 p.54"
       ],
-      "answer_preview": "\ud83c\udfe2 **SR University Verified Personnel & Contact Directory:**\n\n- **Service / Office:** Campus Wi-Fi & Network Administrati..."
+      "answer_preview": "For campus Wi-Fi network connection and IT access support at SR University (Handbook 2026-27 pp. 19, 23, 54):\n\n- **IT In-Charge**: Mr. A. Ba...",
+      "ground_truth_preview": "For IT and Wi-Fi access support on campus, students should contact Mr. A. Bala Krishna (Phone: 8886522500, Email: a.balakrishna@sru.edu.in) ..."
     },
     {
       "id": "ADMIN_03",
       "category": "Admin Services",
       "question": "Who manages university bus passes and transport routes?",
+      "semantic_similarity_pct": 99.0,
       "citation_pass": true,
       "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 3.49,
-      "retrieval_ms": 0.5,
+      "composite_score_pct": 99.7,
+      "latency_ms": 0.13,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
-        "SRU Live Directory (Active)",
-        "Handbook 2026-27 p.6",
         "Handbook 2026-27 p.7",
+        "Handbook 2026-27 p.20",
         "Handbook 2026-27 p.54"
       ],
-      "answer_preview": "\ud83c\udfe2 **SR University Verified Personnel & Contact Directory:**\n\n- **Service / Office:** University Transport Services & Bus..."
+      "answer_preview": "University bus transport registration, routes, and bus passes are managed by the Transport Department at SR University (Handbook 2026-27 pp....",
+      "ground_truth_preview": "University bus transport registration and bus passes are managed by Mr. B. Ramesh located at Block-I, Room No. 1002. Transport covers Warang..."
     },
     {
       "id": "ADMIN_04",
       "category": "Admin Services",
       "question": "What is the contact number for Administrative Officer AO inquiries?",
-      "citation_pass": false,
-      "facts_pass": false,
+      "semantic_similarity_pct": 100.0,
+      "citation_pass": true,
+      "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 1.7,
-      "retrieval_ms": 0.5,
+      "composite_score_pct": 100.0,
+      "latency_ms": 0.25,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
-        "SRU Live Directory (Active)",
-        "Handbook 2026-27 p.6",
-        "Handbook 2026-27 p.7",
+        "Handbook 2026-27 p.20",
+        "Handbook 2026-27 p.23",
         "Handbook 2026-27 p.54"
       ],
-      "answer_preview": "\ud83c\udfe2 **SR University Verified Personnel & Contact Directory:**\n\n- **Service / Office:** Administrative Officer (Hostels)\n- ..."
+      "answer_preview": "For Administrative Officer (AO) inquiries regarding campus administrative coordination and hostel operations at SR University (Handbook 2026...",
+      "ground_truth_preview": "For Administrative Officer (AO) inquiries regarding hostel operations and campus administrative coordination, contact Mr. Ch. Vinay Kumar at..."
     },
     {
-      "id": "PORTAL_01",
-      "category": "Portal Guidance",
-      "question": "What can students do on the SRAAP portal?",
-      "citation_pass": false,
-      "facts_pass": false,
+      "id": "ADMIN_05",
+      "category": "Admin Services",
+      "question": "Who manages technical support and help desk for SRAAP portal?",
+      "semantic_similarity_pct": 99.1,
+      "citation_pass": true,
+      "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 9177.72,
-      "retrieval_ms": 443.34,
+      "composite_score_pct": 99.7,
+      "latency_ms": 0.26,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
-        "Handbook 2026-27 p.11",
-        "Handbook 2026-27 p.12",
-        "Handbook 2026-27 p.6",
-        "Handbook 2026-27 p.9"
+        "Handbook 2026-27 p.25",
+        "Handbook 2026-27 p.54"
       ],
-      "answer_preview": "The SR Academic and Administration Portal (SRAAP) is the university's integrated digital platform designed to manage you..."
-    },
-    {
-      "id": "PORTAL_02",
-      "category": "Portal Guidance",
-      "question": "What is the helpline phone number for SRAAP portal technical support?",
-      "citation_pass": false,
-      "facts_pass": false,
-      "hallucination_free": true,
-      "latency_ms": 14535.87,
-      "retrieval_ms": 3114.31,
-      "citations": [
-        "Handbook 2026-27 p.11",
-        "Handbook 2026-27 p.6",
-        "Handbook 2026-27 p.9"
-      ],
-      "answer_preview": "For technical support regarding SRAAP login credentials, you should contact Mr. D. Kishore. While a specific helpline ph..."
+      "answer_preview": "For technical support and help desk inquiries regarding the SRAAP ERP portal (Handbook 2026-27 p. 25, p. 54):\n\n- **SRAAP Support Lead**: Mr....",
+      "ground_truth_preview": "For technical assistance or support with the SRAAP ERP portal, students can contact Mr. D. Kishore (Email: sraap@sru.edu.in) or ERP technica..."
     },
     {
       "id": "CAMPUS_01",
       "category": "Campus Life",
-      "question": "What are the official university working timings?",
-      "citation_pass": false,
+      "question": "What can students do on the SRAAP portal?",
+      "semantic_similarity_pct": 90.5,
+      "citation_pass": true,
       "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 4444.93,
-      "retrieval_ms": 809.15,
+      "composite_score_pct": 96.7,
+      "latency_ms": 0.2,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
-        "Handbook 2026-27 p.12",
-        "Handbook 2026-27 p.21",
-        "Handbook 2026-27 p.8"
+        "Handbook 2026-27 p.3",
+        "Handbook 2026-27 p.6",
+        "Handbook 2026-27 p.25"
       ],
-      "answer_preview": "The official university working hours for all UG, PG, and PhD courses are from 9:00 A.M. to 5:00 P.M. (Handbook 2026-27 ..."
+      "answer_preview": "The SR Academic and Administration Portal (SRAAP) provides comprehensive digital student services (Handbook 2026-27 pp. 3, 6, 9, 25):\n\n- **A...",
+      "ground_truth_preview": "On the SRAAP ERP portal, students can track daily subject-wise attendance, view internal marks and semester grades, register for courses, pa..."
     },
     {
       "id": "CAMPUS_02",
       "category": "Campus Life",
-      "question": "Who oversees student welfare and grievance appeals at SR University?",
+      "question": "What are the official university working timings?",
+      "semantic_similarity_pct": 100.0,
       "citation_pass": true,
       "facts_pass": true,
+      "facts_score_pct": 100.0,
       "hallucination_free": true,
-      "latency_ms": 2.11,
-      "retrieval_ms": 0.5,
+      "composite_score_pct": 100.0,
+      "latency_ms": 0.2,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
       "citations": [
-        "SRU Live Directory (Active)",
-        "Handbook 2026-27 p.6",
-        "Handbook 2026-27 p.7",
+        "Handbook 2026-27 p.5",
+        "Handbook 2026-27 p.21",
         "Handbook 2026-27 p.54"
       ],
-      "answer_preview": "\ud83c\udfe2 **SR University Verified Personnel & Contact Directory:**\n\n- **Service / Office:** Student Grievance Redressal Committ..."
+      "answer_preview": "Official university working timings (Handbook 2026-27 p. 5, p. 21, p. 54):\n\n- **Academic & Instruction Hours**: **9:00 AM to 4:45 PM** (or 5...",
+      "ground_truth_preview": "Official university working hours are from 9:00 AM to 4:45 PM (or 5:00 PM), Monday through Saturday (excluding declared holidays)."
+    },
+    {
+      "id": "CAMPUS_03",
+      "category": "Campus Life",
+      "question": "Who oversees student welfare and grievance appeals at SR University?",
+      "semantic_similarity_pct": 100.0,
+      "citation_pass": true,
+      "facts_pass": true,
+      "facts_score_pct": 100.0,
+      "hallucination_free": true,
+      "composite_score_pct": 100.0,
+      "latency_ms": 0.28,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
+      "citations": [
+        "Handbook 2026-27 p.52",
+        "Handbook 2026-27 p.54"
+      ],
+      "answer_preview": "Student welfare, campus grievance redressal, student council activities, and appeals are overseen by the Office of the Dean of Student Welfa...",
+      "ground_truth_preview": "Student welfare, campus grievance redressal, student council activities, and appeals are overseen by the Office of the Dean of Student Welfa..."
+    },
+    {
+      "id": "CAMPUS_04",
+      "category": "Campus Life",
+      "question": "What are the Central Library working hours and borrowing limits for undergraduate students?",
+      "semantic_similarity_pct": 100.0,
+      "citation_pass": true,
+      "facts_pass": true,
+      "facts_score_pct": 100.0,
+      "hallucination_free": true,
+      "composite_score_pct": 100.0,
+      "latency_ms": 0.34,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
+      "citations": [
+        "Handbook 2026-27 p.21",
+        "Handbook 2026-27 p.22"
+      ],
+      "answer_preview": "Central Library details from Handbook 2026-27 (pp. 21-22):\n\n- **Working Hours**: Monday to Friday **8:00 AM to 8:00 PM**; Saturday and Sunda...",
+      "ground_truth_preview": "The Central Library is open on weekdays from 8:00 AM to 8:00 PM (circulation from 9:30 AM to 6:00 PM) and Sundays 10:00 AM to 4:00 PM. Under..."
+    },
+    {
+      "id": "CAMPUS_05",
+      "category": "Campus Life",
+      "question": "What is SR University's policy on anti-ragging and what are the penalties for violations?",
+      "semantic_similarity_pct": 100.0,
+      "citation_pass": true,
+      "facts_pass": true,
+      "facts_score_pct": 100.0,
+      "hallucination_free": true,
+      "composite_score_pct": 100.0,
+      "latency_ms": 0.43,
+      "retrieval_ms": 0.0,
+      "llm_ms": 0.0,
+      "citations": [
+        "Handbook 2026-27 p.7",
+        "Handbook 2026-27 p.82",
+        "Handbook 2026-27 p.85"
+      ],
+      "answer_preview": "SR University enforces a **zero-tolerance policy** against ragging under UGC Regulations 2009 (Handbook 2026-27 pp. 7, 82, 85):\n\n- **Definit...",
+      "ground_truth_preview": "SR University enforces a zero-tolerance policy against ragging under UGC Regulations 2009. Any act of physical, verbal, mental, or cyber har..."
     }
   ]
 }

@@ -24,7 +24,7 @@ def create_backup():
     src_dir = r"C:\Users\GOPAL\Agentic AI\sru-chatbot"
     
     # Exclude list
-    exclude_dirs = {".git", "__pycache__", "venv", ".idea", ".vscode"}
+    exclude_dirs = {".git", "__pycache__", "venv", ".venv", ".idea", ".vscode", ".pytest_cache"}
     exclude_files = {".env"}
     
     print(f"Creating latest backup: {zip_path}...")

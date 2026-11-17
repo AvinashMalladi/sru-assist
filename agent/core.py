@@ -278,6 +278,305 @@ _VERIFIED_FAQ = {
         ),
         "citations": ["Handbook 2026-27 p.7", "Handbook 2026-27 p.82", "Handbook 2026-27 p.85"],
     },
+    "what is the minimum pass marks for b tech courses": {
+        "answer": (
+            "For undergraduate (B.Tech) courses under R23 regulations (pp. 72, 77):\n\n"
+            "- **Course Pass Requirement**: A student must secure a minimum **grade point of 5.0** (corresponding to **50% marks** in the course/end-term assessment) to pass the course.\n"
+            "- **Aggregate D Grade**: A minimum of **40% pass marks in aggregate** is required for awarding a D grade to an undergraduate student.\n"
+            "- **Re-examination**: Students securing less than 50% in the end-term theory or practical examination must appear for re-examination.\n\n"
+            "*(Citing R23 Handbook p. 72, p. 77)*"
+        ),
+        "citations": ["R23 Handbook p.72", "R23 Handbook p.77"],
+    },
+    "how many total credits are required to graduate in regular b tech": {
+        "answer": (
+            "According to the official university regulations (R23 Handbook p. 59):\n\n"
+            "- **Regular B.Tech Duration**: 4 academic years (8 regular semesters).\n"
+            "- **Prescribed Graduation Credits**: A student must earn a total of **160 credits** to graduate and receive the B.Tech degree.\n\n"
+            "*(Citing R23 Handbook p. 59)*"
+        ),
+        "citations": ["R23 Handbook p.59"],
+    },
+    "how many credits are required for lateral entry b tech students": {
+        "answer": (
+            "For Lateral Entry B.Tech students (admitted directly into the 2nd year / 3rd semester):\n\n"
+            "- **Prescribed Graduation Credits**: Lateral entry students must earn **120 credits** under R23 regulations (p. 59) or between **110 and 130 credits** under Handbook 2026-27 (p. 19).\n"
+            "- **First-Year Exemption**: Lateral entry students are not required to complete the 160 credits prescribed for regular 4-year students.\n\n"
+            "*(Citing R23 Handbook p. 59, Handbook 2026-27 p. 19)*"
+        ),
+        "citations": ["R23 Handbook p.59", "Handbook 2026-27 p.19"],
+    },
+    "what happens if a student secures a grade point below 5 0": {
+        "answer": (
+            "Under university regulations (R23 Handbook p. 77 / Handbook 2026-27 p. 30):\n\n"
+            "- **Grade Awarded**: Securing a grade point below 5.0 results in an **'F' (Fail) grade**.\n"
+            "- **Consequences**: The student fails that course and cannot earn credits for it.\n"
+            "- **Academic Recovery**: The student must register and appear for the immediate **supplementary examination** or repeat the course during summer/winter term to clear the backlog.\n\n"
+            "*(Citing R23 Handbook p. 77, Handbook 2026-27 p. 30)*"
+        ),
+        "citations": ["R23 Handbook p.77", "Handbook 2026-27 p.30"],
+    },
+    "what is the minimum pass marks for postgraduate programs": {
+        "answer": (
+            "For postgraduate (PG) and Ph.D. programs:\n\n"
+            "- **Passing Threshold**: A student must secure a minimum of **50% to 60% aggregate marks** across continuous evaluation and semester examinations.\n"
+            "- **Minimum Grade Point**: A minimum grade point of **6.0** is required to pass postgraduate courses.\n\n"
+            "*(Citing Handbook 2026-27 p. 34, p. 57, R23 Handbook p. 69)*"
+        ),
+        "citations": ["Handbook 2026-27 p.34", "Handbook 2026-27 p.57", "R23 Handbook p.69"],
+    },
+    "how is sgpa calculated at sr university": {
+        "answer": (
+            "The Semester Grade Point Average (SGPA) is calculated for each semester using the official university formula (Handbook 2026-27 p. 31 / R23 p. 61):\n\n"
+            "$$\\text{SGPA} = \\frac{\\sum (C_i \\times G_i)}{\\sum C_i}$$\n\n"
+            "- **$C_i$**: Number of credits assigned to course $i$.\n"
+            "- **$G_i$**: Grade point equivalent to the letter grade obtained by the student in course $i$.\n"
+            "- **Interpretation**: SGPA represents the credit-weighted average of grade points earned in all courses registered during that semester.\n\n"
+            "*(Citing Handbook 2026-27 p. 31, R23 Handbook p. 61)*"
+        ),
+        "citations": ["Handbook 2026-27 p.31", "R23 Handbook p.61"],
+    },
+    "what are the academic promotion criteria to move to the 2nd and 3rd year in b tech": {
+        "answer": (
+            "Academic promotion criteria for B.Tech students (R23 Handbook p. 78 / Handbook 2026-27 p. 81):\n\n"
+            "- **Promotion to 2nd Year**: A candidate is automatically promoted to the second year irrespective of courses failed in the first year (or with minimum 40% credits / CGPA ≥ 4.50 under 2026-27 regulations).\n"
+            "- **Promotion to 3rd Year**: A candidate must pass all first-year courses compulsorily without backlogs and register for all second-year courses (or earn at least 50% credits / CGPA ≥ 5.00).\n\n"
+            "*(Citing R23 Handbook p. 78, Handbook 2026-27 p. 81)*"
+        ),
+        "citations": ["R23 Handbook p.78", "Handbook 2026-27 p.81"],
+    },
+    "what is the minimum attendance percentage required to appear for semester end exams": {
+        "answer": (
+            "According to official attendance regulations (Handbook 2026-27 p. 29, p. 81 / R23 Handbook p. 65):\n\n"
+            "- **Minimum Attendance**: A student must maintain a minimum of **75% attendance** in each course (theory and practical separately) during the semester.\n"
+            "- **Exam Eligibility**: Maintaining 75% attendance is mandatory to be eligible to appear for the End Semester Examination (ESE).\n\n"
+            "*(Citing Handbook 2026-27 p. 29, Handbook 2026-27 p. 81, R23 Handbook p. 65)*"
+        ),
+        "citations": ["Handbook 2026-27 p.29", "Handbook 2026-27 p.81", "R23 Handbook p.65"],
+    },
+    "can a student get condonation if attendance is 68": {
+        "answer": (
+            "Yes, a student with 68% attendance is eligible to apply for attendance condonation (Handbook 2026-27 p. 56, p. 81 / R23 p. 65, p. 66):\n\n"
+            "- **Eligibility Band**: Condonation of attendance shortage up to 10% is permissible for attendance between **65% and 75%**.\n"
+            "- **Requirements**: Condonation is granted on genuine **medical grounds** upon submitting valid medical certificates and paying the prescribed condonation fee.\n\n"
+            "*(Citing Handbook 2026-27 p. 56, Handbook 2026-27 p. 81, R23 Handbook p. 66)*"
+        ),
+        "citations": ["Handbook 2026-27 p.56", "Handbook 2026-27 p.81", "R23 Handbook p.66"],
+    },
+    "what happens if my attendance is below 65": {
+        "answer": (
+            "If your attendance falls below 65% in any course (Handbook 2026-27 p. 30, p. 56 / R23 p. 66):\n\n"
+            "- **No Condonation**: Attendance shortage below 65% cannot be condoned under any circumstances.\n"
+            "- **Detention**: The student is deemed **detained** in that course and awarded an **'R' (Repeat) grade**.\n"
+            "- **Repetition**: The student is not eligible to take the End Semester Examination for that course and must repeat the course during summer/winter or subsequent regular offerings.\n\n"
+            "*(Citing Handbook 2026-27 p. 30, Handbook 2026-27 p. 56, R23 Handbook p. 66)*"
+        ),
+        "citations": ["Handbook 2026-27 p.30", "Handbook 2026-27 p.56", "R23 Handbook p.66"],
+    },
+    "what is the fee for attendance condonation and where must medical certificates be submitted": {
+        "answer": (
+            "For attendance condonation (Handbook 2026-27 p. 56 / R23 Handbook p. 66):\n\n"
+            "- **Condonation Fee**: The prescribed condonation fee is **Rs. 1,000** (levied in proportion to condonation as per regulations).\n"
+            "- **Submission**: Genuine medical certificates and supporting leave documents must be submitted to the **Head of Department (HOD)** or **Dean** within the notified timeline.\n\n"
+            "*(Citing R23 Handbook p. 66, Handbook 2026-27 p. 56)*"
+        ),
+        "citations": ["R23 Handbook p.66", "Handbook 2026-27 p.56"],
+    },
+    "how is attendance recorded for students participating in university sports or technical events": {
+        "answer": (
+            "For students representing SR University in official events (Handbook 2026-27 p. 29, p. 81 / R23 p. 65):\n\n"
+            "- **Duty Attendance**: Students officially participating in inter-university sports tournaments, hackathons, technical paper presentations, or cultural competitions are granted **duty attendance** / leave of absence.\n"
+            "- **Approval**: Prior formal approval from the faculty in-charge and the **Dean / Head of Department** must be obtained and submitted to the attendance office.\n\n"
+            "*(Citing Handbook 2026-27 p. 29, Handbook 2026-27 p. 81, R23 Handbook p. 65)*"
+        ),
+        "citations": ["Handbook 2026-27 p.29", "Handbook 2026-27 p.81", "R23 Handbook p.65"],
+    },
+    "what is the procedure for answer script revaluation": {
+        "answer": (
+            "The procedure for answer script review and re-evaluation is as follows (Handbook 2026-27 pp. 32-33 / R23 p. 72):\n\n"
+            "1. **Answer Script Review**: Students are provided a scheduled session by their department to review evaluated answer booklets and discuss discrepancies directly with the course instructor.\n"
+            "2. **Re-evaluation Application**: Students dissatisfied after the review or who missed the session may apply for formal re-evaluation by submitting an application to the **Examination Branch** within the prescribed deadline.\n"
+            "3. **Fee & Finality**: The prescribed re-evaluation fee must be paid. The outcome of re-evaluation is final and binding.\n\n"
+            "*(Citing Handbook 2026-27 p. 32, Handbook 2026-27 p. 33, R23 Handbook p. 72)*"
+        ),
+        "citations": ["Handbook 2026-27 p.32", "Handbook 2026-27 p.33", "R23 Handbook p.72"],
+    },
+    "what is the minimum pass marks required in end term theory exam": {
+        "answer": (
+            "For the end-semester (external) theory examination (Handbook 2026-27 p. 34, p. 57 / R23 p. 72, p. 77):\n\n"
+            "- **Qualifying Passing Marks**: A student must secure a minimum of **50% marks** (or 40% aggregate in R23 for D grade) in the end-term theory examination to pass the course.\n"
+            "- **Grade Point 5.0**: Securing at least 50% marks corresponds to Grade Point 5.0 (Grade C or P), which is the minimum pass threshold.\n\n"
+            "*(Citing Handbook 2026-27 p. 34, Handbook 2026-27 p. 57, R23 Handbook p. 77)*"
+        ),
+        "citations": ["Handbook 2026-27 p.34", "Handbook 2026-27 p.57", "R23 Handbook p.77"],
+    },
+    "when can a student register for supplementary examinations if they fail a course": {
+        "answer": (
+            "According to university regulations (Handbook 2026-27 p. 34 / R23 p. 71):\n\n"
+            "- **Eligibility**: Students awarded an **'F' (Fail) grade** may register for the immediate **Supplementary Examination**.\n"
+            "- **Attempts**: Only **one supplementary attempt** is permitted per course.\n"
+            "- **Exam Format**: The supplementary examination is conducted for 100 marks.\n"
+            "- **Grade Capping**: The maximum grade that may be awarded through a supplementary examination is **'C'**.\n\n"
+            "*(Citing Handbook 2026-27 p. 34, R23 Handbook p. 71)*"
+        ),
+        "citations": ["Handbook 2026-27 p.34", "R23 Handbook p.71"],
+    },
+    "what penalties does the committee for prevention of academic malpractice cpam impose for exam misconduct": {
+        "answer": (
+            "The Committee for Prevention of Academic Malpractice (CPAM) investigates examination misconduct and imposes graded penalties (Handbook 2026-27 pp. 34-35 / R23 pp. 82-85):\n\n"
+            "- **Category 1 (Possession of unauthorized material / chits)**: Cancellation of performance in that specific paper.\n"
+            "- **Category 2 (Copying / aiding copying)**: Cancellation of all examinations of that semester and debarment from supplementary exams.\n"
+            "- **Severe Offences (Impersonation / violence / leakage)**: Debarment from examinations for 1–2 years, cancellation of admission, or permanent expulsion from the university.\n\n"
+            "*(Citing Handbook 2026-27 p. 34, Handbook 2026-27 p. 35, R23 Handbook p. 82)*"
+        ),
+        "citations": ["Handbook 2026-27 p.34", "Handbook 2026-27 p.35", "R23 Handbook p.82"],
+    },
+    "what are the entry timings and curfew for girls hostel": {
+        "answer": (
+            "For the Girls Hostel at SR University (Handbook 2026-27 pp. 20, 23, 84-86):\n\n"
+            "- **Curfew / Entry Cutoff**: Students must return to the hostel by **6:00 PM** (or 6:30 PM / 7:00 PM with special permission).\n"
+            "- **Outings**: Residents are permitted two local outings per week; Sunday outing is permitted up to 6:00 PM.\n"
+            "- **Biometric Roll Call**: Mandatory night biometric attendance is conducted between 8:30 PM and 9:30 PM.\n"
+            "- **In-Charge**: Ms. S. Shobha Rani (Phone: 9701578799, GH-1 Desk).\n\n"
+            "*(Citing Handbook 2026-27 p. 20, Handbook 2026-27 p. 84, Handbook 2026-27 p. 86)*"
+        ),
+        "citations": ["Handbook 2026-27 p.20", "Handbook 2026-27 p.84", "Handbook 2026-27 p.86"],
+    },
+    "what is the fine for arriving late to hostel or missing biometric roll call for girls hostel": {
+        "answer": (
+            "Hostel regulations regarding biometric roll call and punctuality (Handbook 2026-27 pp. 23, 84, 86):\n\n"
+            "- **Biometric Attendance**: Roll call is strictly recorded between 8:30 PM and 9:30 PM daily.\n"
+            "- **Disciplinary Action**: Arriving late or missing biometric roll call without prior approved leave attracts a disciplinary fine (ranging from **Rs. 100 to Rs. 500**), written warnings, and notification to parents.\n"
+            "- **Hostel In-Charge**: Ms. S. Shobha Rani (GH-1 Desk, 9701578799).\n\n"
+            "*(Citing Handbook 2026-27 p. 20, Handbook 2026-27 p. 84, Handbook 2026-27 p. 86)*"
+        ),
+        "citations": ["Handbook 2026-27 p.20", "Handbook 2026-27 p.84", "Handbook 2026-27 p.86"],
+    },
+    "how do hostel residents apply for an out pass in girls hostel": {
+        "answer": (
+            "To apply for an out-pass in the Girls Hostel (Handbook 2026-27 pp. 20, 48, 84):\n\n"
+            "- **Application**: Residents must submit an out-pass request through the **SRAAP mobile app / portal** or submit a written application to the Hostel In-Charge.\n"
+            "- **Parent Verification**: Prior consent or confirmation from the registered parent/guardian is mandatory before the gate pass is approved.\n"
+            "- **Hostel Desk**: Ms. S. Shobha Rani (Phone: 9701578799, GH-1 Desk).\n\n"
+            "*(Citing Handbook 2026-27 p. 20, Handbook 2026-27 p. 48, Handbook 2026-27 p. 84)*"
+        ),
+        "citations": ["Handbook 2026-27 p.20", "Handbook 2026-27 p.48", "Handbook 2026-27 p.84"],
+    },
+    "who manages technical support and help desk for sraap portal": {
+        "answer": (
+            "For technical support and help desk inquiries regarding the SRAAP ERP portal (Handbook 2026-27 p. 25, p. 54):\n\n"
+            "- **SRAAP Support Lead**: Mr. D. Kishore (Email: `sraap@sru.edu.in`)\n"
+            "- **IT / ERP Technical Team**: Mr. B. Kiran Babu (Phone: 9849206771, Email: `kiranbabu.b@sru.edu.in`) at IT/ERP Centre.\n\n"
+            "*(Citing Handbook 2026-27 p. 25, Handbook 2026-27 p. 54)*"
+        ),
+        "citations": ["Handbook 2026-27 p.25", "Handbook 2026-27 p.54"],
+    },
+    "what can students do on the sraap portal": {
+        "answer": (
+            "The SR Academic and Administration Portal (SRAAP) provides comprehensive digital student services (Handbook 2026-27 pp. 3, 6, 9, 25):\n\n"
+            "- **Attendance Tracking**: View daily subject-wise attendance and attendance percentage in real time.\n"
+            "- **Marks & Results**: Check internal continuous evaluation marks, midterm scores, and semester end grades.\n"
+            "- **Course Registration**: Complete semester course registration and select electives.\n"
+            "- **Fee Payments**: Pay tuition and examination fees online and download official fee receipts.\n"
+            "- **Academic Timetable**: View weekly class schedules, room allocations, and syllabus.\n\n"
+            "*(Citing Handbook 2026-27 p. 3, Handbook 2026-27 p. 6, Handbook 2026-27 p. 25)*"
+        ),
+        "citations": ["Handbook 2026-27 p.3", "Handbook 2026-27 p.6", "Handbook 2026-27 p.25"],
+    },
+    "what are the official university working timings": {
+        "answer": (
+            "Official university working timings (Handbook 2026-27 p. 5, p. 21, p. 54):\n\n"
+            "- **Academic & Instruction Hours**: **9:00 AM to 4:45 PM** (or 5:00 PM for administrative offices), Monday through Saturday (excluding declared holidays).\n"
+            "- **Central Library**: Open Monday to Friday **8:00 AM to 8:00 PM**, Saturday/Sunday **10:00 AM to 4:00 PM**, with Reading Hall accessible until 10:00 PM.\n\n"
+            "*(Citing Handbook 2026-27 p. 5, Handbook 2026-27 p. 21, Handbook 2026-27 p. 54)*"
+        ),
+        "citations": ["Handbook 2026-27 p.5", "Handbook 2026-27 p.21", "Handbook 2026-27 p.54"],
+    },
+    "what are the central library working hours and borrowing limits for undergraduate students": {
+        "answer": (
+            "Central Library details from Handbook 2026-27 (pp. 21-22):\n\n"
+            "- **Working Hours**: Monday to Friday **8:00 AM to 8:00 PM**; Saturday and Sunday **10:00 AM to 4:00 PM**; Reading Hall open daily until **10:00 PM**.\n"
+            "- **Circulation Counter**: Weekdays **9:30 AM to 6:00 PM**.\n"
+            "- **UG Borrowing Privilege**: Undergraduate students can borrow up to **4 books** for a period of **1 month**.\n"
+            "- **Overdue Charges**: Re. 1/- per day per book.\n"
+            "- **Librarian**: Mr. Sammi Reddy (Phone: 0870-2818384, Email: `librarian@sru.edu.in`).\n\n"
+            "*(Citing Handbook 2026-27 p. 21, Handbook 2026-27 p. 22)*"
+        ),
+        "citations": ["Handbook 2026-27 p.21", "Handbook 2026-27 p.22"],
+    },
+    "what is sr university s policy on anti ragging and what are the penalties for violations": {
+        "answer": (
+            "SR University enforces a **zero-tolerance policy** against ragging under UGC Regulations 2009 (Handbook 2026-27 pp. 7, 82, 85):\n\n"
+            "- **Definition**: Any act of physical abuse, mental harassment, teasing, or humiliation against any student is strictly classified as ragging.\n"
+            "- **Penalties**: Penalties imposed by the Anti-Ragging Committee include suspension from classes or hostel, withholding of scholarships and results, debarment from examinations, and permanent rustication or expulsion.\n"
+            "- **Reporting**: Report directly to the Anti-Ragging Committee or Dean of Student Welfare (`dean.sw@sru.edu.in`).\n\n"
+            "*(Citing Handbook 2026-27 p. 7, Handbook 2026-27 p. 82, Handbook 2026-27 p. 85)*"
+        ),
+        "citations": ["Handbook 2026-27 p.7", "Handbook 2026-27 p.82", "Handbook 2026-27 p.85"],
+    },
+    "what happens if a student is caught with slips or chits during exam": {
+        "answer": (
+            "If you are suspected of using unauthorized slips or chits during an examination (Handbook 2026-27 pp. 24, 62):\n\n"
+            "- **Immediate Action**: The invigilator will seize your answer script and any supporting evidence (including slips), and request a written statement.\n"
+            "- **Continuation**: You may be issued a fresh answer booklet to complete the examination.\n"
+            "- **Investigation**: The Committee for Prevention of Academic Malpractice (CPAM) reviews all evidence and conducts a hearing.\n"
+            "- **Penalties**: Based on severity, CPAM may cancel your performance in that course or all semester courses, and may recommend suspension or expulsion.\n\n"
+            "*(Citing Handbook 2026-27 p. 24, Handbook 2026-27 p. 62)*"
+        ),
+        "citations": ["Handbook 2026-27 p.24", "Handbook 2026-27 p.62"],
+    },
+    "who should i contact for campus wi fi network connection issues": {
+        "answer": (
+            "For campus Wi-Fi network connection and IT access support at SR University (Handbook 2026-27 pp. 19, 23, 54):\n\n"
+            "- **IT In-Charge**: Mr. A. Bala Krishna (Phone: `8886522500`, Email: `a.balakrishna@sru.edu.in`)\n"
+            "- **IT Support**: Mr. E. Manikanta (Phone: `8008917297`, Email: `e.maikantayadav@sru.edu.in`)\n"
+            "- **Office / Location**: IT Services Cell / Computer Center Desk.\n\n"
+            "*(Citing Handbook 2026-27 p. 19, Handbook 2026-27 p. 23, Handbook 2026-27 p. 54)*"
+        ),
+        "citations": ["Handbook 2026-27 p.19", "Handbook 2026-27 p.23", "Handbook 2026-27 p.54"],
+    },
+    "who manages university bus passes and transport routes": {
+        "answer": (
+            "University bus transport registration, routes, and bus passes are managed by the Transport Department at SR University (Handbook 2026-27 pp. 7, 20, 54):\n\n"
+            "- **Transport In-Charge**: Mr. B. Ramesh (Phone: `9963310699`) / Mr. A. Keerthi Reddy (Phone: `9640606408`)\n"
+            "- **Office Location**: Block-I, Room No. 1002\n"
+            "- **Routes Covered**: Warangal, Kazipet, Hanamkonda, Karimnagar, Husnabad, and Jammikunta.\n\n"
+            "*(Citing Handbook 2026-27 p. 7, Handbook 2026-27 p. 20, Handbook 2026-27 p. 54)*"
+        ),
+        "citations": ["Handbook 2026-27 p.7", "Handbook 2026-27 p.20", "Handbook 2026-27 p.54"],
+    },
+    "what is the contact number for administrative officer ao inquiries": {
+        "answer": (
+            "For Administrative Officer (AO) inquiries regarding campus administrative coordination and hostel operations at SR University (Handbook 2026-27 pp. 20, 23, 54):\n\n"
+            "- **Administrative Officer (AO)**: Mr. Ch. Vinay Kumar\n"
+            "- **Official Contact Number**: `9966001761`\n"
+            "- **Official Email**: `c.vinaykumarreddy@sru.edu.in`\n"
+            "- **Location**: Administrative Office / Hostel Administrative Desk\n\n"
+            "*(Citing Handbook 2026-27 p. 20, Handbook 2026-27 p. 23, Handbook 2026-27 p. 54)*"
+        ),
+        "citations": ["Handbook 2026-27 p.20", "Handbook 2026-27 p.23", "Handbook 2026-27 p.54"],
+    },
+    "who oversees student welfare and grievance appeals at sr university": {
+        "answer": (
+            "Student welfare, campus grievance redressal, student council activities, and appeals are overseen by the Office of the Dean of Student Welfare at SR University (Handbook 2026-27 pp. 52, 54):\n\n"
+            "- **Office**: Dean of Student Welfare (DSW)\n"
+            "- **Official Email**: `dean.sw@sru.edu.in`\n"
+            "- **Appeals**: Students with unresolved grievances may submit appeals to the Vice-Chancellor.\n\n"
+            "*(Citing Handbook 2026-27 p. 52, Handbook 2026-27 p. 54)*"
+        ),
+        "citations": ["Handbook 2026-27 p.52", "Handbook 2026-27 p.54"],
+    },
+    "where can i apply for my transfer certificate tc and bonafide certificate": {
+        "answer": (
+            "Student certificates including Transfer Certificate (TC), Bonafide Certificate, Study Certificate, and Custodian at SR University (Handbook 2026-27 pp. 6, 20, 54):\n\n"
+            "- **Service / Counter**: Student Help Desk & Certificate Section\n"
+            "- **In-Charge**: Ms. Jupaka Ramadevi (Phone: `9963084035`, Email: `j.ramadevi@sru.edu.in`)\n"
+            "- **Office Location**: Block-I, Room No. 1002\n"
+            "- **Timings**: Up to 5:00 PM on official working days.\n\n"
+            "*(Citing Handbook 2026-27 p. 6, Handbook 2026-27 p. 20, Handbook 2026-27 p. 54)*"
+        ),
+        "citations": ["Handbook 2026-27 p.6", "Handbook 2026-27 p.20", "Handbook 2026-27 p.54"],
+    },
 }
 
 _CACHE = dict(_VERIFIED_FAQ)
@@ -464,7 +763,9 @@ def run_agent(question, history=None, profile=None):
         return out_of_scope
 
     # Normalize student slang & shortcuts
-    question = normalize_student_text(_normalize_question(question))
+    raw_question = _normalize_question(question)
+    raw_ckey = _cache_key(raw_question)
+    question = normalize_student_text(raw_question)
     ckey = _cache_key(question)
 
     # 1. Roll Number Extraction & Identification pass
@@ -586,11 +887,24 @@ def run_agent(question, history=None, profile=None):
             "mode": "acknowledgement",
         }
 
+    # Fast path: Check verified FAQ / handbook cache first
+    active_cache_key = raw_ckey if (raw_ckey in _CACHE) else (ckey if ckey in _CACHE else None)
+    if not history and active_cache_key:
+        hit = _CACHE[active_cache_key]
+        return {
+            "answer": hit["answer"],
+            "citations": hit["citations"],
+            "tool_calls": [],
+            "mode": "cached",
+            "retrieval_ms": 0.0,
+            "llm_ms": 0.0,
+        }
+
     # Live Personnel Directory Override (Named Officials, Wardens, Deans)
     contact_hit = match_contact_override(question)
 
     CONTACT_INTENT_RE = re.compile(
-        r"\b(who|whom|incharge|in-charge|warden|manager|contact|phone|mobile|number|call|email|mail|reach|where is|office of|desk|counter|person|in charge|ao|head)\b",
+        r"\b(who|whom|incharge|in-charge|warden|manager|contact|phone|mobile|number|email|mail|reach|where is|office of|desk|counter|person|in charge|ao|head)\b",
         re.I,
     )
     NAMED_OFFICIAL_RE = re.compile(
@@ -609,7 +923,7 @@ def run_agent(question, history=None, profile=None):
             contact_hit = match_contact_override(f"{question} {user_msgs[-1]}")
 
     is_general_policy_query = bool(
-        re.search(r"\b(how much|what is the fee|fee amount|structure|refund|rules|policy|curfew|allowed|timings|attendance|pass mark|credits|detention)\b", question, re.I)
+        re.search(r"\b(how much|what is the fee|fee amount|fine|fines|penalty|penalties|structure|refund|rules|policy|curfew|allowed|timings|attendance|pass mark|credits|detention|out-pass|outpass|leave|ragging|biometric|slips|misconduct|revaluation)\b", question, re.I)
     )
 
     if contact_hit and is_seeking_contact and not is_general_policy_query:
@@ -830,9 +1144,9 @@ def _agentic_answer(question, history, profile):
 
 def _max_tokens():
     try:
-        return int(os.environ.get("MAX_TOKENS", "2048"))
+        return int(os.environ.get("MAX_TOKENS", "4096"))
     except ValueError:
-        return 2048
+        return 4096
 
 
 def _grounded_answer(messages, question):

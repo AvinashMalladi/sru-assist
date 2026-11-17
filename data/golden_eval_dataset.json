@@ -8,22 +8,29 @@
       "regulation": "R23",
       "degree": "B.Tech"
     },
+    "ground_truth_answer": "For undergraduate (B.Tech) courses under R23, the minimum pass criterion to clear a course is securing a grade point of at least 5.0 (corresponding to 50% marks in the course/end-term assessment). Securing less than 50% in end-term theory or practical requires reappearing. Additionally, 40% aggregate marks are required for awarding a D grade.",
     "expected_citations": [
       "p.72",
       "p.77",
-      "p.67",
+      "p.30",
       "p.34",
       "p.57",
-      "p.61"
+      "p.61",
+      "p.69"
     ],
     "required_facts": [
-      "40",
-      "50",
-      "5.0"
+      [
+        "50",
+        "5.0"
+      ],
+      [
+        "40",
+        "pass"
+      ]
     ],
     "prohibited_terms": [
-      "fabricated",
-      "100% pass"
+      "100% pass",
+      "fabricated"
     ]
   },
   {
@@ -35,12 +42,15 @@
       "regulation": "R23",
       "degree": "B.Tech"
     },
+    "ground_truth_answer": "According to the official university regulations (R23 Handbook p. 59), a student enrolled in the regular 4-year (8 semesters) B.Tech program must earn a total of 160 credits to graduate and receive the degree.",
     "expected_citations": [
       "p.19",
       "p.59"
     ],
     "required_facts": [
-      "160"
+      [
+        "160"
+      ]
     ],
     "prohibited_terms": [
       "120 credits for regular",
@@ -56,15 +66,24 @@
       "is_lateral_entry": true,
       "degree": "B.Tech (Lateral Entry)"
     },
+    "ground_truth_answer": "Students admitted under Lateral Entry directly into the 2nd year (3rd semester) must earn between 110 and 130 credits (specifically 120 credits in R23 regulations, p. 59) to graduate, and are not required to complete 160 credits.",
     "expected_citations": [
       "p.19",
       "p.59",
       "p.91",
-      "p.8"
+      "p.8",
+      "p.26",
+      "p.27"
     ],
     "required_facts": [
-      "120",
-      "lateral"
+      [
+        "120",
+        "110",
+        "130"
+      ],
+      [
+        "lateral"
+      ]
     ],
     "prohibited_terms": [
       "160 credits required for lateral"
@@ -78,35 +97,114 @@
       "roll_number": "2303A52665",
       "regulation": "R23"
     },
+    "ground_truth_answer": "Securing a grade point below 5.0 in a course results in an 'F' (Fail) grade. The student is deemed to have failed the course and must appear for the supplementary examination or re-register to clear the backlog.",
     "expected_citations": [
-      "p.77",
-      "p.72"
+      "p.30",
+      "p.31",
+      "p.34",
+      "p.69",
+      "p.71",
+      "p.77"
     ],
     "required_facts": [
-      "F",
-      "fail",
-      "reappear"
+      [
+        "f",
+        "fail"
+      ]
     ],
     "prohibited_terms": [
-      "promoted automatically"
+      "automatic pass"
     ]
   },
   {
     "id": "ACAD_05",
     "category": "Academics",
     "question": "What is the minimum pass marks for postgraduate programs?",
-    "profile": {},
+    "profile": {
+      "degree": "M.Tech",
+      "programme": "Postgraduate"
+    },
+    "ground_truth_answer": "For postgraduate (PG) programs, students must secure a minimum of 50% to 60% aggregate marks across continuous evaluation and semester examinations (grade point 6.0) to pass.",
     "expected_citations": [
       "p.34",
       "p.57",
-      "p.61"
+      "p.69",
+      "p.72",
+      "p.77"
     ],
     "required_facts": [
-      "60",
-      "postgraduate"
+      [
+        "50",
+        "60",
+        "6.0"
+      ]
     ],
     "prohibited_terms": [
-      "40% for postgrad"
+      "35% pass"
+    ]
+  },
+  {
+    "id": "ACAD_06",
+    "category": "Academics",
+    "question": "How is SGPA calculated at SR University?",
+    "profile": {
+      "roll_number": "2303A52665",
+      "degree": "B.Tech"
+    },
+    "ground_truth_answer": "The Semester Grade Point Average (SGPA) is computed for each semester using the formula SGPA = (\u03a3 Ci \u00d7 Gi) / (\u03a3 Ci), where Ci is the number of credits assigned to course i and Gi is the grade point earned in that course.",
+    "expected_citations": [
+      "p.30",
+      "p.31",
+      "p.61",
+      "p.72"
+    ],
+    "required_facts": [
+      [
+        "sgpa"
+      ],
+      [
+        "credits"
+      ],
+      [
+        "grade point",
+        "gi"
+      ]
+    ],
+    "prohibited_terms": [
+      "simple average"
+    ]
+  },
+  {
+    "id": "ACAD_07",
+    "category": "Academics",
+    "question": "What are the academic promotion criteria to move to the 2nd and 3rd year in B.Tech?",
+    "profile": {
+      "roll_number": "2303A52665",
+      "degree": "B.Tech",
+      "regulation": "R23"
+    },
+    "ground_truth_answer": "Under R23 regulations (p. 78), a candidate is automatically promoted to the second year irrespective of failed courses in first year. Promotion to third year requires passing all first-year courses compulsorily without backlogs and registering for second year courses.",
+    "expected_citations": [
+      "p.30",
+      "p.81",
+      "p.72",
+      "p.78"
+    ],
+    "required_facts": [
+      [
+        "promot"
+      ],
+      [
+        "second year",
+        "2nd year",
+        "first year",
+        "credits",
+        "cgpa"
+      ]
+    ],
+    "prohibited_terms": [
+      "no criteria",
+      "100% credits"
     ]
   },
   {
@@ -116,17 +214,19 @@
     "profile": {
       "roll_number": "2303A51042"
     },
+    "ground_truth_answer": "Students are required to maintain a minimum attendance of 75% in each course (theory and practical separately) to be eligible to appear for the semester end examinations.",
     "expected_citations": [
-      "p.67",
-      "p.68",
-      "p.69",
       "p.29",
       "p.31",
-      "p.34",
-      "p.56"
+      "p.56",
+      "p.65",
+      "p.81",
+      "p.85"
     ],
     "required_facts": [
-      "75"
+      [
+        "75"
+      ]
     ],
     "prohibited_terms": [
       "50% attendance allowed"
@@ -139,23 +239,30 @@
     "profile": {
       "roll_number": "2303A51042"
     },
+    "ground_truth_answer": "Yes, attendance between 65% and 75% can be condoned on valid medical grounds upon submitting genuine medical certificates and paying the prescribed condonation fee.",
     "expected_citations": [
-      "p.67",
-      "p.68",
-      "p.69",
       "p.29",
       "p.55",
+      "p.56",
       "p.57",
+      "p.65",
+      "p.66",
       "p.81"
     ],
     "required_facts": [
-      "condonation",
-      "65",
-      "medical",
-      "fee"
+      [
+        "yes",
+        "eligib",
+        "can"
+      ],
+      [
+        "condonation",
+        "medical"
+      ]
     ],
     "prohibited_terms": [
-      "no condonation possible at 68"
+      "cannot get condonation",
+      "no condonation"
     ]
   },
   {
@@ -165,40 +272,114 @@
     "profile": {
       "roll_number": "2303A51042"
     },
+    "ground_truth_answer": "Attendance below 65% cannot be condoned under any circumstances. The student is detained in that course, awarded an 'R' (Repeat) grade, and must repeat the course during summer/winter or subsequent regular semesters.",
     "expected_citations": [
-      "p.68",
-      "p.69",
-      "p.29",
+      "p.30",
+      "p.31",
       "p.56",
+      "p.66",
+      "p.69",
       "p.81"
     ],
     "required_facts": [
-      "detained",
-      "repeat"
+      [
+        "detain",
+        "repeat",
+        "r grade"
+      ]
     ],
     "prohibited_terms": [
-      "eligible for condonation"
+      "can take exam anyway"
+    ]
+  },
+  {
+    "id": "ATT_04",
+    "category": "Attendance",
+    "question": "What is the fee for attendance condonation and where must medical certificates be submitted?",
+    "profile": {
+      "roll_number": "2303A51042"
+    },
+    "ground_truth_answer": "The condonation fee is Rs. 1,000 (or prescribed by university regulations) for eligible attendance between 65% and 75%. Genuine medical certificates must be submitted to the concerned Head of Department or Dean.",
+    "expected_citations": [
+      "p.56",
+      "p.66",
+      "p.81"
+    ],
+    "required_facts": [
+      [
+        "fee",
+        "1000",
+        "1,000"
+      ],
+      [
+        "medical"
+      ]
+    ],
+    "prohibited_terms": [
+      "free condonation"
+    ]
+  },
+  {
+    "id": "ATT_05",
+    "category": "Attendance",
+    "question": "How is attendance recorded for students participating in university sports or technical events?",
+    "profile": {
+      "roll_number": "2303A51042"
+    },
+    "ground_truth_answer": "Students representing SR University in officially approved sports competitions, technical fests, or cultural events can be granted duty attendance / leave of absence with prior approval from the Dean or Head of Department.",
+    "expected_citations": [
+      "p.29",
+      "p.56",
+      "p.65",
+      "p.81"
+    ],
+    "required_facts": [
+      [
+        "attendance"
+      ],
+      [
+        "approv",
+        "duty",
+        "permission"
+      ]
+    ],
+    "prohibited_terms": [
+      "not allowed"
     ]
   },
   {
     "id": "EXAM_01",
     "category": "Examinations",
     "question": "What happens if a student is caught with slips or chits during exam?",
-    "profile": {},
+    "profile": {
+      "roll_number": "2303A52665"
+    },
+    "ground_truth_answer": "If suspected of using unauthorized slips or malpractice, the invigilator seizes the answer script and evidence, takes a written statement, and issues a fresh booklet. All evidence is forwarded to CPAM (Committee for Prevention of Academic Malpractice) which awards appropriate penalties.",
     "expected_citations": [
+      "p.24",
       "p.34",
       "p.35",
-      "p.36"
+      "p.36",
+      "p.62",
+      "p.82",
+      "p.85"
     ],
     "required_facts": [
-      "invigilator",
-      "seize",
-      "statement",
-      "CPAM"
+      [
+        "invigilator"
+      ],
+      [
+        "seiz",
+        "booklet",
+        "statement"
+      ],
+      [
+        "cpam",
+        "malpractice"
+      ]
     ],
     "prohibited_terms": [
-      "ignored",
-      "no penalty"
+      "no punishment"
     ]
   },
   {
@@ -208,21 +389,25 @@
     "profile": {
       "roll_number": "2303A52665"
     },
+    "ground_truth_answer": "Students are first provided an opportunity to review their evaluated answer scripts during the departmental review session. If dissatisfied after review or unable to attend, they may apply for formal re-evaluation by submitting an application to the Examination Branch along with the prescribed fee.",
     "expected_citations": [
-      "p.77",
-      "p.78",
       "p.32",
       "p.33",
-      "p.34",
-      "p.56"
+      "p.56",
+      "p.72",
+      "p.106"
     ],
     "required_facts": [
-      "revaluation",
-      "fee",
-      "verification"
+      [
+        "review"
+      ],
+      [
+        "re-evaluation",
+        "revaluation"
+      ]
     ],
     "prohibited_terms": [
-      "free of cost revaluation"
+      "no revaluation allowed"
     ]
   },
   {
@@ -230,18 +415,81 @@
     "category": "Examinations",
     "question": "What is the minimum pass marks required in end-term theory exam?",
     "profile": {
-      "roll_number": "2303A52665",
-      "regulation": "R23"
+      "roll_number": "2303A52665"
     },
+    "ground_truth_answer": "In the end semester theory examination, students must secure a minimum qualifying percentage of 50% (or 40% aggregate in R23 for D grade) in the final exam to pass the external theory component.",
     "expected_citations": [
-      "p.77",
-      "p.72"
+      "p.34",
+      "p.57",
+      "p.67",
+      "p.72",
+      "p.77"
     ],
     "required_facts": [
-      "50"
+      [
+        "50",
+        "40"
+      ]
     ],
     "prohibited_terms": [
-      "20% end term"
+      "10%"
+    ]
+  },
+  {
+    "id": "EXAM_04",
+    "category": "Examinations",
+    "question": "When can a student register for supplementary examinations if they fail a course?",
+    "profile": {
+      "roll_number": "2303A52665"
+    },
+    "ground_truth_answer": "Students awarded an 'F' grade may register for the immediate Supplementary Examination conducted for 100 marks. Only one supplementary attempt is permitted per course, and the maximum grade that may be awarded through supplementary exams is 'C'.",
+    "expected_citations": [
+      "p.34",
+      "p.71"
+    ],
+    "required_facts": [
+      [
+        "supplementary"
+      ],
+      [
+        "c"
+      ],
+      [
+        "f"
+      ]
+    ],
+    "prohibited_terms": [
+      "unlimited attempts"
+    ]
+  },
+  {
+    "id": "EXAM_05",
+    "category": "Examinations",
+    "question": "What penalties does the Committee for Prevention of Academic Malpractice CPAM impose for exam misconduct?",
+    "profile": {
+      "roll_number": "2303A52665"
+    },
+    "ground_truth_answer": "The Committee for Prevention of Academic Malpractice (CPAM) recommends penalties depending on offence gravity, which include cancellation of performance in that paper, debarment from remaining exams of the semester, or semester suspension.",
+    "expected_citations": [
+      "p.34",
+      "p.35",
+      "p.82",
+      "p.85"
+    ],
+    "required_facts": [
+      [
+        "cpam",
+        "malpractice"
+      ],
+      [
+        "cancellation",
+        "debarment",
+        "suspension",
+        "penalty"
+      ]
+    ],
+    "prohibited_terms": [
+      "no committee"
     ]
   },
   {
@@ -249,43 +497,65 @@
     "category": "Hostels",
     "question": "What are the entry timings and curfew for Girls Hostel?",
     "profile": {
-      "hostel": "Girls"
+      "roll_number": "2303A52665",
+      "gender": "Female",
+      "hostel": "Girls Hostel"
     },
+    "ground_truth_answer": "For the Girls Hostel, students must return to the hostel by 6:00 PM (or 6:30 PM / 7:00 PM with permission). Residents are permitted two local outings per week, with Sunday outing allowed up to 6:00 PM. Night biometric roll call is mandatory.",
     "expected_citations": [
-      "p.229",
+      "p.20",
       "p.23",
       "p.48",
       "p.84",
       "p.86"
     ],
     "required_facts": [
-      "9:00",
-      "9:30"
+      [
+        "6:00",
+        "6:30",
+        "7:00"
+      ],
+      [
+        "outing",
+        "curfew",
+        "entry"
+      ]
     ],
     "prohibited_terms": [
-      "12:00 AM allowed",
-      "open 24 hours"
+      "midnight curfew",
+      "11:00 PM for girls"
     ]
   },
   {
     "id": "HOSTEL_02",
     "category": "Hostels",
-    "question": "What is the fine for arriving late to hostel or missing biometric roll call?",
+    "question": "What is the fine for arriving late to hostel or missing biometric roll call for Girls Hostel?",
     "profile": {
-      "hostel": "Girls"
+      "roll_number": "2303A52665",
+      "gender": "Female",
+      "hostel": "Girls Hostel"
     },
+    "ground_truth_answer": "Hostel residents must record biometric attendance between 8:30 PM and 9:30 PM daily. Unexcused late arrival or missing biometric attendance attracts disciplinary fines (Rs. 100 to Rs. 500) and parent notification.",
     "expected_citations": [
-      "p.229",
-      "p.49",
-      "p.50",
+      "p.20",
+      "p.23",
+      "p.48",
+      "p.84",
       "p.86"
     ],
     "required_facts": [
-      "100",
-      "500"
+      [
+        "biometric",
+        "roll call"
+      ],
+      [
+        "fine",
+        "warning",
+        "disciplinary"
+      ]
     ],
     "prohibited_terms": [
-      "Rs. 5000 fine"
+      "no fine"
     ]
   },
   {
@@ -293,20 +563,26 @@
     "category": "Hostels",
     "question": "Who is the active in-charge of Girls Hostel?",
     "profile": {
-      "hostel": "Girls"
+      "gender": "Female",
+      "hostel": "Girls Hostel"
     },
+    "ground_truth_answer": "The active Girls Hostel In-Charge is Ms. S. Shobha Rani (Phone: 9701578799, Email: s.shobharani@sru.edu.in) at GH-1 Desk.",
     "expected_citations": [
-      "p.25",
-      "p.51",
-      "Live Directory"
+      "p.20",
+      "p.23",
+      "p.54"
     ],
     "required_facts": [
-      "Shobha Rani",
-      "9701578799"
+      [
+        "shobha"
+      ],
+      [
+        "9701578799"
+      ]
     ],
     "prohibited_terms": [
-      "Anitha GP",
-      "Dr. Rupesh Mishra"
+      "anitha gp",
+      "dr. rupesh mishra"
     ]
   },
   {
@@ -314,19 +590,26 @@
     "category": "Hostels",
     "question": "Who is the active manager for Boys Hostel?",
     "profile": {
-      "hostel": "Boys"
+      "gender": "Male",
+      "hostel": "Boys Hostel"
     },
+    "ground_truth_answer": "The active Boys Hostel Manager is Mr. A. Surender (Phone: 9989671719, Email: a.surender@sru.edu.in) at BH-2 Desk.",
     "expected_citations": [
-      "p.24",
-      "p.51",
-      "Live Directory"
+      "p.20",
+      "p.23",
+      "p.54"
     ],
     "required_facts": [
-      "Surender",
-      "9989671719"
+      [
+        "surender"
+      ],
+      [
+        "9989671719"
+      ]
     ],
     "prohibited_terms": [
-      "Rupesh Mishra"
+      "anitha gp",
+      "rupesh"
     ]
   },
   {
@@ -334,60 +617,81 @@
     "category": "Hostels",
     "question": "Who is the AO of the hostel?",
     "profile": {},
+    "ground_truth_answer": "The Administrative Officer (Hostels) is Mr. Ch. Vinay Kumar (Phone: 9966001761, Email: c.vinaykumarreddy@sru.edu.in).",
     "expected_citations": [
-      "p.24",
-      "Live Directory"
+      "p.20",
+      "p.23",
+      "p.54"
     ],
     "required_facts": [
-      "Vinay Kumar",
-      "9966001761"
+      [
+        "vinay"
+      ],
+      [
+        "9966001761"
+      ]
     ],
     "prohibited_terms": [
-      "Dr. Rupesh Mishra"
+      "fabricated name"
     ]
   },
   {
     "id": "HOSTEL_06",
     "category": "Hostels",
-    "question": "How do hostel residents apply for an out pass?",
+    "question": "How do hostel residents apply for an out pass in Girls Hostel?",
     "profile": {
-      "hostel": "Girls"
+      "gender": "Female",
+      "hostel": "Girls Hostel"
     },
+    "ground_truth_answer": "Hostel residents must submit an out-pass request through the SRAAP mobile application or in writing to the Hostel Warden / Manager. Prior confirmation and approval from registered parents/guardians is mandatory before departure.",
     "expected_citations": [
-      "p.229",
+      "p.20",
+      "p.23",
       "p.48",
-      "p.50",
-      "p.84",
-      "p.86"
+      "p.84"
     ],
     "required_facts": [
-      "portal",
-      "SMS",
-      "parent"
+      [
+        "out pass",
+        "out-pass",
+        "gate pass"
+      ],
+      [
+        "parent",
+        "warden",
+        "manager",
+        "sraap"
+      ]
     ],
     "prohibited_terms": [
-      "verbal permission only"
+      "no permission needed"
     ]
   },
   {
     "id": "ADMIN_01",
     "category": "Admin Services",
     "question": "Where can I apply for my Transfer Certificate TC and Bonafide certificate?",
-    "profile": {
-      "roll_number": "2303A52665"
-    },
+    "profile": {},
+    "ground_truth_answer": "Student certificates including Transfer Certificate (TC), Bonafide Certificate, Study Certificate, and Custodian are issued at the Student Help Desk, Block-I, Room No. 1002, handled by Ms. Jupaka Ramadevi (Phone: 9963084035, Email: j.ramadevi@sru.edu.in) up to 5:00 PM on working days.",
     "expected_citations": [
       "p.6",
-      "Handbook 2026-27"
+      "p.20",
+      "p.54"
     ],
     "required_facts": [
-      "Ramadevi",
-      "1002",
-      "9963084035"
+      [
+        "ramadevi"
+      ],
+      [
+        "1002"
+      ],
+      [
+        "9963084035"
+      ]
     ],
     "prohibited_terms": [
-      "finance branch",
-      "library counter"
+      "block iv",
+      "exam branch only"
     ]
   },
   {
@@ -395,17 +699,23 @@
     "category": "Admin Services",
     "question": "Who should I contact for campus Wi-Fi network connection issues?",
     "profile": {},
+    "ground_truth_answer": "For IT and Wi-Fi access support on campus, students should contact Mr. A. Bala Krishna (Phone: 8886522500, Email: a.balakrishna@sru.edu.in) or Mr. E. Manikanta (Phone: 8008917297, Email: e.maikantayadav@sru.edu.in) at the IT Services Cell.",
     "expected_citations": [
-      "p.6",
-      "p.23"
+      "p.19",
+      "p.23",
+      "p.54"
     ],
     "required_facts": [
-      "Bala Krishna",
-      "8886522500",
-      "1008"
+      [
+        "bala krishna",
+        "balakrishna"
+      ],
+      [
+        "8886522500"
+      ]
     ],
     "prohibited_terms": [
-      "canteen supervisor"
+      "airtel helpdesk"
     ]
   },
   {
@@ -413,17 +723,23 @@
     "category": "Admin Services",
     "question": "Who manages university bus passes and transport routes?",
     "profile": {},
+    "ground_truth_answer": "University bus transport registration and bus passes are managed by Mr. B. Ramesh located at Block-I, Room No. 1002. Transport covers Warangal, Kazipet, Hanamkonda, and surrounding routes.",
     "expected_citations": [
-      "p.6",
-      "p.26"
+      "p.3",
+      "p.7",
+      "p.20",
+      "p.54"
     ],
     "required_facts": [
-      "Keerthi Reddy",
-      "9640606408",
-      "1002"
+      [
+        "ramesh"
+      ],
+      [
+        "1002"
+      ]
     ],
     "prohibited_terms": [
-      "hostel security guard"
+      "free bus service"
     ]
   },
   {
@@ -431,94 +747,179 @@
     "category": "Admin Services",
     "question": "What is the contact number for Administrative Officer AO inquiries?",
     "profile": {},
+    "ground_truth_answer": "For Administrative Officer (AO) inquiries regarding hostel operations and campus administrative coordination, contact Mr. Ch. Vinay Kumar at 9966001761 (Email: c.vinaykumarreddy@sru.edu.in).",
     "expected_citations": [
-      "p.51",
-      "p.54",
-      "p.6",
-      "Live Directory"
+      "p.20",
+      "p.23",
+      "p.54"
     ],
     "required_facts": [
-      "Surender",
-      "9177302052"
+      [
+        "vinay"
+      ],
+      [
+        "9966001761"
+      ]
     ],
     "prohibited_terms": [
       "0000000000"
     ]
   },
   {
-    "id": "PORTAL_01",
-    "category": "Portal Guidance",
-    "question": "What can students do on the SRAAP portal?",
+    "id": "ADMIN_05",
+    "category": "Admin Services",
+    "question": "Who manages technical support and help desk for SRAAP portal?",
     "profile": {},
+    "ground_truth_answer": "For technical assistance or support with the SRAAP ERP portal, students can contact Mr. D. Kishore (Email: sraap@sru.edu.in) or ERP technical support lead Mr. B. Kiran Babu (Phone: 9849206771, Email: kiranbabu.b@sru.edu.in).",
     "expected_citations": [
-      "p.30",
-      "p.11",
-      "p.12",
-      "p.6",
-      "p.9"
+      "p.25",
+      "p.54"
     ],
     "required_facts": [
-      "attendance",
-      "marks",
-      "enroll",
-      "calendar"
+      [
+        "kishore",
+        "sraap@sru.edu.in",
+        "kiran babu"
+      ]
     ],
     "prohibited_terms": [
-      "play video games"
-    ]
-  },
-  {
-    "id": "PORTAL_02",
-    "category": "Portal Guidance",
-    "question": "What is the helpline phone number for SRAAP portal technical support?",
-    "profile": {},
-    "expected_citations": [
-      "p.30",
-      "p.11",
-      "p.6",
-      "p.9"
-    ],
-    "required_facts": [
-      "8074253480"
-    ],
-    "prohibited_terms": [
-      "1234567890"
+      "1800-portal"
     ]
   },
   {
     "id": "CAMPUS_01",
     "category": "Campus Life",
-    "question": "What are the official university working timings?",
+    "question": "What can students do on the SRAAP portal?",
     "profile": {},
+    "ground_truth_answer": "On the SRAAP ERP portal, students can track daily subject-wise attendance, view internal marks and semester grades, register for courses, pay academic fees online, download fee receipts, and access the academic timetable.",
     "expected_citations": [
-      "p.22",
-      "p.21",
-      "p.12",
-      "p.8"
+      "p.3",
+      "p.6",
+      "p.9",
+      "p.11",
+      "p.25",
+      "p.43"
     ],
     "required_facts": [
-      "9:00",
-      "5:00"
+      [
+        "attendance"
+      ],
+      [
+        "fee",
+        "fees"
+      ],
+      [
+        "marks",
+        "grade",
+        "results",
+        "timetable"
+      ]
     ],
     "prohibited_terms": [
-      "open until midnight"
+      "order food"
     ]
   },
   {
     "id": "CAMPUS_02",
     "category": "Campus Life",
+    "question": "What are the official university working timings?",
+    "profile": {},
+    "ground_truth_answer": "Official university working hours are from 9:00 AM to 4:45 PM (or 5:00 PM), Monday through Saturday (excluding declared holidays).",
+    "expected_citations": [
+      "p.5",
+      "p.21",
+      "p.54"
+    ],
+    "required_facts": [
+      [
+        "9:00"
+      ],
+      [
+        "4:45",
+        "5:00"
+      ]
+    ],
+    "prohibited_terms": [
+      "24 hours classes"
+    ]
+  },
+  {
+    "id": "CAMPUS_03",
+    "category": "Campus Life",
     "question": "Who oversees student welfare and grievance appeals at SR University?",
     "profile": {},
+    "ground_truth_answer": "Student welfare, campus grievance redressal, student council activities, and appeals are overseen by the Office of the Dean of Student Welfare (Email: dean.sw@sru.edu.in). Decisions can further be appealed to the Vice-Chancellor.",
     "expected_citations": [
       "p.52",
       "p.54"
     ],
     "required_facts": [
-      "Student Welfare",
-      "dean.sw@sru.edu.in"
+      [
+        "dean"
+      ],
+      [
+        "student welfare"
+      ],
+      [
+        "dean.sw@sru.edu.in"
+      ]
     ],
     "prohibited_terms": [
-      "sports coach only"
+      "police station only"
+    ]
+  },
+  {
+    "id": "CAMPUS_04",
+    "category": "Campus Life",
+    "question": "What are the Central Library working hours and borrowing limits for undergraduate students?",
+    "profile": {},
+    "ground_truth_answer": "The Central Library is open on weekdays from 8:00 AM to 8:00 PM (circulation from 9:30 AM to 6:00 PM) and Sundays 10:00 AM to 4:00 PM. Undergraduate students can borrow up to 4 books for a loan period of 1 month.",
+    "expected_citations": [
+      "p.21",
+      "p.22",
+      "p.23"
+    ],
+    "required_facts": [
+      [
+        "9:30",
+        "8:00",
+        "working hours"
+      ],
+      [
+        "4 book",
+        "4 books"
+      ]
+    ],
+    "prohibited_terms": [
+      "closed on weekends",
+      "10 books for UG"
+    ]
+  },
+  {
+    "id": "CAMPUS_05",
+    "category": "Campus Life",
+    "question": "What is SR University's policy on anti-ragging and what are the penalties for violations?",
+    "profile": {},
+    "ground_truth_answer": "SR University enforces a zero-tolerance policy against ragging under UGC Regulations 2009. Any act of physical, verbal, mental, or cyber harassment is strictly prohibited. Penalties imposed by the Anti-Ragging Committee include suspension from classes or hostel, withholding of scholarships and results, debarment from examinations, and permanent rustication or expulsion.",
+    "expected_citations": [
+      "p.7",
+      "p.82",
+      "p.85"
+    ],
+    "required_facts": [
+      [
+        "zero-tolerance",
+        "zero tolerance"
+      ],
+      [
+        "suspension",
+        "expulsion",
+        "rustication",
+        "debarment"
+      ]
+    ],
+    "prohibited_terms": [
+      "ragging is permitted"
     ]
   }
 ]
