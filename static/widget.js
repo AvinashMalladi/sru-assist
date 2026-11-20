@@ -144,6 +144,19 @@
     "  .srucw-inputbar{gap:6px;padding:8px 10px}",
     "  .srucw-send{padding:8px 12px;font-size:12.5px}",
     "}",
+    ".srucw-footer{padding:6px 12px 7px 12px;background:#f8fafc;border-top:1px solid #edf2f7;",
+    "display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.5px;user-select:none}",
+    ".srucw-footer-brand{font-size:11px;color:#64748b;font-weight:500;display:flex;align-items:center;gap:4px;letter-spacing:0.2px}",
+    ".srucw-footer-brand strong{color:#1e293b;font-weight:700}",
+    ".srucw-footer-sparkle{color:#f59e0b;font-size:11px}",
+    ".srucw-footer-marquee-wrap{width:100%;overflow:hidden;position:relative;white-space:nowrap;",
+    "display:flex;justify-content:center;padding:1px 0;",
+    "mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);",
+    "-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}",
+    ".srucw-footer-marquee-text{display:inline-block;font-size:10px;font-weight:600;color:#23468A;",
+    "white-space:nowrap;will-change:transform;animation:srucwSideToSide 6s ease-in-out infinite alternate}",
+    ".srucw-footer:hover .srucw-footer-marquee-text{animation-play-state:paused}",
+    "@keyframes srucwSideToSide{0%{transform:translateX(18%)}100%{transform:translateX(-18%)}}",
   ].join("");
 
   // ---------- mini markdown ----------
@@ -257,6 +270,18 @@
   panel.appendChild(msgsBox);
   panel.appendChild(suggBox);
   panel.appendChild(inputBar);
+
+  var footer = el("div", "srucw-footer");
+  footer.innerHTML =
+    '<div class="srucw-footer-brand">' +
+    '<span class="srucw-footer-sparkle">⚡</span> Powered by <strong>Student Ambassador</strong>' +
+    '</div>' +
+    '<div class="srucw-footer-marquee-wrap">' +
+    '<div class="srucw-footer-marquee-text">' +
+    'Developed by students under the guidance of Dr. Shashikala Martha' +
+    '</div>' +
+    '</div>';
+  panel.appendChild(footer);
 
   var bubble = el("button", "srucw-bubble", "💬");
   bubble.setAttribute("aria-label", "Open AURA chat");

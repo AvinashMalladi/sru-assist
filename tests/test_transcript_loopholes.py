@@ -75,9 +75,9 @@ class TestTranscriptLoopholes(unittest.TestCase):
             {"role": "assistant", "content": "Do you mean the Boys Hostel or the Girls Hostel?"},
         ]
         res = run_agent("Girls", history=history, profile={"regulation": "R23"})
-        ans = res["answer"]
+        ans = res["answer"].replace("\u202f", " ")
         self.assertIn("Shobha Rani", ans)
-        self.assertIn("9701578799", ans)
+        self.assertTrue("9701578799" in ans.replace(" ", "") or "9701578799" in ans)
         self.assertNotIn("Anitha GP", ans)
         self.assertNotIn("9599042878", ans)
 

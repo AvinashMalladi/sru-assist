@@ -65,7 +65,15 @@
   tr:last-child td{border-bottom:none}
   td.c,th.c{text-align:center}
 
-  footer{background:#fff;border-top:1px solid #e2e6ec;padding:18px;text-align:center;color:#8a93a3;font-size:12.5px}
+  footer{background:#fff;border-top:1px solid #e2e6ec;padding:16px 20px;text-align:center;color:#64748b}
+  .portal-footer-brand{font-size:12.5px;font-weight:500;color:#475569;margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px}
+  .portal-footer-brand strong{color:#1e293b;font-weight:700}
+  .portal-footer-sparkle{color:#f59e0b;font-size:13px}
+  .portal-marquee-box{width:100%;max-width:580px;margin:0 auto 6px auto;overflow:hidden;position:relative;white-space:nowrap;display:flex;justify-content:center;mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+  .portal-marquee-text{display:inline-block;font-size:12px;font-weight:600;color:#23468A;animation:portalSideToSide 7s ease-in-out infinite alternate}
+  .portal-marquee-box:hover .portal-marquee-text{animation-play-state:paused}
+  @keyframes portalSideToSide{0%{transform:translateX(18%)}100%{transform:translateX(-18%)}}
+  .portal-footer-sub{font-size:11.5px;color:#9ca3af;margin-top:2px}
 
   /* ---- responsive ---- */
   @media (max-width:1024px){.cards{grid-template-columns:repeat(3,1fr)}.panels{grid-template-columns:1fr}}
@@ -205,7 +213,17 @@
 </main>
 
 <footer>
-  SR University — Dummy Portal for Agentic AI Chatbot Demo (not the real SRAAP system)
+  <div class="portal-footer-brand">
+    <span class="portal-footer-sparkle">⚡</span> Powered by <strong>Student Ambassador</strong>
+  </div>
+  <div class="portal-marquee-box">
+    <div class="portal-marquee-text">
+      Developed by students under the guidance of Dr. Shashikala Martha
+    </div>
+  </div>
+  <div class="portal-footer-sub">
+    SR University — Dummy Portal for Agentic AI Chatbot Demo (not the real SRAAP system)
+  </div>
 </footer>
 
 <!-- ===== WIDGET INTEGRATION (exactly what goes into the real portal) ===== -->
